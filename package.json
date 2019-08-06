@@ -3,14 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "npm run prod",
+    "start": "NODE_ENV=development npm-run-all server",
+    "start-dist": "npm run prod",
     "server": "babel-node ./src/bin/www",
     "server:prod": "node ./dist/bin/www",
-    "dev": "NODE_ENV=development npm-run-all server",
+    "prod": "NODE_ENV=production npm-run-all clean build server:prod",
     "clean": "rimraf dist",
     "build": "babel ./src --out-dir dist",
-    "prod": "NODE_ENV=production npm-run-all clean build server:prod",
-    "watch": "nodemon"
+    "watch": "nodemon",
+    "watch-prettier": "watch-prettier": "onchange '**/!(__generated__)/*.js' -- prettier --write {{changed}}"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -27,6 +28,7 @@
     "@babel/core": "^7.5.5",
     "@babel/node": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "prettier": "^1.18.2"
   }
 }
