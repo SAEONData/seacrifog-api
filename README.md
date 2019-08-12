@@ -10,8 +10,9 @@
 3. Start the app: `npm run start:prod`
 
 # Configuration
-This is a sample of the environment variables that the app requires to run - specifically in the context of a `.env` file.
+This is a sample of the environment variables that the app requires to run - specifically in the context of a `.env` file (with the default values shown).
 
 ```
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+PORT=3000
 ```

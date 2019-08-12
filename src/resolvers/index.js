@@ -1,5 +1,5 @@
-import pool from '../pg'
+import hello from './queries/hello'
 
 export default {
-  hello: () => 'hello world'
+  hello
 }

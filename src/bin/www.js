@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import app from '../app'
 import http from 'http'
+import { log, error } from '../log'
 
 const PORT = normalizePort(process.env.PORT || '3000')
 app.set('port', PORT)
@@ -36,11 +37,11 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges')
+      error(bind + ' requires elevated privileges')
       process.exit(1)
       break
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use')
+      error(bind + ' is already in use')
       process.exit(1)
       break
     default:
@@ -55,5 +56,5 @@ function onError(error) {
 function onListening() {
   var addr = server.address()
   var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
-  console.log('Listening on ' + bind)
+  log('Listening on ' + bind)
 }

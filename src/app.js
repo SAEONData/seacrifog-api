@@ -8,7 +8,7 @@ import graphqlHTTP from 'express-graphql'
 import { readFileSync } from 'fs'
 import { normalize, join } from 'path'
 import resolvers from './resolvers'
-import log from './log'
+import { log } from './log'
 
 // Config
 import { config } from 'dotenv'
@@ -24,13 +24,10 @@ log('allowed origins', ALLOWED_ORIGINS)
 const corsMiddleware = (req, res, next) => {
   const origin = req.headers.origin
   const httpVerb = req.method
-
   if (ALLOWED_ORIGINS.includes(origin)) res.setHeader('Access-Control-Allow-Origin', origin)
-
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   res.header('Access-Control-Allow-Credentials', true)
-
   if (httpVerb === 'OPTIONS') res.send(200)
   else next()
 }
