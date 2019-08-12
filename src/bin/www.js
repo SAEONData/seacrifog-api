@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import app from '../app'
 import http from 'http'
-import { log, error } from '../log'
+import { log, error as logError } from '../log'
 
 const PORT = normalizePort(process.env.PORT || '3000')
 app.set('port', PORT)
@@ -37,11 +37,11 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      error(bind + ' requires elevated privileges')
+      logError(bind + ' requires elevated privileges')
       process.exit(1)
       break
     case 'EADDRINUSE':
-      error(bind + ' is already in use')
+      logError(bind + ' is already in use')
       process.exit(1)
       break
     default:
