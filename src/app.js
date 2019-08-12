@@ -3,7 +3,7 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import router from './routes'
-import { buildSchema } from 'graphql'
+import { makeExecutableSchema } from 'graphql-tools'
 import graphqlHTTP from 'express-graphql'
 import { readFileSync } from 'fs'
 import { normalize, join } from 'path'
@@ -41,17 +41,16 @@ app.use(cookieParser())
 app.use(express.static(join(__dirname, '../public')))
 app.use('/', router)
 
-// Load GraphQL Schema
-const schemaPath = normalize(join(__dirname, './schema.graphql'))
-const schemaDef = readFileSync(schemaPath, { encoding: 'utf8' })
-const schema = buildSchema(schemaDef)
+// Load GraphQL schema
+const typeDefsPath = normalize(join(__dirname, './schema.graphql'))
+const typeDefs = readFileSync(typeDefsPath, { encoding: 'utf8' })
+const schema = makeExecutableSchema({ typeDefs, resolvers })
 
 // Make GraphiQL available
 app.use(
   '/graphiql',
   graphqlHTTP({
     schema,
-    rootValue: resolvers,
     graphiql: true
   })
 )
@@ -61,7 +60,6 @@ app.use(
   '/graphql',
   graphqlHTTP({
     schema,
-    rootValue: resolvers,
     graphiql: false
   })
 )

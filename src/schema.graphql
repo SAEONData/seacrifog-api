@@ -2,11 +2,14 @@ type Query {
   variables: [Variable!]!
 }
 
+# type Mutation {}
+
 type Variable {
   id: Int
   name: String
   class: String
   domain: String
+  test: String
 }
 
 # type mutation {}
