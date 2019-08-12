@@ -1,5 +1,12 @@
 type Query {
-  hello: String
+  variables: [Variable!]!
+}
+
+type Variable {
+  id: Int
+  name: String
+  class: String
+  domain: String
 }
 
 # type mutation {}

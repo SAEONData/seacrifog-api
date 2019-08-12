@@ -1,5 +1,5 @@
-import hello from './queries/hello'
+import variables from './queries/variables'
 
 export default {
-  hello
+  variables
 }
