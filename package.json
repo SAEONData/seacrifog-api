@@ -7,7 +7,6 @@
     "prettier": "prettier --write 'src/**/*.js'",
     "start:dev": "NODE_ENV=development npm-run-all server:dev",
     "server:dev": "babel-node ./src/bin/www",
-    
     "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:prod server:prod",
     "server:prod": "node ./dist/bin/www",
     "clean:prod": "rimraf ./dist",
@@ -17,6 +16,7 @@
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "dotenv": "^8.0.0",
     "express": "~4.16.1",
     "express-graphql": "^0.9.0",
     "graphql": "^14.4.2",
