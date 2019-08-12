@@ -3,16 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "watch": "nodemon",
-    "start": "NODE_ENV=development npm-run-all server",
-    "start:dist": "npm run prod",
-    "prod": "NODE_ENV=production npm-run-all clean build server:prod",
-    "server": "babel-node ./src/bin/www",
-    "server:prod": "node ./dist/bin/www",
-    "clean": "rimraf ./dist",
-    "build": "babel ./src --out-dir dist",
+    "dev": "nodemon",
     "prettier": "prettier --write 'src/**/*.js'",
-    "prettier:watch": "onchange 'src/**/*.js' -- prettier --write {{changed}}"
+    "start:dev": "NODE_ENV=development npm-run-all server:dev",
+    "server:dev": "babel-node ./src/bin/www",
+    
+    "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:prod server:prod",
+    "server:prod": "node ./dist/bin/www",
+    "clean:prod": "rimraf ./dist",
+    "build:prod": "babel ./src --out-dir dist",
+    "copy:prod": "cp ./src/schema.graphql dist/schema.graphql"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -21,10 +21,10 @@
     "express-graphql": "^0.9.0",
     "graphql": "^14.4.2",
     "morgan": "~1.9.1",
+    "pg": "^7.12.1",
     "rimraf": "^2.6.3"
   },
   "devDependencies": {
-    "npm-run-all": "^4.1.5",
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/node": "^7.5.5",
@@ -38,7 +38,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
     "nodemon": "^1.19.1",
-    "onchange": "^6.0.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "^1.18.2"
   }
 }
