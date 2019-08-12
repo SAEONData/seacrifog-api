@@ -2,7 +2,7 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
-import indexRouter from './routes/index'
+import router from './routes'
 import { buildSchema } from 'graphql'
 import graphqlHTTP from 'express-graphql'
 import { readFileSync } from 'fs'
@@ -33,19 +33,13 @@ const corsMiddleware = (req, res, next) => {
 }
 
 const app = express()
-
 app.use(logger('dev'))
-
+app.use(corsMiddleware)
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
-
-// Serve static files
 app.use(express.static(join(__dirname, '../public')))
-
-// Serve the router
-app.use(corsMiddleware)
-app.use('/', indexRouter)
+app.use('/', router)
 
 // Load GraphQL Schema
 const schemaPath = normalize(join(__dirname, './schema.graphql'))
