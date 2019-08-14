@@ -1,7 +1,7 @@
 'use strict'
 import express from 'express'
 import cookieParser from 'cookie-parser'
-import logger from 'morgan'
+import morgan from 'morgan'
 import router from './routes'
 import { makeExecutableSchema } from 'graphql-tools'
 import graphqlHTTP from 'express-graphql'
@@ -33,7 +33,7 @@ const corsMiddleware = (req, res, next) => {
 }
 
 const app = express()
-app.use(logger('dev'))
+app.use(morgan('short'))
 app.use(corsMiddleware)
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
