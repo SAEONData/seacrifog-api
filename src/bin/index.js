@@ -13,7 +13,7 @@ const normalizePort = val => {
 const PORT = normalizePort(process.env.PORT || '3000')
 app.set('port', PORT)
 const server = http.createServer(app)
-server.listen(PORT, 'localhost')
+server.listen(PORT)
 
 server.on('error', err => {
   if (err.syscall !== 'listen') throw err
