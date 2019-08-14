@@ -1,3 +1,3 @@
 export default {
-  test: async () => 'i am a test'
+  test: async () => 'i am an example of a field resolver'
 }

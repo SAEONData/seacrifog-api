@@ -3,12 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon",
+    "start": "nodemon",
     "prettier": "prettier --write 'src/**/*.js'",
-    "start:dev": "NODE_ENV=development npm-run-all server:dev",
-    "server:dev": "babel-node ./src/bin/www",
+    "run:dev": "NODE_ENV=development npm-run-all server:dev",
+    "server:dev": "babel-node ./src/bin",
     "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:prod server:prod",
-    "server:prod": "node ./dist/bin/www",
+    "server:prod": "node ./dist/bin",
     "clean:prod": "rimraf ./dist",
     "build:prod": "babel ./src --out-dir dist",
     "copy:prod": "cp ./src/schema.graphql dist/schema.graphql"
