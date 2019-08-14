@@ -11,5 +11,3 @@ type Variable {
   domain: String
   test: String
 }
-
-# type mutation {}
