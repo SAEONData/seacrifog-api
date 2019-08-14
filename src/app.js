@@ -28,7 +28,7 @@ const corsMiddleware = (req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   res.header('Access-Control-Allow-Credentials', true)
-  if (httpVerb === 'OPTIONS') res.send(200)
+  if (httpVerb === 'OPTIONS') res.sendStatus(200)
   else next()
 }
 
