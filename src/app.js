@@ -15,10 +15,9 @@ import { config } from 'dotenv'
 config()
 
 // Env config
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS.split(',') || [
-  'http://localhost:3000',
-  'http://localhost:3001'
-]
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:3000', 'http://localhost:3001']
 log('allowed origins', ALLOWED_ORIGINS)
 
 const corsMiddleware = (req, res, next) => {
