@@ -52,7 +52,7 @@ app.use(
 )
 
 // Setup HTTP router
-app.use('/', router)
+app.use('/', asyncHandler(router))
 
 // Load GraphQL schema
 const typeDefsPath = normalize(join(__dirname, './schema.graphql'))

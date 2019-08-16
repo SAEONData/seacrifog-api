@@ -29,7 +29,6 @@ export default (async () => {
       seacrifogPool = getPool(process.env.POSTGRES_DATABASE || 'seacrifog')
       const schema = readFileSync(normalize(join(__dirname, './schema.sql')), { encoding: 'utf8' })
       await seacrifogPool.query(schema)
-      await seacrifogPool.end()
       log('seacrifog schema created!')
     } else {
       log('Started app WITHOUT creating database and seeding schema (db already exists)')
