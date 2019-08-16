@@ -1,5 +1,6 @@
-const pg = require('pg')
-const { Pool } = pg
+import { Pool } from 'pg'
+import { config } from 'dotenv'
+config()
 
 export default new Pool({
   host: process.env.POSTGRES_HOST || 'localhost',
