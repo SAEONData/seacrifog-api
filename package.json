@@ -7,11 +7,12 @@
     "prettier": "prettier --write 'src/**/*.js'",
     "run:dev": "NODE_ENV=development npm-run-all server:dev",
     "server:dev": "babel-node ./src/bin",
-    "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:schema copy:env server:prod",
+    "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:gqlschema copy:dbschema copy:env server:prod",
     "server:prod": "node ./dist/bin",
     "clean:prod": "rimraf ./dist",
     "build:prod": "babel ./src --out-dir dist",
-    "copy:schema": "cp ./src/schema.graphql dist/schema.graphql",
+    "copy:gqlschema": "cp ./src/schema.graphql dist/schema.graphql",
+    "copy:dbschema": "cp ./src/db/schema.sql dist/db/schema.sql",
     "copy:env": "cp ./.env dist/.env"
   },
   "dependencies": {
