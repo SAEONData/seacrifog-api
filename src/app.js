@@ -4,15 +4,18 @@ import ctx from 'express-http-context'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import router from './routes'
-import { mergeLeft } from 'ramda'
 import { makeExecutableSchema } from 'graphql-tools'
 import graphqlHTTP from 'express-graphql'
 import { readFileSync } from 'fs'
 import { normalize, join } from 'path'
 import resolvers from './resolvers'
-import { log } from './log'
+import { log } from './lib/log'
+import db from './db'
 import { config } from 'dotenv'
 config()
+
+// Helper for allowing async / await with middleware
+const asyncHandler = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
 
 // Env config
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
@@ -41,10 +44,12 @@ app.use(express.static(join(__dirname, '../public')))
 
 // Setup request/response ctx object
 app.use(ctx.middleware)
-app.use((req, res, next) => {
-  ctx.set('test', 42)
-  next()
-})
+app.use(
+  asyncHandler(async (req, res, next) => {
+    ctx.set('db', await db)
+    next()
+  })
+)
 
 // Setup HTTP router
 app.use('/', router)
