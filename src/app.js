@@ -1,16 +1,16 @@
 'use strict'
 import express from 'express'
+import ctx from 'express-http-context'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import router from './routes'
+import { mergeLeft } from 'ramda'
 import { makeExecutableSchema } from 'graphql-tools'
 import graphqlHTTP from 'express-graphql'
 import { readFileSync } from 'fs'
 import { normalize, join } from 'path'
 import resolvers from './resolvers'
 import { log } from './log'
-
-// Config
 import { config } from 'dotenv'
 config()
 
@@ -38,6 +38,15 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(join(__dirname, '../public')))
+
+// Setup request/response ctx object
+app.use(ctx.middleware)
+app.use((req, res, next) => {
+  ctx.set('test', 42)
+  next()
+})
+
+// Setup HTTP router
 app.use('/', router)
 
 // Load GraphQL schema
