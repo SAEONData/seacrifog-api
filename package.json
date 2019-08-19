@@ -4,16 +4,16 @@
   "private": true,
   "scripts": {
     "start": "nodemon",
-    "prettier": "prettier --write 'src/**/*.js'",
+    "prettier": "prettier --write \"src/**/*.js\"",
     "run:dev": "NODE_ENV=development npm-run-all server:dev",
     "server:dev": "babel-node ./src/bin",
-    "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:gqlschema copy:dbschema copy:env server:prod",
+    "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:gqlschema copy:sql copy:env server:prod",
     "server:prod": "node ./dist/bin",
     "clean:prod": "rimraf ./dist",
     "build:prod": "babel ./src --out-dir dist",
-    "copy:gqlschema": "cp ./src/schema.graphql dist/schema.graphql",
-    "copy:dbschema": "cp ./src/db/schema.sql dist/db/schema.sql",
-    "copy:env": "cp ./.env dist/.env"
+    "copy:gqlschema": "copyfiles -u 1 ./src/schema.graphql dist/",
+    "copy:sql": "copyfiles -u 1 \"./src/sql/**/*\" dist/",
+    "copy:env": "copyfiles ./.env dist/"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -34,6 +34,7 @@
     "@babel/core": "^7.5.5",
     "@babel/node": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
+    "copyfiles": "^2.1.1",
     "eslint": "^6.1.0",
     "eslint-config-prettier": "^6.0.0",
     "eslint-config-standard": "^13.0.1",

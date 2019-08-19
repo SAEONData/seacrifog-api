@@ -19,26 +19,34 @@ const getPool = database =>
   })
 
 export default (async () => {
-  try {
-    let seacrifogPool
-    const configDbPool = getPool('postgres')
-    const dbExists = (await configDbPool.query(
-      `select exists(select datname from pg_catalog.pg_database where datname = 'seacrifog');`
-    )).rows[0].exists
-    if (!dbExists) {
-      await configDbPool.query('create database seacrifog;')
-      await configDbPool.end()
-      log('seacrifog database created!')
-      seacrifogPool = getPool(process.env.POSTGRES_DATABASE || 'seacrifog')
-      const schema = readFileSync(normalize(join(__dirname, './schema.sql')), { encoding: 'utf8' })
-      await seacrifogPool.query(schema)
-      log('seacrifog schema created!')
-    } else {
-      log('Started app WITHOUT creating database and seeding schema (db already exists)')
-    }
+  /**
+   * During development, since we are pulling data from an old db
+   * the database is dropped and recreated on startup
+   * Obviously this will need to be adjusted prior to first use
+   * TODO!!!
+   */
 
-    return seacrifogPool || getPool(process.env.POSTGRES_DATABASE || 'seacrifog')
-  } catch (error) {
-    logError('Error configuring the database: ', error)
-  }
-})()
+  // Drop and create seacrifog
+  const configDbPool = getPool('postgres')
+  await configDbPool.query(
+    `drop database if exists ${process.env.POSTGRES_DATABASE || 'seacrifog'};`
+  )
+  await configDbPool.query(`create database ${process.env.POSTGRES_DATABASE || 'seacrifog'};`)
+  await configDbPool.end()
+  log('seacrifog database dropped and re-created!')
+
+  // Create the seacrifog schema, and populate database
+  const seacrifogPool = getPool(process.env.POSTGRES_DATABASE || 'seacrifog')
+  const schema = readFileSync(normalize(join(__dirname, '../sql/migration/schema.sql')), {
+    encoding: 'utf8'
+  })
+  await seacrifogPool.query(schema)
+  await seacrifogPool.query('create extension dblink;')
+  const etl = readFileSync(normalize(join(__dirname, '../sql/migration/etl.sql')), {
+    encoding: 'utf8'
+  })
+  await seacrifogPool.query(etl)
+  log('seacrifog schema re-created!')
+
+  return seacrifogPool
+})().catch(error => logError('Error configuring the database: ', error))
