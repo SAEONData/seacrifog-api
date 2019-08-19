@@ -1,6 +1,6 @@
 'use strict'
 import { Pool } from 'pg'
-import { log, error as logError } from '../lib/log'
+import { log, logError } from '../lib/log'
 import { readFileSync } from 'fs'
 import { config } from 'dotenv'
 import { join, normalize } from 'path'

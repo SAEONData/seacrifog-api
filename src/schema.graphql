@@ -1,5 +1,6 @@
 type Query {
   variables: [Variable!]!
+  protocols: [Protocol!]!
 }
 
 # type Mutation {}
@@ -9,5 +10,13 @@ type Variable {
   name: String
   class: String
   domain: String
-  test: String
+  protocols: [Protocol!]!
+}
+
+type Protocol {
+  id: Int
+  doi: String
+  author: String
+  publisher: String
+  title: String
 }
