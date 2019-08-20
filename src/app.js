@@ -9,7 +9,7 @@ import { readFileSync } from 'fs'
 import { normalize, join } from 'path'
 import resolvers from './resolvers'
 import { log, logError } from './lib/log'
-import { initializeDb, pool } from './db'
+import { initializeDb, initializeDbTemp, pool } from './db'
 import { config } from 'dotenv'
 config()
 
@@ -35,7 +35,11 @@ const corsMiddleware = (req, res, next) => {
 }
 
 // Setup the DB
-Promise.resolve(initializeDb()).catch(err => {
+Promise.resolve(initializeDbTemp()).catch(err => {
+  logError('Error initializing database', err)
+  process.exit(1)
+})
+const db = Promise.resolve(initializeDb()).catch(err => {
   logError('Error initializing database', err)
   process.exit(1)
 })
@@ -55,7 +59,7 @@ app.use(express.static(join(__dirname, '../public')))
 app.use(
   asyncHandler(async (req, res, next) => {
     req.ctx = {
-      pgPool: pool
+      db: await db
     }
     next()
   })

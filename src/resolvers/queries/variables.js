@@ -1,7 +1,7 @@
 import { log, logError } from '../../lib/log'
 
 export default async (self, args, req) => {
-  const { pgPool } = req.ctx
-  const result = await pgPool.query(`select id, name, class, domain from variables`)
+  const { db } = await req.ctx
+  const result = await db.executeSql('queries/variables.sql')
   return result.rows
 }

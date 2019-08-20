@@ -24,7 +24,7 @@ const getPool = database =>
  * Obviously this will need to be adjusted prior to first use
  * TODO!!!
  */
-export const initializeDb = async () => {
+export const initializeDbTemp = async () => {
   // Drop and create seacrifog
   const configDbPool = getPool('postgres')
   await configDbPool.query(`
@@ -55,4 +55,21 @@ export const initializeDb = async () => {
   await seacrifogPool.end()
 }
 
-export const pool = getPool(process.env.POSTGRES_DATABASE || 'seacrifog')
+export const initializeDb = async () => {
+  const pool = getPool(process.env.POSTGRES_DATABASE || 'seacrifog')
+  return {
+    pool,
+    executeSql: async (filepath, ...args) => {
+      // Load the SQL query
+      let sql = readFileSync(normalize(join(__dirname, `../sql/${filepath}`)), {
+        encoding: 'utf8'
+      })
+      // Load the args into the query
+      args.forEach((arg, i) => {
+        sql = sql.replace(`:${i + 1}`, `${arg}`)
+      })
+      // Execute the SQL
+      return await pool.query(sql)
+    }
+  }
+}
