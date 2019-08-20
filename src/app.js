@@ -1,6 +1,5 @@
 'use strict'
 import express from 'express'
-import ctx from 'express-http-context'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import router from './routes'
@@ -9,8 +8,8 @@ import graphqlHTTP from 'express-graphql'
 import { readFileSync } from 'fs'
 import { normalize, join } from 'path'
 import resolvers from './resolvers'
-import { log } from './lib/log'
-import db from './db'
+import { log, logError } from './lib/log'
+import { initializeDb, pool } from './db'
 import { config } from 'dotenv'
 config()
 
@@ -35,6 +34,12 @@ const corsMiddleware = (req, res, next) => {
   else next()
 }
 
+// Setup the DB
+Promise.resolve(initializeDb()).catch(err => {
+  logError('Error initializing database', err)
+  process.exit(1)
+})
+
 const app = express()
 app.use(morgan('short'))
 app.use(corsMiddleware)
@@ -47,11 +52,11 @@ app.use(express.static(join(__dirname, '../public')))
  * Provides a request lifecycle object to append adhoc things
  *  => req.ctx
  */
-app.use(ctx.middleware)
 app.use(
   asyncHandler(async (req, res, next) => {
-    console.log('is there a ctx here', req.ctx)
-    ctx.set('db', await db)
+    req.ctx = {
+      pgPool: pool
+    }
     next()
   })
 )

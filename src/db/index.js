@@ -18,14 +18,13 @@ const getPool = database =>
     connectionTimeoutMillis: 2000
   })
 
-export default (async () => {
-  /**
-   * During development, since we are pulling data from an old db
-   * the database is dropped and recreated on startup
-   * Obviously this will need to be adjusted prior to first use
-   * TODO!!!
-   */
-
+/**
+ * During development, since we are pulling data from an old db
+ * the database is dropped and recreated on startup
+ * Obviously this will need to be adjusted prior to first use
+ * TODO!!!
+ */
+export const initializeDb = async () => {
   // Drop and create seacrifog
   const configDbPool = getPool('postgres')
   await configDbPool.query(`
@@ -53,6 +52,7 @@ export default (async () => {
   })
   await seacrifogPool.query(etl)
   log('seacrifog schema re-created!')
+  await seacrifogPool.end()
+}
 
-  return seacrifogPool
-})().catch(error => logError('Error configuring the database: ', error))
+export const pool = getPool(process.env.POSTGRES_DATABASE || 'seacrifog')
