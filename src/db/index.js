@@ -28,6 +28,12 @@ export default (async () => {
 
   // Drop and create seacrifog
   const configDbPool = getPool('postgres')
+  await configDbPool.query(`
+    SELECT pg_terminate_backend(pg_stat_activity.pid)
+    FROM pg_stat_activity
+    WHERE pg_stat_activity.datname = '${process.env.POSTGRES_DATABASE || 'seacrifog'}'
+    AND pid <> pg_backend_pid();`)
+
   await configDbPool.query(
     `drop database if exists ${process.env.POSTGRES_DATABASE || 'seacrifog'};`
   )

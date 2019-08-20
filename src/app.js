@@ -43,10 +43,14 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(join(__dirname, '../public')))
 
-// Setup request/response ctx object
+/**
+ * Provides a request lifecycle object to append adhoc things
+ *  => req.ctx
+ */
 app.use(ctx.middleware)
 app.use(
   asyncHandler(async (req, res, next) => {
+    console.log('is there a ctx here', req.ctx)
     ctx.set('db', await db)
     next()
   })

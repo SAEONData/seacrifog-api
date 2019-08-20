@@ -597,18 +597,18 @@ delete from public.protocol_variable_xref;
     protid            int,
     varid             int,
     relationship_type text,
-    protauth          text,
-    protpub           text,
-    prottitle         text,
     variable          text,
     varclass          text,
-    vardomain         text
+    vardomain         text,    
+    protauth          text,
+    protpub           text,
+    prottitle         text
   )
 )
 insert into public.protocol_variable_xref (protocol_id, variable_id, relationship_type_id)
 select
-v.id variable_id,
 p.id protocol_id,
+v.id variable_id,
 rt.id
 from var_prot vp
 join public.variables v on v."name" = vp.variable and v."class" = vp."class" and v."domain" = vp."domain"
