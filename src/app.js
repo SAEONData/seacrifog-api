@@ -2,6 +2,7 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
+import compression from 'compression'
 import router from './routes'
 import { makeExecutableSchema } from 'graphql-tools'
 import graphqlHTTP from 'express-graphql'
@@ -45,6 +46,11 @@ const db = Promise.resolve(initializeDb()).catch(err => {
 })
 
 const app = express()
+app.use(
+  compression({
+    filter: (req, res) => (req.headers['x-no-compression'] ? false : compression.filter(req, res))
+  })
+)
 app.use(morgan('short'))
 app.use(corsMiddleware)
 app.use(express.json())

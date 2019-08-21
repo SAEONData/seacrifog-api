@@ -1,1 +1,3 @@
-select * from protocols;
+select
+*
+from protocols;

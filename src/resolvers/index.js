@@ -1,3 +1,6 @@
+import GraphQLJSON from 'graphql-type-json'
+import Date from './types/date'
+
 import Variable from './types/variable'
 import variables from './queries/variables'
 
@@ -15,6 +18,8 @@ export default {
   },
 
   // Types
+  JSON: GraphQLJSON,
+  Date,
   Variable,
   Protocol
 }

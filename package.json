@@ -16,6 +16,7 @@
     "copy:env": "copyfiles ./.env dist/"
   },
   "dependencies": {
+    "compression": "^1.7.4",
     "cookie-parser": "~1.4.4",
     "core-js": "^3.2.1",
     "debug": "~4.1.1",
@@ -24,6 +25,7 @@
     "express-graphql": "^0.9.0",
     "graphql": "^14.4.2",
     "graphql-tools": "^4.0.5",
+    "graphql-type-json": "^0.3.0",
     "morgan": "~1.9.1",
     "pg": "^7.12.1",
     "rimraf": "^3.0.0"

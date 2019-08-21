@@ -1,3 +1,6 @@
+scalar Date
+scalar JSON
+
 type Query {
   variables: [Variable!]!
   protocols: [Protocol!]!
@@ -6,17 +9,61 @@ type Query {
 # type Mutation {}
 
 type Variable {
-  id: Int
-  name: String
-  class: String
-  domain: String
-  protocols: [Protocol!]!
+  id:                Int
+  name:              String
+  class:             String
+  domain:            String
+  set:               String
+  description:       String
+  method:            String
+  uri:               String
+  rftype:            String
+  score:             Int
+  rating:            Int
+  relevance:         Float
+  feasibility:       Float
+  cost:              Float
+  updated_by:        String
+  updated_at:        Date
+  frequency_value:   Float
+  frequency_unit:    String
+  frequency_comment: String
+  res_value:         Float
+  res_unit:          String
+  res_comment:       String
+  run_cval:          Float
+  run_cunit:         String
+  run_ccomment:      String
+  req_source:        String
+  req_uri:           String
+  technology_type:   String
+  protocols:         [Protocol!]!
 }
 
 type Protocol {
-  id: Int
-  doi: String
-  author: String
-  publisher: String
-  title: String
+  id:             Int
+  doi:            String
+  author:         String
+  publisher:      String
+  title:          String
+  publish_date:   String
+  publish_year:   String
+  coverage_type:  String
+  category:       String
+  domain:         String
+  purpose:        String
+  abstract:       String
+  license:        String
+  language:       String
+  format:         String
+  sustainability: String
+  version:        String
+  resolution:     String
+  cost:           String
+  source:         String
+  created_by:     String
+  created_at:     Date
+  edited_by:      String
+  updated_at:     Date
+  variables:      [Variable!]!
 }

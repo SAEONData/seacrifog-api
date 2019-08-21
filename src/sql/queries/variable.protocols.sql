@@ -1,9 +1,6 @@
 select
-p.id,
-p.doi,
-p.author,
-p.publisher,
-p.title
+p.*
+
 from
 public.protocols p
 join public.protocol_variable_xref x on x.protocol_id = p.id

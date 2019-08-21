@@ -1,5 +1,5 @@
 {
   "exec": "npm-run-all prettier run:dev",
   "watch": ["src/*"],
-  "ext": "js, html, css, json, graphql"
+  "ext": "js, html, css, json, graphql, sql"
 }
