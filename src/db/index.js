@@ -83,9 +83,11 @@ export const initializeLoaders = pool => {
     const loader = new DataLoader(async queries => {
       const results = []
       for (const query of queries) {
-        const result = (await pool.query(query)).rows
+        const result = await pool.query(query)
+        const rows = result.rows
         results.push(rows)
       }
+      return new Promise(res => res(results))
     })
     return (loader => query => loader.load(query))(loader)
   })()
