@@ -10,7 +10,7 @@ import { readFileSync } from 'fs'
 import { normalize, join } from 'path'
 import resolvers from './resolvers'
 import { log, logError } from './lib/log'
-import { initializeDb, initializeDbTemp, pool } from './db'
+import { initializeDbPool, initializeLoaders } from './db'
 import { config } from 'dotenv'
 config()
 
@@ -35,12 +35,8 @@ const corsMiddleware = (req, res, next) => {
   else next()
 }
 
-// Setup the DB
-Promise.resolve(initializeDbTemp()).catch(err => {
-  logError('Error initializing database', err)
-  process.exit(1)
-})
-const db = Promise.resolve(initializeDb()).catch(err => {
+// Setup the DB connection Pool
+const pool = Promise.resolve(initializeDbPool()).catch(err => {
   logError('Error initializing database', err)
   process.exit(1)
 })
@@ -65,7 +61,8 @@ app.use(express.static(join(__dirname, '../public')))
 app.use(
   asyncHandler(async (req, res, next) => {
     req.ctx = {
-      db: await db
+      dbPool: await pool,
+      dataLoaders: initializeLoaders(await pool)
     }
     next()
   })

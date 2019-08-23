@@ -6,6 +6,8 @@ import { config } from 'dotenv'
 import { join, normalize } from 'path'
 config()
 
+const DB = process.env.POSTGRES_DATABASE || 'seacrifog'
+
 const getPool = database =>
   new Pool({
     host: process.env.POSTGRES_HOST || 'localhost',
@@ -18,57 +20,61 @@ const getPool = database =>
     connectionTimeoutMillis: 2000
   })
 
+const loadSqlFile = (filepath, ...args) => {
+  let sql = readFileSync(normalize(join(__dirname, `../sql/${filepath}`))).toString('utf8')
+  args.forEach((arg, i) => {
+    const regex = new RegExp(`:${i + 1}`, 'g')
+    sql = sql.replace(regex, `${arg}`)
+  })
+  return sql
+}
+
 /**
  * During development, since we are pulling data from an old db
  * the database is dropped and recreated on startup
  * Obviously this will need to be adjusted prior to first use
  * TODO!!!
  */
-export const initializeDbTemp = async () => {
-  // Drop and create seacrifog
-  const configDbPool = getPool('postgres')
-  await configDbPool.query(`
-    SELECT pg_terminate_backend(pg_stat_activity.pid)
-    FROM pg_stat_activity
-    WHERE pg_stat_activity.datname = '${process.env.POSTGRES_DATABASE || 'seacrifog'}'
-    AND pid <> pg_backend_pid();`)
 
-  await configDbPool.query(
-    `drop database if exists ${process.env.POSTGRES_DATABASE || 'seacrifog'};`
-  )
-  await configDbPool.query(`create database ${process.env.POSTGRES_DATABASE || 'seacrifog'};`)
+const initializeDbTemp = async () => {
+  // Drop and create seacrifog
+  const killUsers = loadSqlFile('migration/db-setup/stop-db.sql', DB)
+  const dropDb = loadSqlFile('migration/db-setup/drop-db.sql', DB)
+  const createDb = loadSqlFile('migration/db-setup/create-db.sql', DB)
+  const configDbPool = getPool('postgres')
+  await configDbPool.query(killUsers)
+  await configDbPool.query(dropDb)
+  await configDbPool.query(createDb)
   await configDbPool.end()
   log('seacrifog database dropped and re-created!')
 
   // Create the seacrifog schema, and populate database
-  const seacrifogPool = getPool(process.env.POSTGRES_DATABASE || 'seacrifog')
-  const schema = readFileSync(normalize(join(__dirname, '../sql/migration/schema.sql')), {
-    encoding: 'utf8'
-  })
+  const seacrifogPool = getPool(DB)
+  const schema = loadSqlFile('migration/schema.sql')
   await seacrifogPool.query(schema)
   await seacrifogPool.query('create extension dblink;')
-  const etl = readFileSync(normalize(join(__dirname, '../sql/migration/etl.sql')), {
-    encoding: 'utf8'
-  })
+  const etl = loadSqlFile('migration/etl.sql')
   await seacrifogPool.query(etl)
   log('seacrifog schema re-created!')
   await seacrifogPool.end()
 }
 
-export const initializeDb = async () => {
-  const pool = getPool(process.env.POSTGRES_DATABASE || 'seacrifog')
+/**
+ * This function is invoked once per app start
+ */
+export const initializeDbPool = async () => {
+  await initializeDbTemp()
+  return getPool(DB)
+}
+
+/**
+ * This function is initialized once per request-response lifecycle
+ * @param {Object} pool An instance of pg's Pool constructor
+ */
+export const initializeLoaders = pool => {
   return {
-    pool,
     executeSql: async (filepath, ...args) => {
-      // Load the SQL query
-      let sql = readFileSync(normalize(join(__dirname, `../sql/${filepath}`)), {
-        encoding: 'utf8'
-      })
-      // Load the args into the query
-      args.forEach((arg, i) => {
-        sql = sql.replace(`:${i + 1}`, `${arg}`)
-      })
-      // Execute the SQL
+      const sql = loadSqlFile(filepath, ...args)
       return await pool.query(sql)
     }
   }
