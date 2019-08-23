@@ -38,23 +38,17 @@ const loadSqlFile = (filepath, ...args) => {
 
 const initializeDbTemp = async () => {
   // Drop and create seacrifog
-  const killUsers = loadSqlFile('migration/db-setup/stop-db.sql', DB)
-  const dropDb = loadSqlFile('migration/db-setup/drop-db.sql', DB)
-  const createDb = loadSqlFile('migration/db-setup/create-db.sql', DB)
   const configDbPool = getPool('postgres')
-  await configDbPool.query(killUsers)
-  await configDbPool.query(dropDb)
-  await configDbPool.query(createDb)
+  await configDbPool.query(loadSqlFile('migration/db-setup/stop-db.sql', DB))
+  await configDbPool.query(loadSqlFile('migration/db-setup/drop-db.sql', DB))
+  await configDbPool.query(loadSqlFile('migration/db-setup/create-db.sql', DB))
   await configDbPool.end()
   log('seacrifog database dropped and re-created!')
 
   // Create the seacrifog schema, and populate database
   const seacrifogPool = getPool(DB)
-  const schema = loadSqlFile('migration/schema.sql')
-  await seacrifogPool.query(schema)
-  await seacrifogPool.query('create extension dblink;')
-  const etl = loadSqlFile('migration/etl.sql')
-  await seacrifogPool.query(etl)
+  await seacrifogPool.query(loadSqlFile('migration/schema.sql'))
+  await seacrifogPool.query(loadSqlFile('migration/etl.sql'))
   log('seacrifog schema re-created!')
   await seacrifogPool.end()
 }

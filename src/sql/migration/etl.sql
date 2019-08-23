@@ -1,7 +1,7 @@
 /***************************************************
  * Enable the DBLINK extension if it's not already enabled
  ***************************************************/
--- CREATE EXTENSION dblink;
+CREATE EXTENSION dblink;
 
 /***************************************************
  * DBLINK CONNECTION
