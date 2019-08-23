@@ -4,6 +4,7 @@ import { log, logError } from '../lib/log'
 import { readFileSync } from 'fs'
 import { config } from 'dotenv'
 import { join, normalize } from 'path'
+import DataLoader from 'dataloader'
 config()
 
 const DB = process.env.POSTGRES_DATABASE || 'seacrifog'
@@ -65,11 +66,29 @@ export const initializeDbPool = async () => {
  * This function is initialized once per request-response lifecycle
  * @param {Object} pool An instance of pg's Pool constructor
  */
+export const initializeFileQuery = pool => async (filepath, ...args) => {
+  const sql = loadSqlFile(filepath, ...args)
+  return await pool.query(sql)
+}
+
+/**
+ * This function is initialized once per request-response lifecycle
+ * @param {Object} pool An instance of pg's Pool constructor
+ */
 export const initializeLoaders = pool => {
-  return {
-    executeSql: async (filepath, ...args) => {
-      const sql = loadSqlFile(filepath, ...args)
-      return await pool.query(sql)
-    }
-  }
+  // Create the finders object
+  const finders = {}
+
+  finders.variables = (() => {
+    const loader = new DataLoader(async queries => {
+      const results = []
+      for (const query of queries) {
+        const result = (await pool.query(query)).rows
+        results.push(rows)
+      }
+    })
+    return (loader => query => loader.load(query))(loader)
+  })()
+
+  return finders
 }

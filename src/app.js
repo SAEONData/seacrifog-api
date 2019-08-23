@@ -10,7 +10,7 @@ import { readFileSync } from 'fs'
 import { normalize, join } from 'path'
 import resolvers from './resolvers'
 import { log, logError } from './lib/log'
-import { initializeDbPool, initializeLoaders } from './db'
+import { initializeDbPool, initializeFileQuery, initializeLoaders } from './db'
 import { config } from 'dotenv'
 config()
 
@@ -60,9 +60,13 @@ app.use(express.static(join(__dirname, '../public')))
  */
 app.use(
   asyncHandler(async (req, res, next) => {
+    const awaitedPool = await pool
     req.ctx = {
-      dbPool: await pool,
-      dataLoaders: initializeLoaders(await pool)
+      db: {
+        pool: awaitedPool,
+        queryFromFile: initializeFileQuery(awaitedPool),
+        dataLoaders: initializeLoaders(awaitedPool)
+      }
     }
     next()
   })
