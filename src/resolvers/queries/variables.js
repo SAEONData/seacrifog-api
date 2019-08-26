@@ -1,7 +1,7 @@
 import { log, logError } from '../../lib/log'
 
 export default async (self, args, req) => {
-  const { queryFromFile } = await req.ctx.db
-  const result = await queryFromFile('queries/variables.sql')
+  const { pool } = await req.ctx.db
+  const result = await pool.query('select * from variables;')
   return result.rows
 }

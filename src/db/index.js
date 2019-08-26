@@ -5,6 +5,7 @@ import { readFileSync } from 'fs'
 import { config } from 'dotenv'
 import { join, normalize } from 'path'
 import DataLoader from 'dataloader'
+import sift from 'sift'
 config()
 
 const DB = process.env.POSTGRES_DATABASE || 'seacrifog'
@@ -22,7 +23,7 @@ const getPool = database =>
   })
 
 const loadSqlFile = (filepath, ...args) => {
-  let sql = readFileSync(normalize(join(__dirname, `../sql/${filepath}`))).toString('utf8')
+  let sql = readFileSync(normalize(join(__dirname, `./sql/${filepath}`))).toString('utf8')
   args.forEach((arg, i) => {
     const regex = new RegExp(`:${i + 1}`, 'g')
     sql = sql.replace(regex, `${arg}`)
@@ -30,67 +31,63 @@ const loadSqlFile = (filepath, ...args) => {
   return sql
 }
 
-/**
- * During development, since we are pulling data from an old db
- * the database is dropped and recreated on startup
- * Obviously this will need to be adjusted prior to first use
- * TODO!!!
- */
+export const pool = getPool(DB)
 
-const initializeDbTemp = async () => {
-  // Drop and create seacrifog
-  const configDbPool = getPool('postgres')
-  await configDbPool.query(loadSqlFile('migration/db-setup/stop-db.sql', DB))
-  await configDbPool.query(loadSqlFile('migration/db-setup/drop-db.sql', DB))
-  await configDbPool.query(loadSqlFile('migration/db-setup/create-db.sql', DB))
-  await configDbPool.end()
-  log('seacrifog database dropped and re-created!')
-
-  // Create the seacrifog schema, and populate database
-  const seacrifogPool = getPool(DB)
-  await seacrifogPool.query(loadSqlFile('migration/schema.sql'))
-  await seacrifogPool.query(loadSqlFile('migration/etl.sql'))
-  log('seacrifog schema re-created!')
-  await seacrifogPool.end()
-}
-
-/**
- * This function is invoked once per app start
- */
-export const initializeDbPool = async () => {
-  await initializeDbTemp()
-  return getPool(DB)
-}
-
-/**
- * This function is initialized once per request-response lifecycle
- * @param {Object} pool An instance of pg's Pool constructor
- */
-export const initializeFileQuery = pool => async (filepath, ...args) => {
+export const execSqlFile = async (filepath, ...args) => {
   const sql = loadSqlFile(filepath, ...args)
   return await pool.query(sql)
 }
 
-/**
- * This function is initialized once per request-response lifecycle
- * @param {Object} pool An instance of pg's Pool constructor
- */
-export const initializeLoaders = pool => {
-  // Create the finders object
-  const finders = {}
+// TEMP: This is only for during dev
+Promise.resolve(
+  (async () => {
+    // Drop and create seacrifog
+    const configDbPool = getPool('postgres')
+    await configDbPool.query(loadSqlFile('migration/db-setup/stop-db.sql', DB))
+    await configDbPool.query(loadSqlFile('migration/db-setup/drop-db.sql', DB))
+    await configDbPool.query(loadSqlFile('migration/db-setup/create-db.sql', DB))
+    await configDbPool.end()
+    log('seacrifog database dropped and re-created!')
 
-  finders.variables = (() => {
-    const loader = new DataLoader(async queries => {
-      const results = []
-      for (const query of queries) {
-        const result = await pool.query(query)
-        const rows = result.rows
-        results.push(rows)
-      }
-      return new Promise(res => res(results))
-    })
-    return (loader => query => loader.load(query))(loader)
+    // Create the seacrifog schema, and populate database
+    const seacrifogPool = getPool(DB)
+    await seacrifogPool.query(loadSqlFile('migration/schema.sql'))
+    await seacrifogPool.query(loadSqlFile('migration/etl.sql'))
+    log('seacrifog schema re-created!')
+    await seacrifogPool.end()
   })()
+).catch(err => {
+  logError('Error initializing DEV database', err)
+  process.exit(1)
+})
 
-  return finders
+export const initializeLoaders = () => {
+  const variablesOfProtocolsLoader = new DataLoader(async keys => {
+    const sql = `
+    select
+    v.*,
+    x.protocol_id
+    from public.protocol_variable_xref x
+    join public.variables v on v.id = x.variable_id
+    where x.protocol_id in (${keys.join(',')})`
+    const rows = (await pool.query(sql)).rows
+    return new Promise(resolve => resolve(keys.map(key => rows.filter(sift({ protocol_id: key })))))
+  })
+
+  const protocolsOfVariablesLoader = new DataLoader(async keys => {
+    const sql = `
+    select
+    p.*,
+    x.variable_id
+    from public.protocol_variable_xref x
+    join public.protocols p on p.id = x.protocol_id
+    where x.variable_id in (${keys.join(',')})`
+    const rows = (await pool.query(sql)).rows
+    return new Promise(resolve => resolve(keys.map(key => rows.filter(sift({ variable_id: key })))))
+  })
+
+  return {
+    findVariablesOfProtocols: keys => variablesOfProtocolsLoader.load(keys),
+    findProtocolsOfVariables: keys => protocolsOfVariablesLoader.load(keys)
+  }
 }
