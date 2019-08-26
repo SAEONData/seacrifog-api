@@ -41,6 +41,12 @@ export const execSqlFile = async (filepath, ...args) => {
 // TEMP: This is only for during dev
 Promise.resolve(
   (async () => {
+    log(
+      '\n\n',
+      '============================================ WARNING!!!!! ==================================================\n',
+      "Dropping and recreating databases. If you see this as a log on the production server YOU'RE IN TROUBLE!!!!!!\n",
+      '============================================================================================================\n\n'
+    )
     // Drop and create seacrifog
     const configDbPool = getPool('postgres')
     await configDbPool.query(loadSqlFile('migration/db-setup/stop-db.sql', DB))
