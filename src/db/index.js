@@ -71,7 +71,7 @@ export const initializeLoaders = () => {
     join public.variables v on v.id = x.variable_id
     where x.protocol_id in (${keys.join(',')})`
     const rows = (await pool.query(sql)).rows
-    return new Promise(resolve => resolve(keys.map(key => rows.filter(sift({ protocol_id: key })))))
+    return keys.map(key => rows.filter(sift({ protcol_id: key })))
   })
 
   const protocolsOfVariablesLoader = new DataLoader(async keys => {
@@ -83,7 +83,7 @@ export const initializeLoaders = () => {
     join public.protocols p on p.id = x.protocol_id
     where x.variable_id in (${keys.join(',')})`
     const rows = (await pool.query(sql)).rows
-    return new Promise(resolve => resolve(keys.map(key => rows.filter(sift({ variable_id: key })))))
+    return keys.map(key => rows.filter(sift({ variable_id: key })))
   })
 
   return {
