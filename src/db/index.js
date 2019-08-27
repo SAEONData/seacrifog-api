@@ -38,7 +38,11 @@ export const execSqlFile = async (filepath, ...args) => {
   return await pool.query(sql)
 }
 
-// TEMP: This is only for during dev
+/**
+ * For development purposes
+ * While the model is still being built it's helpful to refresh the database
+ * on every Node.js restart. This should obviously be deleted at some point
+ */
 Promise.resolve(
   (async () => {
     log(
@@ -67,6 +71,11 @@ Promise.resolve(
   process.exit(1)
 })
 
+/**
+ * TODO
+ * I think these will work as intended. But the example is certainly better!
+ * https://github.com/graphql/dataloader/blob/master/examples/SQL.md
+ */
 export const initializeLoaders = () => {
   const variablesOfProtocolsLoader = new DataLoader(async keys => {
     const sql = `
@@ -77,7 +86,7 @@ export const initializeLoaders = () => {
     join public.variables v on v.id = x.variable_id
     where x.protocol_id in (${keys.join(',')})`
     const rows = (await pool.query(sql)).rows
-    return keys.map(key => rows.filter(sift({ protcol_id: key })))
+    return keys.map(key => rows.filter(sift({ protcol_id: key })) || [])
   })
 
   const protocolsOfVariablesLoader = new DataLoader(async keys => {
@@ -89,11 +98,11 @@ export const initializeLoaders = () => {
     join public.protocols p on p.id = x.protocol_id
     where x.variable_id in (${keys.join(',')})`
     const rows = (await pool.query(sql)).rows
-    return keys.map(key => rows.filter(sift({ variable_id: key })))
+    return keys.map(key => rows.filter(sift({ variable_id: key })) || [])
   })
 
   return {
-    findVariablesOfProtocols: keys => variablesOfProtocolsLoader.load(keys),
-    findProtocolsOfVariables: keys => protocolsOfVariablesLoader.load(keys)
+    findVariablesOfProtocols: key => variablesOfProtocolsLoader.load(key),
+    findProtocolsOfVariables: key => protocolsOfVariablesLoader.load(key)
   }
 }
