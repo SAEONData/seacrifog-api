@@ -12,7 +12,7 @@
     "clean:prod": "rimraf ./dist",
     "build:prod": "babel ./src --out-dir dist",
     "copy:gqlschema": "copyfiles -u 1 ./src/schema.graphql dist/",
-    "copy:sql": "copyfiles -u 1 \"./src/sql/**/*\" dist/",
+    "copy:sql": "copyfiles -u 2 \"./src/db/sql/**/*\" dist/db/",
     "copy:env": "copyfiles ./.env dist/"
   },
   "dependencies": {
