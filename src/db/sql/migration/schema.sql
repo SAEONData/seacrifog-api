@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS public.relationship_types;
 DROP TABLE IF EXISTS public.datatypes;
 DROP TABLE IF EXISTS public.dataproducts;
 DROP TABLE IF EXISTS public.variables;
+DROP TABLE IF EXISTS public.networks;
 DROP TABLE IF EXISTS public.protocols;
 DROP TABLE IF EXISTS public.uris;
 DROP TABLE IF EXISTS public.protocol_coverages;
@@ -160,6 +161,29 @@ CREATE TABLE public.protocols (
 	updated_at     varchar(50)    NULL,
 	CONSTRAINT protocols_pk primary key (id),
 	CONSTRAINT protocols_unique_cols unique (author, publisher, title)
+);
+
+CREATE TABLE public.networks (
+  id               serial        NOT NULL,
+  title            varchar       NOT NULL,
+  acronym          varchar(50)   NULL,
+  "type"           varchar(50)   NULL,
+  status           varchar(25)   NULL,
+  start_year       int4          NULL,
+  end_year         int4          NULL,
+  url_info_id      int4          NULL,
+  url_data_id      int4          NULL,
+  abstract         varchar       NULL,
+  coverage_spatial point[]       NULL,
+  url_sites_id     int4          NULL,
+  parent_id         int4          NULL,
+  created_by       varchar(255)  NULL,
+  created_at       date          NULL,
+  modified_by      varchar(255)  NULL,
+  modified_at      date          NULL,
+  CONSTRAINT       networks_pk   PRIMARY KEY (id),
+  CONSTRAINT       self_fk FOREIGN KEY (parent_id) REFERENCES public.networks (id),
+  CONSTRAINT       networks_unique_cols UNIQUE (title, acronym)
 );
 
 CREATE TABLE public.relationship_types (

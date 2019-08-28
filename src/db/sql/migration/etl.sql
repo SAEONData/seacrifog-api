@@ -107,6 +107,35 @@ union
 select url2 from s_variables
 on conflict on constraint uris_uniqe_col do nothing;
 
+;with s_networks as (
+  select
+  neturlinfo,
+  neturldata,
+  neturlsites
+  from dblink(
+    'seacrifog_old',
+    'select
+     neturlinfo,
+     neturldata,
+     neturlsites
+    from public.networks'
+  ) as s_networks_source (
+    neturlinfo  varchar(2083),
+    neturldata  varchar(2083),
+    neturlsites varchar(2083)
+  )
+)
+insert into public.uris (uri)
+select neturlinfo
+from s_networks
+union
+select neturldata
+from s_networks
+union
+select neturlsites
+from s_networks
+on conflict on constraint uris_uniqe_col do nothing;
+
 
 /********************
  * PROTOCOLS
@@ -356,6 +385,125 @@ on conflict on constraint variables_unique_cols do update set
   req_uri           = excluded.req_uri,
   technology_type   = excluded.technology_type;
 
+/********************
+ * NETWORKS
+ ********************/
+delete from public.networks;
+;with s_networks as (
+  select
+  nettitle     title,
+  netacronym   acronym,
+  nettype      "type",
+  netstatus    status,
+  netstartyear start_year,
+  netendyear   end_year,
+  neturlinfo   url_info,
+  neturldata   url_data,
+  netabstract  abstract,
+  concat('{', replace(replace(netcov, '(', '"('), ')', ')"'), '}')::point[] coverage_spatial,
+  neturlsites  url_sites,
+  netparent    parent_title,
+  netaddby     created_by,
+  netaddwhen   created_at,
+  neteditby    modified_by,
+  neteditwhen  modified_at
+  from dblink(
+    'seacrifog_old',
+    'select
+      nettitle,
+      netacronym,
+      nettype,
+      netstatus,
+      netstartyear,
+      netendyear,
+      neturlinfo,
+      neturldata,
+      netabstract,
+      netcov::text,
+      neturlsites,
+      netparent,
+      netaddby,
+      netaddwhen,
+      neteditby,
+      neteditwhen    
+     from public.networks'
+  ) as s_networks_source (
+    nettitle     varchar ,
+    netacronym   varchar(50),
+    nettype      varchar(50),
+    netstatus    varchar(25),
+    netstartyear int4,
+    netendyear   int4,
+    neturlinfo   varchar(2083),
+    neturldata   varchar(2083),
+    netabstract  varchar,
+    netcov       text,
+    neturlsites  varchar(2083),
+    netparent    varchar(255),
+    netaddby     varchar(255),
+    netaddwhen   date,
+    neteditby    varchar(255),
+    neteditwhen  date
+  )
+)
+
+insert into public.networks (title, acronym, "type", status, start_year, end_year, url_info_id, url_data_id, abstract, coverage_spatial, url_sites_id, parent_id, created_by, created_at, modified_by, modified_at)
+select
+n.title,
+n.acronym,
+n."type",
+n.status,
+n.start_year,
+n.end_year,
+u_info.id,
+u_data.id,
+n.abstract,
+n.coverage_spatial,
+u_sites.id,
+null parent_id,
+n.created_by,
+n.created_at,
+n.modified_by,
+n.modified_at
+
+from s_networks n
+join public.uris u_info on u_info.uri = n.url_info
+join public.uris u_data on u_data.uri = n.url_data
+join public.uris u_sites on u_sites.uri = n.url_sites;
+
+;with s_networks as (
+  select
+  nettitle   title,
+  netacronym acronym,
+  netparent  parent_title
+  from dblink(
+    'seacrifog_old',
+    'select
+      nettitle,
+      netacronym,
+      netparent
+     from public.networks'
+  ) as s_networks_source (
+    nettitle     varchar,
+    netacronym   varchar,
+    netparent    varchar
+  )
+)
+
+update public.networks n
+set parent_id = r.res_id
+from (
+	select
+	n.id,
+	n.title,
+	n.acronym,
+	n.parent_id,
+	s.parent_title,
+	(select id from public.networks where title = s.parent_title) res_id
+	from s_networks s
+	join public.networks n on n.title = s.title and n.acronym = s.acronym
+) r
+where r.id = n.id
 
 /********************
  * DATATYPES
