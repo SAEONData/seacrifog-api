@@ -86,7 +86,43 @@ export const initializeLoaders = () => {
     join public.variables v on v.id = x.variable_id
     where x.protocol_id in (${keys.join(',')})`
     const rows = (await pool.query(sql)).rows
-    return keys.map(key => rows.filter(sift({ protcol_id: key })) || [])
+    return keys.map(key => rows.filter(sift({ protocol_id: key })) || [])
+  })
+
+  const variablesOfNetworksLoader = new DataLoader(async keys => {
+    const sql = `
+    select
+    v.*,
+    x.network_id
+    from public.network_variable_xref x
+    join public.variables v on v.id = x.variable_id
+    where x.network_id in (${keys.join(',')})`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ network_id: key })) || [])
+  })
+
+  const variablesOfRadiativeForcingsLoader = new DataLoader(async keys => {
+    const sql = `
+    select
+    v.*,
+    x.rforcing_id
+    from public.rforcing_variable_xref x
+    join public.variables v on v.id = x.variable_id
+    where x.rforcing_id in (${keys.join(',')})`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ rforcing_id: key })) || [])
+  })
+
+  const variablesOfDataProductsLoader = new DataLoader(async keys => {
+    const sql = `
+    select
+    v.*,
+    x.dataproduct_id
+    from public.dataproduct_variable_xref x
+    join public.variables v on v.id = x.variable_id
+    where x.dataproduct_id in (${keys.join(',')})`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ dataproduct_id: key })) || [])
   })
 
   const protocolsOfVariablesLoader = new DataLoader(async keys => {
@@ -102,7 +138,10 @@ export const initializeLoaders = () => {
   })
 
   return {
+    findVariablesOfNetworks: key => variablesOfNetworksLoader.load(key),
     findVariablesOfProtocols: key => variablesOfProtocolsLoader.load(key),
+    findVariablesOfDataProducts: key => variablesOfDataProductsLoader.load(key),
+    findVariablesOfRadiativeForcings: key => variablesOfRadiativeForcingsLoader.load(key),
     findProtocolsOfVariables: key => protocolsOfVariablesLoader.load(key)
   }
 }

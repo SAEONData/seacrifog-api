@@ -1062,6 +1062,48 @@ join public.uris u on u.uri = tbl1.uri
 on conflict on constraint protocol_uri_xref_unique_cols do nothing;
 
 /***************************
+ * DATAPRODUCT_VARIABLE_XREF
+ ***************************/
+delete from public.dataproduct_variable_xref;
+;with var_dp_s as (
+  select
+  dptitle,
+  dppubyear,
+  dppubdate,
+  variable,
+  varclass,
+  vardomain
+  from dblink(
+  'seacrifog_old',
+  'select
+   dp.dptitle,
+   dp.dppubyear,
+   dp.dppubdate,	
+   v.variable,
+   v.varclass,
+   v.vardomain
+   from public.dataproducts dp
+   join public.var_dp vdp on vdp.varid = dp.dpid
+   join public.variables v on v.varid = vdp.varid'
+  ) as var_dp_source (
+     dptitle    text,
+     dppubyear  int,
+     dppubdate  date,
+     variable   text,
+     varclass   text,
+     vardomain  text
+  )
+)
+insert into public.dataproduct_variable_xref (dataproduct_id, variable_id)
+select
+dp.id dataproduct_id,
+v.id variable_id
+from var_dp_s s
+join public.variables v on v."name" = s.variable and v."class" = s.varclass and v."domain" = s.vardomain
+join public.dataproducts dp on dp.title = s.dptitle and dp.publish_year = s.dppubyear and dp.publish_date = s.dppubdate
+on conflict on constraint dataproduct_variable_xref_unique_cols do nothing;
+
+/***************************
  * DATAPRODUCT_DATATYPE_XREF
  ***************************/
 delete from dataproduct_datatype_xref;

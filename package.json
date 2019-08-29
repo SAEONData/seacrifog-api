@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon",
-    "prettier": "prettier --write \"src/**/*.js\"",
+    "prettier": "prettier --write \"src/**/*.@(js|graphql)\"",
     "run:dev": "NODE_ENV=development npm-run-all server:dev",
     "server:dev": "babel-node ./src/bin",
     "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:gqlschema copy:sql copy:env server:prod",
