@@ -2,13 +2,18 @@
 This is an Express.js application. The Express.js webserver is defined in `/src/bin/index.js`, tucked out the way. The web-server loads and serves the application - the application root is `./src/app.js`
 
 ## Setup DEV environment
+The app will look for a PostgreSQL database server and, in accordance with the configuration, try to connect to a specific database. If that database doesn't exist it, then the app will create the database (hopefully) correctly. Note that part of this configuration involves reading data from an old version of the SEACRIFOG database currently, and inserting that into the new database. So to start the application in dev mode, you need a database called `seacrifog_old` to exist on the same PostgreSQL server. `seacrifog_old` is just a restore of the prototype database.
+
+Once the PostgreSQL server is setup, start the app via the following steps:
+
 1. Add a `.env` configuration file to the route of the source code directory (`touch .env`)
 2. Add appropriate configuration settings for your machine (see the section on configuration)
 3. Install all dependencies: `npm install`
 4. Start the dev server: `npm start`
 
 ## Setup production environment
-1. Add a `.env` file with production-sensible values
+1. Configure a Postgis database server somewhere
+2. Add a `.env` file with production-sensible values (that correspond with your Postgis server)
 3. Start the app: `npm run start:prod`
 
 ## Configuration
