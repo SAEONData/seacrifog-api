@@ -12,13 +12,16 @@ DROP TABLE IF EXISTS public.protocol_uri_xref;
 DROP TABLE IF EXISTS public.variable_uri_xref;
 DROP TABLE IF EXISTS public.dataproduct_variable_xref;
 DROP TABLE IF EXISTS public.protocol_variable_xref;
-DROP TABLE IF EXISTS public.variable_protocol_xref;
+DROP TABLE IF EXISTS public.network_variable_xref;
+DROP TABLE IF EXISTS public.rforcing_variable_xref;
+
 
 DROP TABLE IF EXISTS public.relationship_types;
 DROP TABLE IF EXISTS public.datatypes;
 DROP TABLE IF EXISTS public.dataproducts;
 DROP TABLE IF EXISTS public.variables;
 DROP TABLE IF EXISTS public.networks;
+DROP TABLE IF EXISTS public.rforcings;
 DROP TABLE IF EXISTS public.protocols;
 DROP TABLE IF EXISTS public.uris;
 DROP TABLE IF EXISTS public.protocol_coverages;
@@ -164,7 +167,7 @@ CREATE TABLE public.protocols (
 );
 
 CREATE TABLE public.networks (
-  id               serial        NOT NULL,
+  id               serial,
   title            varchar       NOT NULL,
   acronym          varchar(50)   NULL,
   "type"           varchar(50)   NULL,
@@ -176,14 +179,28 @@ CREATE TABLE public.networks (
   abstract         varchar       NULL,
   coverage_spatial point[]       NULL,
   url_sites_id     int4          NULL,
-  parent_id         int4          NULL,
+  parent_id        int4          NULL,
   created_by       varchar(255)  NULL,
   created_at       date          NULL,
   modified_by      varchar(255)  NULL,
   modified_at      date          NULL,
   CONSTRAINT       networks_pk   PRIMARY KEY (id),
+  CONSTRAINT       networks_unique_cols UNIQUE (title, acronym),
   CONSTRAINT       self_fk FOREIGN KEY (parent_id) REFERENCES public.networks (id),
-  CONSTRAINT       networks_unique_cols UNIQUE (title, acronym)
+  constraint       networks_uri_info_fk  foreign key (url_info_id)  references public.uris (id),
+  constraint       networks_uri_data_fk  foreign key (url_data_id)  references public.uris (id),
+  constraint       networks_uri_sites_fk foreign key (url_sites_id) references public.uris (id)
+);
+
+CREATE TABLE public.rforcings (
+  id       serial,
+  category varchar(255) NOT NULL,
+  compound varchar(255) NULL,
+  "min"    float4       NULL,
+  best     float4       NULL,
+  "max"    float4       null,
+  constraint rforcings_pkey primary key (id),
+  constraint rforcings_unique_cols unique (category, compound)
 );
 
 CREATE TABLE public.relationship_types (
@@ -192,6 +209,26 @@ CREATE TABLE public.relationship_types (
   description text,
   CONSTRAINT relationship_types_pkey PRIMARY KEY (id),
   CONSTRAINT relationship_types_unique_cols UNIQUE (name)
+);
+
+create table public.rforcing_variable_xref (
+  id          serial,
+  rforcing_id int not null,
+  variable_id int not null,
+  constraint rforcings_variable_xref_pkey         primary key (id),
+  constraint rforcings_variable_xref_unique_cols  unique (rforcing_id, variable_id),
+  constraint rforcings_variable_xref_rforcings_fk foreign key (rforcing_id) references public.rforcings (id),
+  constraint rforcings_variable_xref_variables_fk foreign key (variable_id) references public.variables (id)
+);
+
+create table public.network_variable_xref (
+  id          serial,
+  network_id  int not null,
+  variable_id int not null,
+  constraint network_variable_xref_pkey         primary key (id),
+  constraint network_variable_xref_unique_cols  unique      (network_id, variable_id),
+  constraint network_variable_xref_networks_fk  foreign key (network_id)  references public.networks (id),
+  constraint network_variable_xref_variables_fk foreign key (variable_id) references public.variables (id)
 );
 
 CREATE TABLE public.protocol_variable_xref (

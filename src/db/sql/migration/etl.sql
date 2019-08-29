@@ -385,10 +385,54 @@ on conflict on constraint variables_unique_cols do update set
   req_uri           = excluded.req_uri,
   technology_type   = excluded.technology_type;
 
+ 
+ /********************
+ * RFORCINGS
+ ********************/
+;with s_rforcings as (
+  select
+    rfcat category,
+    compound,
+    rfmin "min",
+    rfbest best,
+    rfmax "max"
+  from dblink (
+  'seacrifog_old',
+  'select
+    rfcat,
+    compound,
+    rfmin,
+    rfbest,
+    rfmax
+   from public.rforcing'
+  ) as s_rforcings_source (
+    rfcat    text,
+	compound text,
+	rfmin    float4,
+	rfbest   float4,
+	rfmax    float4
+  )
+)
+
+insert into public.rforcings (category, compound, "min", best, "max")
+select
+category,
+compound,
+"min",
+best,
+"max"
+from s_rforcings
+on conflict on constraint rforcings_unique_cols do update set
+  category = excluded.category,
+  compound = excluded.compound,
+  "min"    = excluded."min",
+  best     = excluded.best,
+  "max"    = excluded."max";
+
+
 /********************
  * NETWORKS
  ********************/
-delete from public.networks;
 ;with s_networks as (
   select
   nettitle     title,
@@ -455,11 +499,11 @@ n."type",
 n.status,
 n.start_year,
 n.end_year,
-u_info.id,
-u_data.id,
+u_info.id url_info_id,
+u_data.id url_data_id,
 n.abstract,
 n.coverage_spatial,
-u_sites.id,
+u_sites.id url_sites_id,
 null parent_id,
 n.created_by,
 n.created_at,
@@ -469,7 +513,27 @@ n.modified_at
 from s_networks n
 join public.uris u_info on u_info.uri = n.url_info
 join public.uris u_data on u_data.uri = n.url_data
-join public.uris u_sites on u_sites.uri = n.url_sites;
+join public.uris u_sites on u_sites.uri = n.url_sites
+
+on conflict on constraint networks_unique_cols do update set
+	title            = excluded.title,
+	acronym          = excluded.acronym,
+	"type"           = excluded."type",
+	status           = excluded.status,
+	start_year       = excluded.start_year,
+	end_year         = excluded.end_year,
+	url_info_id        = excluded.url_info_id,
+	url_data_id        = excluded.url_data_id,
+	abstract         = excluded.abstract,
+	coverage_spatial = excluded.coverage_spatial,
+	url_sites_id       = excluded.url_sites_id,
+	parent_id        = null,
+	created_by       = excluded.created_by,
+	created_at       = excluded.created_at,
+	modified_by      = excluded.modified_by,
+	modified_at      = excluded.modified_at;
+
+
 
 ;with s_networks as (
   select
@@ -700,6 +764,85 @@ on conflict on constraint dataproducts_unique_cols do update set
 /*****************************************************************************************
  *********************************** XREF TABLES *****************************************
  *****************************************************************************************/
+
+/*************************
+ * RFORCING_VARIABLE_XREF
+ *************************/
+ delete from public.rforcing_variable_xref;
+;with var_r_s as (
+  select
+   rfcat,
+   compound,
+   variable,
+   varclass,
+   vardomain
+  from dblink(
+  'seacrifog_old',
+  'select
+   f.rfcat,
+   f.compound,
+   v.variable,
+   v.varclass,
+   v.vardomain
+   from public.var_forcing vf
+   join public.variables v on v.varid = vf.varid
+   join public.rforcing f on f.rfid = vf.rfid'
+  ) as var_r_s_source (
+   rfcat text,
+   compound text,
+   variable text,
+   varclass text,
+   vardomain text  
+  )
+)
+
+insert into public.rforcing_variable_xref (rforcing_id, variable_id)
+select
+f.id rforcing_id,
+v.id variable_id
+from var_r_s s
+join public.variables v on v."name" = s.variable and v."class" = s.varclass and v."domain" = s.vardomain
+join public.rforcings f on f.category = s.rfcat and f.compound = s.compound
+on conflict on constraint rforcings_variable_xref_unique_cols do nothing;
+   
+/*************************
+ * NETWORK_VARIABLE_XREF
+ *************************/
+delete from public.network_variable_xref;
+;with var_net_s as (
+  select
+  nettitle,
+  netacronym,
+  variable,
+  varclass,
+  vardomain
+  from dblink(
+  'seacrifog_old',
+  'select
+   n.nettitle,
+   n.netacronym,
+   v.variable,
+   v.varclass,
+   v.vardomain
+   from public.networks n
+   join public.var_net vn on vn.netid = n.netid
+   join public.variables v on v.varid = vn.varid'
+  ) as var_net_source (
+     nettitle   text,
+     netacronym text,
+     variable   text,
+     varclass   text,
+     vardomain  text
+  )
+)
+insert into public.network_variable_xref (network_id, variable_id)
+select
+n.id network_id,
+v.id variable_id
+from var_net_s s
+join public.variables v on v."name" = s.variable and v."class" = s.varclass and v."domain" = s.vardomain
+join public.networks n on n.title = s.nettitle and n.acronym = s.netacronym
+on conflict on constraint network_variable_xref_unique_cols do nothing;
 
 /*************************
  * PROTOCOL_VARIABLE_XREF
