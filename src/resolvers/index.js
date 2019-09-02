@@ -2,9 +2,11 @@ import GraphQLJSON from 'graphql-type-json'
 import Date from './types/date'
 
 import Variable from './types/variable'
+import variable from './queries/variable'
 import variables from './queries/variables'
 
 import Protocol from './types/protocol'
+import protocol from './queries/protocol'
 import protocols from './queries/protocols'
 
 import DataProduct from './types/data-product'
@@ -22,8 +24,12 @@ export default {
 
   // Queries
   Query: {
+    variable,
     variables,
+
+    protocol,
     protocols,
+
     dataProducts,
     networks,
     radiativeForcings

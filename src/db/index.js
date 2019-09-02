@@ -84,7 +84,7 @@ export const initializeLoaders = () => {
     x.protocol_id
     from public.protocol_variable_xref x
     join public.variables v on v.id = x.variable_id
-    where x.protocol_id in (${keys.join(',')})`
+    where x.protocol_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ protocol_id: key })) || [])
   })
@@ -96,7 +96,7 @@ export const initializeLoaders = () => {
     x.network_id
     from public.network_variable_xref x
     join public.variables v on v.id = x.variable_id
-    where x.network_id in (${keys.join(',')})`
+    where x.network_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ network_id: key })) || [])
   })
@@ -108,7 +108,7 @@ export const initializeLoaders = () => {
     x.rforcing_id
     from public.rforcing_variable_xref x
     join public.variables v on v.id = x.variable_id
-    where x.rforcing_id in (${keys.join(',')})`
+    where x.rforcing_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ rforcing_id: key })) || [])
   })
@@ -120,7 +120,7 @@ export const initializeLoaders = () => {
     x.dataproduct_id
     from public.dataproduct_variable_xref x
     join public.variables v on v.id = x.variable_id
-    where x.dataproduct_id in (${keys.join(',')})`
+    where x.dataproduct_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ dataproduct_id: key })) || [])
   })
@@ -132,16 +132,33 @@ export const initializeLoaders = () => {
     x.variable_id
     from public.protocol_variable_xref x
     join public.protocols p on p.id = x.protocol_id
-    where x.variable_id in (${keys.join(',')})`
+    where x.variable_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ variable_id: key })) || [])
   })
 
+  const variablesLoader = new DataLoader(async keys => {
+    const sql = `select * from public.variables where id in (${keys.join(',')});`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ id: key })) || [])
+  })
+
+  const protocolsLoader = new DataLoader(async keys => {
+    const sql = `select * from public.protocols where id in (${keys.join(',')});`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ id: key })) || [])
+  })
+
   return {
+    // VARIABLES
+    findVariables: key => variablesLoader.load(key),
     findVariablesOfNetworks: key => variablesOfNetworksLoader.load(key),
     findVariablesOfProtocols: key => variablesOfProtocolsLoader.load(key),
     findVariablesOfDataProducts: key => variablesOfDataProductsLoader.load(key),
     findVariablesOfRadiativeForcings: key => variablesOfRadiativeForcingsLoader.load(key),
+
+    // PROTOCOLS
+    findProtocols: key => protocolsLoader.load(key),
     findProtocolsOfVariables: key => protocolsOfVariablesLoader.load(key)
   }
 }

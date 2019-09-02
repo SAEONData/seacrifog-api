@@ -2,8 +2,12 @@ scalar Date
 scalar JSON
 
 type Query {
-  variables: [Variable!]!
-  protocols: [Protocol!]!
+  variable(id: Int!): Variable
+  variables: [Variable]!
+
+  protocol(id: Int!): Protocol
+  protocols: [Protocol]!
+
   dataProducts: [DataProduct!]!
   networks: [Network!]!
   radiativeForcings: [RadiativeForcing!]!
