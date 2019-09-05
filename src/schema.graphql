@@ -101,7 +101,8 @@ type Protocol {
   created_at: Date
   edited_by: String
   updated_at: Date
-  variables: [Variable!]!
+  directly_related_variables: [Variable!]!
+  indirectly_related_variables: [Variable!]!
 }
 
 type DataProduct {

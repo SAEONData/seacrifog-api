@@ -235,7 +235,7 @@ CREATE TABLE public.protocol_variable_xref (
   id                   SERIAL,
   protocol_id          INT NOT NULL,
   variable_id          int NOT NULL,
-  relationship_type_id int2 not NULL,
+  relationship_type_id int not NULL,
   CONSTRAINT protocol_variable_xref_pkey PRIMARY KEY (id),
   CONSTRAINT protocol_variable_xref_unique_cols UNIQUE (protocol_id, variable_id, relationship_type_id),
   CONSTRAINT protocol_variable_xref_protocols_fk FOREIGN KEY (protocol_id) REFERENCES public.protocols(id),
