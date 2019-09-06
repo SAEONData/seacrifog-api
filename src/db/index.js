@@ -77,7 +77,7 @@ Promise.resolve(
  * https://github.com/graphql/dataloader/blob/master/examples/SQL.md
  */
 export const initializeLoaders = () => {
-  const variablesOfProtocolsLoader = new DataLoader(async keys => {
+  const findVariablesOfProtocols = new DataLoader(async keys => {
     const sql = `
     select
     v.*,
@@ -92,7 +92,22 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ protocol_id: key })) || [])
   })
 
-  const variablesOfNetworksLoader = new DataLoader(async keys => {
+  const findProtocolsOfVariables = new DataLoader(async keys => {
+    const sql = `
+    select
+    p.*,
+    rt."name" relationship_type_name,
+    rt.description relationship_type_description,
+    x.variable_id
+    from public.protocol_variable_xref x
+    join public.protocols p on p.id = x.protocol_id
+    join public.relationship_types rt on rt.id = x.relationship_type_id
+    where x.variable_id in (${keys.join(',')});`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ variable_id: key })) || [])
+  })
+
+  const findVariablesOfNetworks = new DataLoader(async keys => {
     const sql = `
     select
     v.*,
@@ -104,7 +119,7 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ network_id: key })) || [])
   })
 
-  const variablesOfRadiativeForcingsLoader = new DataLoader(async keys => {
+  const findVariablesOfRadiativeForcings = new DataLoader(async keys => {
     const sql = `
     select
     v.*,
@@ -116,7 +131,7 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ rforcing_id: key })) || [])
   })
 
-  const variablesOfDataProductsLoader = new DataLoader(async keys => {
+  const findVariablesOfDataProducts = new DataLoader(async keys => {
     const sql = `
     select
     v.*,
@@ -128,25 +143,13 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ dataproduct_id: key })) || [])
   })
 
-  const protocolsOfVariablesLoader = new DataLoader(async keys => {
-    const sql = `
-    select
-    p.*,
-    x.variable_id
-    from public.protocol_variable_xref x
-    join public.protocols p on p.id = x.protocol_id
-    where x.variable_id in (${keys.join(',')});`
-    const rows = (await pool.query(sql)).rows
-    return keys.map(key => rows.filter(sift({ variable_id: key })) || [])
-  })
-
-  const variablesLoader = new DataLoader(async keys => {
+  const findVariables = new DataLoader(async keys => {
     const sql = `select * from public.variables where id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ id: key })) || [])
   })
 
-  const protocolsLoader = new DataLoader(async keys => {
+  const findProtocols = new DataLoader(async keys => {
     const sql = `select * from public.protocols where id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ id: key })) || [])
@@ -154,14 +157,14 @@ export const initializeLoaders = () => {
 
   return {
     // VARIABLES
-    findVariables: key => variablesLoader.load(key),
-    findVariablesOfNetworks: key => variablesOfNetworksLoader.load(key),
-    findVariablesOfProtocols: key => variablesOfProtocolsLoader.load(key),
-    findVariablesOfDataProducts: key => variablesOfDataProductsLoader.load(key),
-    findVariablesOfRadiativeForcings: key => variablesOfRadiativeForcingsLoader.load(key),
+    findVariables: key => findVariables.load(key),
+    findVariablesOfNetworks: key => findVariablesOfNetworks.load(key),
+    findVariablesOfProtocols: key => findVariablesOfProtocols.load(key),
+    findVariablesOfDataProducts: key => findVariablesOfDataProducts.load(key),
+    findVariablesOfRadiativeForcings: key => findVariablesOfRadiativeForcings.load(key),
 
     // PROTOCOLS
-    findProtocols: key => protocolsLoader.load(key),
-    findProtocolsOfVariables: key => protocolsOfVariablesLoader.load(key)
+    findProtocols: key => findProtocols.load(key),
+    findProtocolsOfVariables: key => findProtocolsOfVariables.load(key)
   }
 }

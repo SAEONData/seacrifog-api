@@ -73,7 +73,8 @@ type Variable {
   req_source: String
   req_uri: String
   technology_type: String
-  protocols: [Protocol!]!
+  directly_related_protocols: [Protocol!]!
+  indirectly_related_protocols: [Protocol!]!
 }
 
 type Protocol {
