@@ -597,7 +597,7 @@ on conflict on constraint datatypes_unique_col do nothing;
  ********************/
 ;with s_dataproducts as (
   select
-  dptitle title,
+  trim_whitespace(dptitle) title,
   dppubyear publish_year,
   dppubdate publish_date,
   dpkeywords keywords,
@@ -1067,7 +1067,7 @@ on conflict on constraint protocol_uri_xref_unique_cols do nothing;
 delete from public.dataproduct_variable_xref;
 ;with var_dp_s as (
   select
-  dptitle,
+  trim_whitespace(dptitle) dptitle,
   dppubyear,
   dppubdate,
   variable,
@@ -1083,7 +1083,7 @@ delete from public.dataproduct_variable_xref;
    v.varclass,
    v.vardomain
    from public.dataproducts dp
-   join public.var_dp vdp on vdp.varid = dp.dpid
+   join public.var_dp vdp on vdp.dpid = dp.dpid
    join public.variables v on v.varid = vdp.varid'
   ) as var_dp_source (
      dptitle    text,
@@ -1100,7 +1100,7 @@ dp.id dataproduct_id,
 v.id variable_id
 from var_dp_s s
 join public.variables v on v."name" = s.variable and v."class" = s.varclass and v."domain" = s.vardomain
-join public.dataproducts dp on dp.title = s.dptitle and dp.publish_year = s.dppubyear and dp.publish_date = s.dppubdate
+join public.dataproducts dp on dp.title = s.dptitle
 on conflict on constraint dataproduct_variable_xref_unique_cols do nothing;
 
 /***************************
@@ -1109,7 +1109,7 @@ on conflict on constraint dataproduct_variable_xref_unique_cols do nothing;
 delete from dataproduct_datatype_xref;
 ;with s_dataproducts as (
   select
-    dptitle,
+    trim_whitespace(dptitle) dptitle,
     dppubyear,
     dppubdate,
     dptype,
@@ -1152,7 +1152,7 @@ from (
   dptype2 datatype
   from s_dataproducts
 ) tbl1
-join public.dataproducts dp on dp.title = tbl1.title and dp.publish_year = tbl1.publish_year and dp.publish_date = tbl1.publish_date
+join public.dataproducts dp on dp.title = tbl1.title
 join public.datatypes dt on dt.name = tbl1.datatype
 
 on conflict on constraint dataproduct_datatype_xref_unique_cols do nothing;

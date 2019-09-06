@@ -35,6 +35,12 @@ create or replace function public.get_substring(text, text, int) returns text
   immutable
   returns null on null input;
 
+create or replace function public.trim_whitespace(text) returns text
+  as 'select trim(both from $1);'
+  language sql
+  immutable
+  returns null on null input;
+
 /*********************************************************/
 
 create table public.sites (
@@ -134,7 +140,7 @@ CREATE TABLE public.dataproducts (
   modified_at          date         null,
   present              text         null,
   CONSTRAINT dataproducts_pkey PRIMARY KEY (id),
-  CONSTRAINT dataproducts_unique_cols UNIQUE (title, publish_year, publish_date)
+  CONSTRAINT dataproducts_unique_cols UNIQUE (title)
 );
 
 CREATE TABLE public.protocols (

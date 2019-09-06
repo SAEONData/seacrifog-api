@@ -75,6 +75,7 @@ type Variable {
   technology_type: String
   directly_related_protocols: [Protocol!]!
   indirectly_related_protocols: [Protocol!]!
+  dataProducts: [DataProduct!]!
 }
 
 type Protocol {
