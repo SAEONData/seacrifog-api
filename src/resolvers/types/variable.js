@@ -15,9 +15,14 @@ export default {
       .filter(r => r.relationship_type_name === 'indirect')
       .sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0))
   },
-  dataProducts: async (self, args, req) => {
+  dataproducts: async (self, args, req) => {
     const { findDataProductsOfVariables } = await req.ctx.db.dataLoaders
     const result = await findDataProductsOfVariables(self.id)
+    return result.sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0))
+  },
+  rforcings: async (self, args, req) => {
+    const { findRForcingsOfVariables } = await req.ctx.db.dataLoaders
+    const result = await findRForcingsOfVariables(self.id)
     return result.sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0))
   }
 }

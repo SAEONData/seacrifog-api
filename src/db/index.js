@@ -107,6 +107,17 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ variable_id: key })) || [])
   })
 
+  const findRForcingsOfVariables = new DataLoader(async keys => {
+    const sql = `
+    select rf.*,
+    x.variable_id
+    from public.rforcing_variable_xref x
+    join public.rforcings rf on rf.id = x.rforcing_id
+    where x.variable_id in (${keys.join(',')});`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ variable_id: key })) || [])
+  })
+
   const findVariablesOfNetworks = new DataLoader(async keys => {
     const sql = `
     select
@@ -175,6 +186,7 @@ export const initializeLoaders = () => {
     findVariablesOfDataProducts: key => findVariablesOfDataProducts.load(key),
     findVariablesOfRadiativeForcings: key => findVariablesOfRadiativeForcings.load(key),
     findDataProductsOfVariables: key => findDataProductsOfVariables.load(key),
+    findRForcingsOfVariables: key => findRForcingsOfVariables.load(key),
 
     // PROTOCOLS
     findProtocols: key => findProtocols.load(key),
