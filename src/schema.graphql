@@ -67,9 +67,9 @@ type Variable {
   res_value: Float
   res_unit: String
   res_comment: String
-  run_cval: Float
-  run_cunit: String
-  run_ccomment: String
+  unc_val: Float
+  unc_unit: String
+  unc_comment: String
   req_source: String
   req_uri: String
   technology_type: String
