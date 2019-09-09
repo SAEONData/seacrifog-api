@@ -281,9 +281,9 @@ on conflict on constraint protocols_unique_cols do update set
     varresval res_value,
     varresunit res_unit,
     varrescomment res_comment,
-    varuncval run_cval,
-    varuncunit run_cunit,
-    varunccomment run_ccomment,
+    varuncval unc_val,
+    varuncunit unc_unit,
+    varunccomment unc_comment,
     varreqsource req_source,
     varrequrl req_uri,
     vartech technology_type
@@ -326,7 +326,7 @@ on conflict on constraint protocols_unique_cols do update set
       vartech        text
     )
 )
-insert into public.variables ("name", "class", "domain", "set", description, "method", uri, rftype, score, rating, relevance, feasibility, "cost", updated_by, updated_at, frequency_value, frequency_unit, frequency_comment, res_value, res_unit, res_comment, run_cval, run_cunit, run_ccomment, req_source, req_uri, technology_type)
+insert into public.variables ("name", "class", "domain", "set", description, "method", uri, rftype, score, rating, relevance, feasibility, "cost", updated_by, updated_at, frequency_value, frequency_unit, frequency_comment, res_value, res_unit, res_comment, unc_val, unc_unit, unc_comment, req_source, req_uri, technology_type)
 select
   "name",
   "class",
@@ -349,9 +349,9 @@ select
   res_value,
   res_unit,
   res_comment,
-  run_cval,
-  run_cunit,
-  run_ccomment,
+  unc_val,
+  unc_unit,
+  unc_comment,
   req_source,
   req_uri,
   technology_type
@@ -378,9 +378,9 @@ on conflict on constraint variables_unique_cols do update set
   res_value         = excluded.res_value,
   res_unit          = excluded.res_unit,
   res_comment       = excluded.res_comment,
-  run_cval          = excluded.run_cval,
-  run_cunit         = excluded.run_cunit,
-  run_ccomment      = excluded.run_ccomment,
+  unc_val          = excluded.unc_val,
+  unc_unit         = excluded.unc_unit,
+  unc_comment      = excluded.unc_comment,
   req_source        = excluded.req_source,
   req_uri           = excluded.req_uri,
   technology_type   = excluded.technology_type;
