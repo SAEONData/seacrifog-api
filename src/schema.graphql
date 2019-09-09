@@ -8,7 +8,9 @@ type Query {
   protocol(id: Int!): Protocol
   protocols: [Protocol]!
 
+  dataProduct(id: Int!): DataProduct
   dataProducts: [DataProduct!]!
+
   networks: [Network!]!
   radiativeForcings: [RadiativeForcing!]!
 }

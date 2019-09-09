@@ -9,8 +9,9 @@ import Protocol from './types/protocol'
 import protocol from './queries/protocol'
 import protocols from './queries/protocols'
 
-import DataProduct from './types/data-product'
-import dataProducts from './queries/data-products'
+import DataProduct from './types/dataproduct'
+import dataProduct from './queries/dataproduct'
+import dataProducts from './queries/dataproducts'
 
 import Network from './types/network'
 import networks from './queries/networks'
@@ -30,7 +31,9 @@ export default {
     protocol,
     protocols,
 
+    dataProduct,
     dataProducts,
+
     networks,
     radiativeForcings
   },

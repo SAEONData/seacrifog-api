@@ -178,6 +178,12 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ id: key })) || [])
   })
 
+  const findDataProducts = new DataLoader(async keys => {
+    const sql = `select * from public.dataproducts where id in (${keys.join(',')});`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ id: key })) || [])
+  })
+
   return {
     // VARIABLES
     findVariables: key => findVariables.load(key),
@@ -187,6 +193,9 @@ export const initializeLoaders = () => {
     findVariablesOfRadiativeForcings: key => findVariablesOfRadiativeForcings.load(key),
     findDataProductsOfVariables: key => findDataProductsOfVariables.load(key),
     findRForcingsOfVariables: key => findRForcingsOfVariables.load(key),
+
+    // DATAPRODUCTS
+    findDataProducts: key => findDataProducts.load(key),
 
     // PROTOCOLS
     findProtocols: key => findProtocols.load(key),
