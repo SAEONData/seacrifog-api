@@ -2,6 +2,8 @@
   "name": "api2",
   "version": "0.0.0",
   "private": true,
+  "license": "MIT",
+  "author": {"email": "zach@saeon.ac.za", "name": "Zach Smith", "url": "http://saeon.ac.za"},
   "scripts": {
     "start": "nodemon",
     "prettier": "prettier --write \"src/**/*.@(js|graphql)\"",
