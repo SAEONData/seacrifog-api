@@ -13,6 +13,14 @@ type Query {
 
   networks: [Network!]!
   radiativeForcings: [RadiativeForcing!]!
+
+  protocolsXrefVariables: [ProtocolXrefVariable!]!
+}
+
+type ProtocolXrefVariable {
+  id: Int
+  variable_id: Int
+  protocol_id: Int
 }
 
 type RadiativeForcing {

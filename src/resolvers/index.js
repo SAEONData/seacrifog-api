@@ -19,6 +19,9 @@ import networks from './queries/networks'
 import RadiativeForcing from './types/radiative-forcing'
 import radiativeForcings from './queries/radiative-forcings'
 
+import ProtocolXrefVariable from './types/protocol-xref-variable'
+import protocolsXrefVariables from './queries/protocols-xref-variables'
+
 export default {
   // Mutations
   // Mutation: {},
@@ -35,7 +38,9 @@ export default {
     dataProducts,
 
     networks,
-    radiativeForcings
+    radiativeForcings,
+
+    protocolsXrefVariables
   },
 
   // Types
@@ -46,5 +51,7 @@ export default {
   Protocol,
   Network,
   DataProduct,
-  RadiativeForcing
+  RadiativeForcing,
+
+  ProtocolXrefVariable
 }
