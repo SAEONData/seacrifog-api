@@ -142,7 +142,7 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ rforcing_id: key })) || [])
   })
 
-  const findVariablesOfDataProducts = new DataLoader(async keys => {
+  const findVariablesOfDataproducts = new DataLoader(async keys => {
     const sql = `
     select
     v.*,
@@ -154,7 +154,7 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ dataproduct_id: key })) || [])
   })
 
-  const findDataProductsOfVariables = new DataLoader(async keys => {
+  const findDataproductsOfVariables = new DataLoader(async keys => {
     const sql = `
     select
     d.*,
@@ -178,7 +178,7 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ id: key })) || [])
   })
 
-  const findDataProducts = new DataLoader(async keys => {
+  const findDataproducts = new DataLoader(async keys => {
     const sql = `select * from public.dataproducts where id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ id: key })) || [])
@@ -189,13 +189,13 @@ export const initializeLoaders = () => {
     findVariables: key => findVariables.load(key),
     findVariablesOfNetworks: key => findVariablesOfNetworks.load(key),
     findVariablesOfProtocols: key => findVariablesOfProtocols.load(key),
-    findVariablesOfDataProducts: key => findVariablesOfDataProducts.load(key),
+    findVariablesOfDataproducts: key => findVariablesOfDataproducts.load(key),
     findVariablesOfRadiativeForcings: key => findVariablesOfRadiativeForcings.load(key),
-    findDataProductsOfVariables: key => findDataProductsOfVariables.load(key),
+    findDataproductsOfVariables: key => findDataproductsOfVariables.load(key),
     findRForcingsOfVariables: key => findRForcingsOfVariables.load(key),
 
     // DATAPRODUCTS
-    findDataProducts: key => findDataProducts.load(key),
+    findDataproducts: key => findDataproducts.load(key),
 
     // PROTOCOLS
     findProtocols: key => findProtocols.load(key),

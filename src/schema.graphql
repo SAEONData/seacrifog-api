@@ -8,19 +8,26 @@ type Query {
   protocol(id: Int!): Protocol
   protocols: [Protocol]!
 
-  dataProduct(id: Int!): DataProduct
-  dataProducts: [DataProduct!]!
+  dataproduct(id: Int!): Dataproduct
+  dataproducts: [Dataproduct!]!
 
   networks: [Network!]!
   radiativeForcings: [RadiativeForcing!]!
 
   protocolsXrefVariables: [ProtocolXrefVariable!]!
+  dataproductsXrefVariables: [DataproductXrefVariable!]!
+}
+
+type DataproductXrefVariable {
+  id: Int
+  dataproduct_id: Int
+  variable_id: Int
 }
 
 type ProtocolXrefVariable {
   id: Int
-  variable_id: Int
   protocol_id: Int
+  variable_id: Int
 }
 
 type RadiativeForcing {
@@ -85,7 +92,7 @@ type Variable {
   technology_type: String
   directly_related_protocols: [Protocol!]!
   indirectly_related_protocols: [Protocol!]!
-  dataproducts: [DataProduct!]!
+  dataproducts: [Dataproduct!]!
   rforcings: [RadiativeForcing!]!
 }
 
@@ -118,7 +125,7 @@ type Protocol {
   indirectly_related_variables: [Variable!]!
 }
 
-type DataProduct {
+type Dataproduct {
   id: Int
   title: String
   publish_year: Int

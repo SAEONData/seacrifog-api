@@ -9,9 +9,9 @@ import Protocol from './types/protocol'
 import protocol from './queries/protocol'
 import protocols from './queries/protocols'
 
-import DataProduct from './types/dataproduct'
-import dataProduct from './queries/dataproduct'
-import dataProducts from './queries/dataproducts'
+import Dataproduct from './types/dataproduct'
+import dataproduct from './queries/dataproduct'
+import dataproducts from './queries/dataproducts'
 
 import Network from './types/network'
 import networks from './queries/networks'
@@ -21,6 +21,9 @@ import radiativeForcings from './queries/radiative-forcings'
 
 import ProtocolXrefVariable from './types/protocol-xref-variable'
 import protocolsXrefVariables from './queries/protocols-xref-variables'
+
+import DataproductXrefVariable from './types/dataproduct-xref-variable'
+import dataproductsXrefVariables from './queries/dataproducts-xref-variables'
 
 export default {
   // Mutations
@@ -34,13 +37,14 @@ export default {
     protocol,
     protocols,
 
-    dataProduct,
-    dataProducts,
+    dataproduct,
+    dataproducts,
 
     networks,
     radiativeForcings,
 
-    protocolsXrefVariables
+    protocolsXrefVariables,
+    dataproductsXrefVariables
   },
 
   // Types
@@ -50,8 +54,9 @@ export default {
   Variable,
   Protocol,
   Network,
-  DataProduct,
+  Dataproduct,
   RadiativeForcing,
 
-  ProtocolXrefVariable
+  ProtocolXrefVariable,
+  DataproductXrefVariable
 }
