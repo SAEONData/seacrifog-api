@@ -26,7 +26,7 @@ log('allowed origins', ALLOWED_ORIGINS)
 const corsMiddleware = (req, res, next) => {
   const origin = req.headers.origin
   const httpVerb = req.method
-  log(`Testing CORS access on origin "${origin}"`)
+  log(`Checking CORS policy`, `${origin}`, `${ALLOWED_ORIGINS.includes(origin)}`)
   if (ALLOWED_ORIGINS.includes(origin)) res.setHeader('Access-Control-Allow-Origin', origin)
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')

@@ -4,14 +4,17 @@ import Date from './types/date'
 import Variable from './types/variable'
 import variable from './queries/variable'
 import variables from './queries/variables'
+import updateVariables from './mutations/update-variables'
 
 import Protocol from './types/protocol'
 import protocol from './queries/protocol'
 import protocols from './queries/protocols'
+import updateProtocols from './mutations/update-protocols'
 
 import Dataproduct from './types/dataproduct'
 import dataproduct from './queries/dataproduct'
 import dataproducts from './queries/dataproducts'
+import updateDataproducts from './mutations/update-dataproducts'
 
 import Network from './types/network'
 import networks from './queries/networks'
@@ -27,7 +30,11 @@ import dataproductsXrefVariables from './queries/dataproducts-xref-variables'
 
 export default {
   // Mutations
-  // Mutation: {},
+  Mutation: {
+    updateVariables,
+    updateProtocols,
+    updateDataproducts
+  },
 
   // Queries
   Query: {
