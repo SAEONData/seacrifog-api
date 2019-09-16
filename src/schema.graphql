@@ -30,6 +30,17 @@ input VariableInput {
   req_source: String
   req_uri: String
   technology_type: String
+
+  # For updating mappings
+  addDataproducts: [Int!]
+  removeDataproducts: [Int!]
+
+  addDirectlyRelatedProtocols: [Int!]
+  addIndirectlyRelatedProtocols: [Int!]
+  removeProtocols: [Int!]
+
+  addRForicings: [Int!]
+  removeRForcings: [Int!]
 }
 
 input ProtocolInput {
@@ -57,6 +68,11 @@ input ProtocolInput {
   created_at: Date
   edited_by: String
   updated_at: Date
+
+  # For updating mappings
+  addDirectlyRelatedVariables: [Int!]
+  addIndirectlyRelatedVariables: [Int!]
+  removeVariables: [Int!]
 }
 
 input DataproductInput {
@@ -89,6 +105,10 @@ input DataproductInput {
   modified_by: String
   modified_at: Date
   present: String
+
+  # For updating mappings
+  addVariables: [Int!]
+  removeVariables: [Int!]
 }
 
 type Mutation {
