@@ -75,6 +75,9 @@ Promise.resolve(
  * TODO
  * I think these will work as intended. But the example is certainly better!
  * https://github.com/graphql/dataloader/blob/master/examples/SQL.md
+ * 
+ * TODO: sift() should be used in a map function, not a filter function
+ * I don't know why it was difficult to get that done
  */
 export const initializeLoaders = () => {
   const findVariablesOfProtocols = new DataLoader(async keys => {
