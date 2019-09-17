@@ -41,6 +41,12 @@ create or replace function public.trim_whitespace(text) returns text
   immutable
   returns null on null input;
 
+create or replace function public.convert_box_to_polygon(text) returns point[]
+  as `select $1`
+  language sql
+  immutable
+  returns null on null input;
+
 /*********************************************************/
 
 create table public.sites (
