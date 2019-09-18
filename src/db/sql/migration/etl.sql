@@ -1,9 +1,4 @@
 /***************************************************
- * Enable the DBLINK extension if it's not already enabled
- ***************************************************/
-CREATE EXTENSION dblink;
-
-/***************************************************
  * DBLINK CONNECTION
  *  (1) Delete existing connection if it exists
  *  (2) Create a reuseable connection to the source
@@ -444,7 +439,7 @@ on conflict on constraint rforcings_unique_cols do update set
   neturlinfo   url_info,
   neturldata   url_data,
   netabstract  abstract,
-  concat('{', replace(replace(netcov, '(', '"('), ')', ')"'), '}')::point[] coverage_spatial,
+  public.convert_box_points_to_poly(netcov) coverage_spatial,
   neturlsites  url_sites,
   netparent    parent_title,
   netaddby     created_by,
@@ -522,11 +517,11 @@ on conflict on constraint networks_unique_cols do update set
 	status           = excluded.status,
 	start_year       = excluded.start_year,
 	end_year         = excluded.end_year,
-	url_info_id        = excluded.url_info_id,
-	url_data_id        = excluded.url_data_id,
+	url_info_id      = excluded.url_info_id,
+	url_data_id      = excluded.url_data_id,
 	abstract         = excluded.abstract,
 	coverage_spatial = excluded.coverage_spatial,
-	url_sites_id       = excluded.url_sites_id,
+	url_sites_id     = excluded.url_sites_id,
 	parent_id        = null,
 	created_by       = excluded.created_by,
 	created_at       = excluded.created_at,
@@ -605,7 +600,7 @@ on conflict on constraint datatypes_unique_col do nothing;
   dpprovider provider,
   dpauthor author,
   dpcontact contact,
-  concat('{', replace(replace(dpcovspatial, '(', '"('), ')', ')"'), '}')::point[] coverage_spatial,
+  public.convert_box_points_to_poly(dpcovspatial) coverage_spatial,
   dpcovtempstart coverage_temp_start,
   dpcovtempend coverage_temp_end,
   dpresspatial res_spatial,

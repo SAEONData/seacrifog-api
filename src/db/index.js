@@ -56,6 +56,7 @@ Promise.resolve(
     await configDbPool.query(loadSqlFile('migration/db-setup/stop-db.sql', DB))
     await configDbPool.query(loadSqlFile('migration/db-setup/drop-db.sql', DB))
     await configDbPool.query(loadSqlFile('migration/db-setup/create-db.sql', DB))
+    await configDbPool.query('ALTER DATABASE seacrifog SET search_path=public,postgis;')
     await configDbPool.end()
     log('seacrifog database dropped and re-created!')
 

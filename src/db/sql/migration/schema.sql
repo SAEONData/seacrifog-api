@@ -27,6 +27,16 @@ DROP TABLE IF EXISTS public.uris;
 DROP TABLE IF EXISTS public.protocol_coverages;
 DROP TABLE IF EXISTS public.sites;
 
+/**************** ENABLE Key extensions ******************/
+CREATE EXTENSION dblink;
+CREATE EXTENSION postgis;
+CREATE EXTENSION postgis_topology;
+CREATE EXTENSION postgis_sfcgal;
+CREATE EXTENSION fuzzystrmatch;
+CREATE EXTENSION address_standardizer;
+CREATE EXTENSION address_standardizer_data_us;
+CREATE EXTENSION postgis_tiger_geocoder;
+
 /*********************************************************/
 
 create or replace function public.get_substring(text, text, int) returns text
@@ -41,9 +51,40 @@ create or replace function public.trim_whitespace(text) returns text
   immutable
   returns null on null input;
 
-create or replace function public.convert_box_to_polygon(text) returns point[]
-  as `select $1`
-  language sql
+create or replace function public.convert_box_points_to_poly(text) returns text
+  as $$
+  declare p point[];
+  declare x1 float;
+  declare y1 float;
+  declare x2 float;
+  declare y2 float;
+  declare x_min float;
+  declare x_max float;
+  declare y_min float;
+  declare y_max float;
+  begin
+    
+    -- Get point[] from text
+    select concat('{', replace(replace($1, '(', '"('), ')', ')"'), '}')::point[] into p;
+
+    -- Get the x & y values
+    select ( select ( select p[1])[0]) into x1;
+    select ( select ( select p[1])[1]) into y1;
+    select ( select ( select p[2])[0]) into x2;
+    select ( select ( select p[2])[1]) into y2;
+    
+    -- Get min/max x & y values
+    select least(x1, x2) into x_min;
+    select least(y1, y2) into y_min;
+    select greatest(x1, x2) into x_max;
+    select greatest(y1, y2) into y_max;
+    
+    -- Return string value that gets inserted into geometry-type column
+    return concat('POLYGON((', x_min, ' ', y_min, ',', x_min, ' ', y_max, ',', x_max, ' ', y_max, ',', x_max, ' ', y_min, ',', x_min, ' ', y_min, '))');
+    
+  end
+  $$
+  language plpgsql
   immutable
   returns null on null input;
 
@@ -124,7 +165,7 @@ CREATE TABLE public.dataproducts (
   provider             text         null,
   author               text         null,
   contact              text         null,
-  coverage_spatial     point[]      null,
+  coverage_spatial     geometry     null,
   coverage_temp_start  date         null,
   coverage_temp_end    date         null,
   res_spatial          float4       null,
@@ -189,7 +230,7 @@ CREATE TABLE public.networks (
   url_info_id      int4          NULL,
   url_data_id      int4          NULL,
   abstract         varchar       NULL,
-  coverage_spatial point[]       NULL,
+  coverage_spatial geometry      NULL,
   url_sites_id     int4          NULL,
   parent_id        int4          NULL,
   created_by       varchar(255)  NULL,
