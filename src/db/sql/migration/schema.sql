@@ -80,7 +80,7 @@ create or replace function public.convert_box_points_to_poly(text) returns text
     select greatest(y1, y2) into y_max;
     
     -- Return string value that gets inserted into geometry-type column
-    return concat('POLYGON((', x_min, ' ', y_min, ',', x_min, ' ', y_max, ',', x_max, ' ', y_max, ',', x_max, ' ', y_min, ',', x_min, ' ', y_min, '))');
+    return ST_SetSRID(ST_MakePolygon(ST_GeomFromText(concat('LINESTRING(', x_min, ' ', y_min, ',', x_min, ' ', y_max, ',', x_max, ' ', y_max, ',', x_max, ' ', y_min, ',', x_min, ' ', y_min, ')'))), 4326);
     
   end
   $$
@@ -165,7 +165,7 @@ CREATE TABLE public.dataproducts (
   provider             text         null,
   author               text         null,
   contact              text         null,
-  coverage_spatial     geometry     null,
+  coverage_spatial     geometry(Polygon, 4326)     null,
   coverage_temp_start  date         null,
   coverage_temp_end    date         null,
   res_spatial          float4       null,
