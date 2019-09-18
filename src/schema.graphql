@@ -251,7 +251,7 @@ type Dataproduct {
   provider: String
   author: String
   contact: String
-  coverage_spatial: String
+  coverage_spatial: JSON
   coverage_temp_start: Date
   coverage_temp_end: Date
   res_spatial: Float
