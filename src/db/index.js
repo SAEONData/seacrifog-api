@@ -182,7 +182,8 @@ export const initializeLoaders = () => {
   })
 
   const findDataproducts = new DataLoader(async keys => {
-    const sql = `select
+    const sql = `
+    select
     id,
     title,
     publish_year,
@@ -192,7 +193,7 @@ export const initializeLoaders = () => {
     provider,
     author,
     contact,
-    ST_AsGeoJSON(coverage_spatial) coverage_spatial,
+    ST_AsGeoJSON(st_transform(coverage_spatial, 3857)) coverage_spatial,
     coverage_temp_start,
     coverage_temp_end,
     res_spatial,
@@ -213,7 +214,12 @@ export const initializeLoaders = () => {
     modified_by,
     modified_at,
     present
-    from public.dataproducts where id in (${keys.join(',')});`
+    
+    from public.dataproducts
+    
+    where
+    not ( ST_Equals(coverage_spatial, ST_GeomFromText('POLYGON ((-180 -90, -180 90, 180 90, 180 -90, -180 -90))', 4326)) )
+    and id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ id: key })) || [])
   })
