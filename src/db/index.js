@@ -120,7 +120,7 @@ Promise.resolve(
       // const ddlDropStmt = `drop table ${tempTableName};`
       // await client.query(ddlDropStmt)
     }
-    log("Dev DB setup complete.  If you don't see this message there was a problem")
+    log("Dev DB setup complete. If you don't see this message there was a problem")
     await seacrifogPool.end()
   })()
 ).catch(err => {
