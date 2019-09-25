@@ -16,6 +16,9 @@ import dataproduct from './queries/dataproduct'
 import dataproducts from './queries/dataproducts'
 import updateDataproducts from './mutations/update-dataproducts'
 
+import Site from './types/site'
+import sites from './queries/sites'
+
 import Network from './types/network'
 import networks from './queries/networks'
 
@@ -47,6 +50,8 @@ export default {
     dataproduct,
     dataproducts,
 
+    sites,
+
     networks,
     radiativeForcings,
 
@@ -61,6 +66,7 @@ export default {
   Variable,
   Protocol,
   Network,
+  Site,
   Dataproduct,
   RadiativeForcing,
 

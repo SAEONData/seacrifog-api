@@ -127,6 +127,8 @@ type Query {
   dataproduct(id: Int!): Dataproduct
   dataproducts: [Dataproduct!]!
 
+  sites: [Site!]!
+
   networks: [Network!]!
   radiativeForcings: [RadiativeForcing!]!
 
@@ -144,6 +146,13 @@ type ProtocolXrefVariable {
   id: Int
   protocol_id: Int
   variable_id: Int
+}
+
+type Site {
+  id: Int
+  name: String
+  lng_lat: JSON
+  networks: [Network]
 }
 
 type RadiativeForcing {

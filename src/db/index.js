@@ -133,6 +133,18 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ network_id: key })) || [])
   })
 
+  const findNetworksOfSites = new DataLoader(async keys => {
+    const sql = `
+    select
+    n.*,
+    x.site_id
+    from public.site_network_xref x
+    join public.networks n on n.id = x.network_id
+    where x.site_id in (${keys.join(',')});`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ site_id: key })) || [])
+  })
+
   const findVariablesOfRadiativeForcings = new DataLoader(async keys => {
     const sql = `
     select
@@ -236,6 +248,9 @@ export const initializeLoaders = () => {
 
     // DATAPRODUCTS
     findDataproducts: key => findDataproducts.load(key),
+
+    // SITES
+    findNetworksOfSites: key => findNetworksOfSites.load(key),
 
     // PROTOCOLS
     findProtocols: key => findProtocols.load(key),

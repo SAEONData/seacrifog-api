@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS public.dataproduct_variable_xref;
 DROP TABLE IF EXISTS public.protocol_variable_xref;
 DROP TABLE IF EXISTS public.network_variable_xref;
 DROP TABLE IF EXISTS public.rforcing_variable_xref;
+DROP TABLE IF EXISTS public.site_network_xref;
 
 
 DROP TABLE IF EXISTS public.relationship_types;
@@ -92,13 +93,10 @@ create or replace function public.convert_box_points_to_poly(text) returns text
 
 create table public.sites (
   id           serial,
-  code         varchar(200),
-  "name"       varchar(200),
-  organization varchar(250),
-  latitude     point,
-  longitude    point,
-  constraint  sites_pkey primary key (id),
-  constraint sites_unique_cols unique (code, "name", organization)
+  "name"       text,
+  lng_lat      geometry,
+  constraint   sites_pkey primary key (id),
+  constraint   sites_unique_cols unique ("name", lng_lat)
 );
 
 create table public.datatypes (
@@ -341,9 +339,19 @@ create table public.variable_uri_xref (
   variable_id           int,
   uri_id                int,
   relationship_type_id  int,
-  CONSTRAINT variable_uri_xref_pd          PRIMARY KEY (id),
-  CONSTRAINT variable_uri_xref_unique_cols UNIQUE      (variable_id, uri_id),
-  CONSTRAINT variable_uri_xref_variable_fk FOREIGN KEY (variable_id) REFERENCES variables(id),
-  CONSTRAINT variable_uri_xref_uri_fk      FOREIGN KEY (uri_id)      REFERENCES uris(id),
+  CONSTRAINT variable_uri_xref_pk                   PRIMARY KEY (id),
+  CONSTRAINT variable_uri_xref_unique_cols UNIQUE (variable_id, uri_id),
+  CONSTRAINT variable_uri_xref_variable_fk          FOREIGN KEY (variable_id) REFERENCES variables(id),
+  CONSTRAINT variable_uri_xref_uri_fk               FOREIGN KEY (uri_id)      REFERENCES uris(id),
   CONSTRAINT variable_uri_xref_relationship_type_fk FOREIGN KEY (relationship_type_id) REFERENCES public.relationship_types(id)
 );
+
+create table public.site_network_xref (
+  id          serial,
+  network_id  int,
+  site_id     int,
+  constraint site_network_xref_pk primary key (id),
+  constraint site_network_xref_unique_cols unique (network_id, site_id),
+  constraint site_network_xref_site_fk foreign key (site_id) references sites(id),
+  constraint site_network_xref_network_fk foreign key (network_id) references networks(id)
+)
