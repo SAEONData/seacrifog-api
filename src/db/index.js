@@ -1,12 +1,26 @@
 'use strict'
+import csvReader from '../lib/csv-reader'
 import { Pool } from 'pg'
 import { log, logError } from '../lib/log'
-import { readFileSync } from 'fs'
+import { readFileSync, readdirSync } from 'fs'
 import { config } from 'dotenv'
 import { join, normalize } from 'path'
 import DataLoader from 'dataloader'
 import sift from 'sift'
 config()
+
+String.prototype.sqlize = function() {
+  return `'${this.replace(/'/g, "''")}'`
+}
+
+const makeSql = (tableName, headers, contents) => {
+  const ddlDrop = `drop table if exists "${tableName}";`
+  const ddlMake = `create table ${tableName} (${headers.map(h => `"${h}" text`).join(',')});`
+  const dmlInsert = `
+    insert into "${tableName}" (${headers.map(h => `"${h}"`)})
+    values ${contents.map(row => '(' + row.map(v => v.sqlize()).join(',') + ')').join(',')};`
+  return `${ddlDrop}${ddlMake}${dmlInsert}`
+}
 
 const DB = process.env.POSTGRES_DATABASE || 'seacrifog'
 
@@ -64,6 +78,49 @@ Promise.resolve(
     await seacrifogPool.query(loadSqlFile('migration/schema.sql'))
     await seacrifogPool.query(loadSqlFile('migration/etl.sql'))
     log('seacrifog schema re-created!')
+
+    // Update the database from the CSVs
+    const cleanUp = []
+    const DIRECTORIES = ['jcommops']
+
+    for (const D of DIRECTORIES) {
+      console.log(`Parsing ${D} directory`)
+
+      // Get the files in this directory
+      const directoryPath = normalize(join(__dirname, `./csvs/${D}/`))
+      const relatedFiles = readdirSync(directoryPath).filter(fName => fName.indexOf('csv') >= 0)
+      for (const F of relatedFiles) {
+        const csvPath = normalize(join(directoryPath, F))
+        const csvContents = await csvReader(csvPath)
+
+        // Separate the headers from the CSV contents
+        const csvHeaders = csvContents.splice(0, 1).flat()
+
+        // Setup the temp table
+        const tempTableName = `${D}_${F.replace('.csv', '')}_temp`.toLowerCase()
+        console.log(`Creating ${tempTableName} with`, csvContents.length, 'rows')
+        const sql = makeSql(tempTableName, csvHeaders, csvContents)
+        try {
+          await seacrifogPool.query(sql)
+        } catch (error) {
+          throw new Error(
+            `Error inserting rows from ${csvPath} into ${tempTableName}, ${error}. SQL: ${sql}`
+          )
+        }
+
+        // Register the temp table for cleanup
+        cleanUp.push(tempTableName)
+      }
+
+      // Run the migration SQL to select from the temp table into the model
+      const sql = readFileSync(`${directoryPath}/etl.sql`, { encoding: 'utf8' })
+      await seacrifogPool.query(sql)
+
+      // Clean up all the temp tables
+      // const ddlDropStmt = `drop table ${tempTableName};`
+      // await client.query(ddlDropStmt)
+    }
+    log("Dev DB setup complete.  If you don't see this message there was a problem")
     await seacrifogPool.end()
   })()
 ).catch(err => {
