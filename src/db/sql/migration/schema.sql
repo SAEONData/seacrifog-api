@@ -94,9 +94,9 @@ create or replace function public.convert_box_points_to_poly(text) returns text
 create table public.sites (
   id           serial,
   "name"       text,
-  lng_lat      geometry,
+  xyz          geometry,
   constraint   sites_pkey primary key (id),
-  constraint   sites_unique_cols unique ("name", lng_lat)
+  constraint   sites_unique_cols unique ("name", xyz)
 );
 
 create table public.datatypes (

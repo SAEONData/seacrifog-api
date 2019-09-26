@@ -1,73 +1,66 @@
-delete from public.site_network_xref;
-delete from public.sites;
-
-/**
- * (1) Update the sites table
- */
+-- (1) Update the sites table
 ;with jcommops as (
   select
   "Country" country,
   "Station" station,
-  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) lng_lat,
+  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) xyz,
   'ARGO' "network"
   from  jcommops_argo_temp
   union select
   "Country" country,
   "Station" station,
-  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) lng_lat,
+  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) xyz,
   'DBCP' "network"
   from  jcommops_dbcp_temp
   union
   select
   "Country" country,
   "Station" station,
-  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) lng_lat,
+  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) xyz,
   'GOOS' "network"
   from  jcommops_goos_temp
   union
   select
   "Country" country,
   "Station" station,
-  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) lng_lat,
+  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) xyz,
   'SOT' "network"
   from  jcommops_sot_temp
 )
 
-insert into public.sites ("name", lng_lat)
+insert into public.sites ("name", xyz)
 select distinct
 station "name",
-lng_lat
-from jcommops j;
+xyz
+from jcommops j
+on conflict on constraint sites_unique_cols do nothing;
 
-
-/**
- * Update the sites-networks mappings
- */
+-- Update the sites-networks mappings
 ;with jcommops as (
   select
   "Country" country,
   "Station" station,
-  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) lng_lat,
+  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) xyz,
   'ARGO' "network"
   from  jcommops_argo_temp
   union select
   "Country" country,
   "Station" station,
-  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) lng_lat,
+  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) xyz,
   'DBCP' "network"
   from  jcommops_dbcp_temp
   union
   select
   "Country" country,
   "Station" station,
-  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) lng_lat,
+  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) xyz,
   'GOOS' "network"
   from  jcommops_goos_temp
   union
   select
   "Country" country,
   "Station" station,
-  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) lng_lat,
+  ST_SetSRID(ST_MakePoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) xyz,
   'SOT' "network"
   from  jcommops_sot_temp
 )
@@ -78,4 +71,5 @@ s.id site_id,
 n.id network_id
 from jcommops j
 join networks n on upper(n.acronym) = upper(j.network)
-join sites s on UPPER(s."name") = upper(j.station);
+join sites s on UPPER(s."name") = upper(j.station)
+on conflict on constraint site_network_xref_unique_cols do nothing;

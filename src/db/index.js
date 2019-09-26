@@ -81,10 +81,10 @@ Promise.resolve(
 
     // Update the database from the CSVs
     const cleanUp = []
-    const DIRECTORIES = ['jcommops']
+    const DIRECTORIES = ['jcommops', 'simple_sites']
 
     for (const D of DIRECTORIES) {
-      console.log(`Parsing ${D} directory`)
+      console.log(`\nParsing ${D} directory`)
 
       // Get the files in this directory
       const directoryPath = normalize(join(__dirname, `./csvs/${D}/`))
@@ -120,7 +120,7 @@ Promise.resolve(
       // const ddlDropStmt = `drop table ${tempTableName};`
       // await client.query(ddlDropStmt)
     }
-    log("Dev DB setup complete. If you don't see this message there was a problem")
+    log("\nDev DB setup complete. If you don't see this message there was a problem")
     await seacrifogPool.end()
   })()
 ).catch(err => {
