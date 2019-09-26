@@ -151,7 +151,7 @@ type ProtocolXrefVariable {
 type Site {
   id: Int
   name: String
-  lng_lat: JSON
+  xyz: JSON
   networks: [Network]
 }
 

@@ -6,7 +6,7 @@ export default async (self, args, req) => {
     select
     id,
     "name",
-    ST_AsGeoJSON(st_transform(lng_lat, 3857)) lng_lat
+    ST_AsGeoJSON(st_transform(xyz, 3857)) xyz
     from public.sites;`)
   return result.rows
 }
