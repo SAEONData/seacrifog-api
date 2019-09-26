@@ -81,10 +81,10 @@ Promise.resolve(
 
     // Update the database from the CSVs
     const cleanUp = []
-    const DIRECTORIES = ['jcommops', 'simple_sites']
+    const DIRECTORIES = ['jcommops', 'simple_sites', 'wmo_index']
 
     for (const D of DIRECTORIES) {
-      console.log(`\nParsing ${D} directory`)
+      log(`\nParsing ${D} directory`)
 
       // Get the files in this directory
       const directoryPath = normalize(join(__dirname, `./csvs/${D}/`))
@@ -98,7 +98,7 @@ Promise.resolve(
 
         // Setup the temp table
         const tempTableName = `${D}_${F.replace('.csv', '')}_temp`.toLowerCase()
-        console.log(`Creating ${tempTableName} with`, csvContents.length, 'rows')
+        log(`Creating ${tempTableName} with`, csvContents.length, 'rows')
         const sql = makeSql(tempTableName, csvHeaders, csvContents)
         try {
           await seacrifogPool.query(sql)
@@ -113,8 +113,12 @@ Promise.resolve(
       }
 
       // Run the migration SQL to select from the temp table into the model
-      const sql = readFileSync(`${directoryPath}/_.sql`, { encoding: 'utf8' })
-      await seacrifogPool.query(sql)
+      try {
+        const sql = readFileSync(`${directoryPath}/_.sql`, { encoding: 'utf8' })
+        await seacrifogPool.query(sql)
+      } catch (error) {
+        logError(`ERROR executing ${directoryPath}/_.sql`, error)
+      }
 
       // Clean up all the temp tables
       // const ddlDropStmt = `drop table ${tempTableName};`

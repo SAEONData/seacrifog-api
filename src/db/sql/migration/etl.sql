@@ -80,7 +80,7 @@ from s_protocols
 union
 select proturl2
 from s_protocols
-on conflict on constraint uris_uniqe_col do nothing;
+on conflict on constraint uris_unique_col do nothing;
 
 ;with s_variables as (
   select
@@ -100,7 +100,7 @@ insert into public.uris (uri)
 select url1 from s_variables
 union
 select url2 from s_variables
-on conflict on constraint uris_uniqe_col do nothing;
+on conflict on constraint uris_unique_col do nothing;
 
 ;with s_networks as (
   select
@@ -129,7 +129,7 @@ from s_networks
 union
 select neturlsites
 from s_networks
-on conflict on constraint uris_uniqe_col do nothing;
+on conflict on constraint uris_unique_col do nothing;
 
 
 /********************

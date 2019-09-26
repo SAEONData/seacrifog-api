@@ -14,6 +14,8 @@ DROP TABLE IF EXISTS public.dataproduct_variable_xref;
 DROP TABLE IF EXISTS public.protocol_variable_xref;
 DROP TABLE IF EXISTS public.network_variable_xref;
 DROP TABLE IF EXISTS public.rforcing_variable_xref;
+DROP TABLE IF EXISTS public.site_uri_xref;
+DROP TABLE IF EXISTS public.site_status_xref;
 DROP TABLE IF EXISTS public.site_network_xref;
 
 
@@ -25,6 +27,7 @@ DROP TABLE IF EXISTS public.networks;
 DROP TABLE IF EXISTS public.rforcings;
 DROP TABLE IF EXISTS public.protocols;
 DROP TABLE IF EXISTS public.uris;
+DROP TABLE IF EXISTS public.site_status;
 DROP TABLE IF EXISTS public.protocol_coverages;
 DROP TABLE IF EXISTS public.sites;
 
@@ -99,6 +102,14 @@ create table public.sites (
   constraint   sites_unique_cols unique ("name", xyz)
 );
 
+create table public.site_status (
+  id serial,
+  "name" text,
+  description text,
+  constraint site_status_pk primary key (id),
+  constraint site_status_unique_col unique ("name")
+);
+
 create table public.datatypes (
     id serial,
     "name" text,
@@ -117,7 +128,7 @@ CREATE TABLE public.uris (
 	id serial,
 	uri varchar(32767),
 	CONSTRAINT uris_pk PRIMARY KEY (id),
-	CONSTRAINT uris_uniqe_col UNIQUE(uri)
+	CONSTRAINT uris_unique_col UNIQUE(uri)
 );
 
 CREATE TABLE public.variables (
@@ -341,9 +352,29 @@ create table public.variable_uri_xref (
   relationship_type_id  int,
   CONSTRAINT variable_uri_xref_pk                   PRIMARY KEY (id),
   CONSTRAINT variable_uri_xref_unique_cols UNIQUE (variable_id, uri_id),
-  CONSTRAINT variable_uri_xref_variable_fk          FOREIGN KEY (variable_id) REFERENCES variables(id),
-  CONSTRAINT variable_uri_xref_uri_fk               FOREIGN KEY (uri_id)      REFERENCES uris(id),
+  CONSTRAINT variable_uri_xref_variable_fk          FOREIGN KEY (variable_id) REFERENCES public.variables(id),
+  CONSTRAINT variable_uri_xref_uri_fk               FOREIGN KEY (uri_id)      REFERENCES public.uris(id),
   CONSTRAINT variable_uri_xref_relationship_type_fk FOREIGN KEY (relationship_type_id) REFERENCES public.relationship_types(id)
+);
+
+create table public.site_uri_xref (
+  id      serial,
+  site_id int,
+  uri_id  int,
+  constraint site_uri_xref_pk primary key (id),
+  constraint site_uri_xref_unique_cols unique (site_id, uri_id),
+  constraint site_uri_xref_site_fk foreign key (site_id) references public.sites (id),
+  constraint site_uri_xref_uri_fk foreign key (uri_id) references public.uris (id)
+);
+
+create table public.site_status_xref (
+  id serial,
+  site_id int,
+  site_status_id int,
+  constraint site_status_xref_pk primary key (id),
+  constraint site_status_xref_unique_cols unique (site_id, site_status_id),
+  constraint site_status_xref_sites_fk foreign key (site_id) references public.sites (id),
+  constraint site_status_xref_status_fk foreign key (site_status_id) references public.site_status
 );
 
 create table public.site_network_xref (
