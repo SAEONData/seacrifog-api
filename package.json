@@ -13,13 +13,14 @@
     "prettier": "prettier --write \"src/**/*.@(js|graphql)\"",
     "run:dev": "NODE_ENV=development npm-run-all server:dev",
     "server:dev": "babel-node ./src/bin",
-    "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:gqlschema copy:sql copy:env server:prod",
+    "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:gqlschema copy:sql copy:csvs copy:env server:prod",
     "server:prod": "node ./dist/bin",
     "clean:prod": "rimraf ./dist",
     "build:prod": "babel ./src --out-dir dist",
     "copy:gqlschema": "copyfiles -u 1 ./src/schema.graphql dist/",
     "copy:sql": "copyfiles -u 2 \"./src/db/sql/**/*\" dist/db/",
-    "copy:env": "copyfiles ./.env dist/"
+    "copy:env": "copyfiles ./.env dist/",
+    "copy:csvs": "copyfiles -u 2 \"./src/db/csvs/**/*\" dist/db/"
   },
   "dependencies": {
     "compression": "^1.7.4",

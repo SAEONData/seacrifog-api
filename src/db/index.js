@@ -113,7 +113,7 @@ Promise.resolve(
       }
 
       // Run the migration SQL to select from the temp table into the model
-      const sql = readFileSync(`${directoryPath}/etl.sql`, { encoding: 'utf8' })
+      const sql = readFileSync(`${directoryPath}/_.sql`, { encoding: 'utf8' })
       await seacrifogPool.query(sql)
 
       // Clean up all the temp tables
