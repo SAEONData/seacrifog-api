@@ -71,5 +71,5 @@ s.id site_id,
 n.id network_id
 from jcommops j
 join networks n on upper(n.acronym) = upper(j.network)
-join sites s on UPPER(s."name") = upper(j.station) and st_equal(j.xyz, j.xyz)
+join sites s on UPPER(s."name") = upper(j.station) and st_equals(j.xyz, j.xyz)
 on conflict on constraint site_network_xref_unique_cols do nothing;
