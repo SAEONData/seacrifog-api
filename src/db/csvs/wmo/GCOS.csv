@@ -39,11 +39,11 @@ Africa,Egypt,HURGUADA,27.17861111,33.80083333,15.84,0-20000-0-62463,https://osca
 Africa,Egypt,HELWAN,29.86277778,31.34916667,139.3,0-20000-0-62378,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8461
 Africa,Egypt,SIWA,29.2,25.48333333,-15,0-20000-0-62417,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8472
 Africa,Egypt,ASSWAN,23.96444444,32.82,201.78,0-20000-0-62414,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8471
-Africa,Eritrea,ASMARA,15.28333333,38.91666667,,0-20000-0-63021,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8536
-Africa,Ethiopia,METEHARA,8.866666667,39.9,,0-20000-0-63453,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8573
-Africa,Ethiopia,NEGHELLE,5.333333333,39.56666667,,0-20000-0-63533,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8579
-Africa,Ethiopia,GORE,8.15,35.53333333,,0-20000-0-63403,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8570
-Africa,Ethiopia,ADDIS ABABA-BOLE,9.033333333,38.75,,0-20000-0-63450,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8571
+Africa,Eritrea,ASMARA,15.28333333,38.91666667,0,0-20000-0-63021,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8536
+Africa,Ethiopia,METEHARA,8.866666667,39.9,0,0-20000-0-63453,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8573
+Africa,Ethiopia,NEGHELLE,5.333333333,39.56666667,0,0-20000-0-63533,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8579
+Africa,Ethiopia,GORE,8.15,35.53333333,0,0-20000-0-63403,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8570
+Africa,Ethiopia,ADDIS ABABA-BOLE,9.033333333,38.75,0,0-20000-0-63450,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8571
 Africa,France,PORT-AUX-FRANCAIS (ILES KERGUELEN),-49.35222222,70.24333333,29,0-20000-0-61998,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8413
 Africa,France,SAINT-DENIS/GILLOT (REUNION),-20.8925,55.52861111,20,0-20000-0-61980,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8404
 Africa,France,ILE EUROPA,-22.34416667,40.34055556,6,0-20000-0-61972,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8399
@@ -75,7 +75,7 @@ Africa,Mali,KITA,13.06666667,-9.466666667,333,0-20000-0-61270,https://oscar.wmo.
 Africa,Mali,TESSALIT,20.2,0.983333333,494,0-20000-0-61202,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8306
 Africa,Mali,SIKASSO,11.35,-5.683333333,374,0-20000-0-61297,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8325
 Africa,Mali,TOMBOUCTOU,16.71666667,-3,263,0-20000-0-61223,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8308
-Africa,Mauritania,NEMA,16.6,-7.266666667,,0-20000-0-61497,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8337
+Africa,Mauritania,NEMA,16.6,-7.266666667,0,0-20000-0-61497,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8337
 Africa,Mauritania,ATAR,20.51666667,-13.06666667,226,0-20000-0-61421,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8329
 Africa,Mauritania,BIR MOGHREIN,25.23333333,-11.61666667,364,0-20000-0-61401,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8326
 Africa,Mauritania,TIDJIKJA,18.56666667,-11.43333333,396,0-20000-0-61450,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8332
@@ -98,8 +98,8 @@ Africa,Niger,MAINE-SOROA,13.23333333,11.98333333,338,0-20000-0-61096,https://osc
 Africa,Niger,NIAMEY-AERO,13.48333333,2.166666667,223,0-20000-0-61052,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8298
 Africa,Niger,BILMA,18.68333333,12.91666667,355,0-20000-0-61017,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8292
 Africa,Niger,TAHOUA,14.9,5.25,386,0-20000-0-61043,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8295
-Africa,Nigeria,YOLA,9.233333333,12.46666667,,0-20000-0-65167,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8818
-Africa,Nigeria,MINNA,9.616666667,6.533333333,,0-20000-0-65123,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8813
+Africa,Nigeria,YOLA,9.233333333,12.46666667,0,0-20000-0-65167,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8818
+Africa,Nigeria,MINNA,9.616666667,6.533333333,0,0-20000-0-65123,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8813
 Africa,Portugal,FUNCHAL,32.64753,-16.89248,58,0-20000-0-08522,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/2708
 Africa,Senegal,PODOR,16.64972222,-14.92972222,5.73,0-20000-0-61612,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8343
 Africa,Senegal,TAMBACOUNDA,13.76972222,-13.67972222,48.68,0-20000-0-61687,https://oscar.wmo.int/surface/index.html#/search/station/stationReportDetails/8349

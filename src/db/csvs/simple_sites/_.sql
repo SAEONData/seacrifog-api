@@ -112,10 +112,8 @@ join public.uris u on u.uri = st.uri
 join public.sites s on upper(s."name") = upper(st."name")
 on conflict on constraint site_uri_xref_unique_cols do nothing;
 
-
 ;with sites_temp as (
-	select
-	"Name" "name",
+	select distinct
 	"Status2" status
 	from public.simple_sites_slsmf_temp
 )

@@ -77,7 +77,7 @@ Promise.resolve(
 
     // Update the database from the CSVs
     const cleanUp = []
-    const DIRECTORIES = ['jcommops', 'simple_sites', 'wmo_index']
+    const DIRECTORIES = ['jcommops', 'simple_sites', 'wmo']
 
     for (const D of DIRECTORIES) {
       log(`\nParsing ${D} directory`)
@@ -110,10 +110,10 @@ Promise.resolve(
 
       // Run the migration SQL to select from the temp table into the model
       try {
-        const sql = readFileSync(`${directoryPath}/_.sql`, { encoding: 'utf8' })
+        const sql = readFileSync(normalize(`${directoryPath}/_.sql`), { encoding: 'utf8' })
         await seacrifogPool.query(sql)
       } catch (error) {
-        logError(`ERROR executing ${directoryPath}/_.sql`, error)
+        logError(`ERROR executing ${directoryPath}_.sql`, error)
       }
 
       // Clean up all the temp tables
