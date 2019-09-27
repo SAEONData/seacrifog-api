@@ -1,10 +1,10 @@
 Obs_Nr,Observatory,Implementation,fk_IsoCode,Province,District,Locality,FarmName,RainfallSeas,Latitude,Longitude,Altitude,Biome
-S75,Bicuar National Park,Dec-15,AO,Huíla,NULL,NULL,NULL,Summer,-15.17198471,14.91947577,1220,Woodland Savanna
+S75,Bicuar National Park,Dec-15,AO,HuÃ­la,NULL,NULL,NULL,Summer,-15.17198471,14.91947577,1220,Woodland Savanna
 S76,Cameia National Park,May-16,AO,Moxico,Cameia,NULL,NULL,Summer,-11.5269772,20.91333872,1132,Western Zambezian Grasslands
 S73,Candelela,Mar-13,AO,Cuando-Cubango,Municipality of Caiundo,Candeleia,NULL,Summer,-16.475659,17.804708,1133,Woodland Savanna
 S74,Cusseque,Mar-13,AO,NULL,Chitembo,NULL,NULL,Summer,-13.6772,17.077056,1572,Miombo Woodlands
 S71,Espinheira,NULL,AO,NULL,NULL,NULL,NULL,NULL,-16.764426,12.342549,NULL,Desert
-S72,Tundavala,NULL,AO,Huíla,NULL,Tundavala,NULL,Summer,-14.79542,13.4019,2250,Afroalpine
+S72,Tundavala,NULL,AO,HuÃ­la,NULL,Tundavala,NULL,Summer,-14.79542,13.4019,2250,Afroalpine
 S38,Claratal,2004,NA,Khomas,Windhoek,Windhoek,Claratal 18,Summer,-22.779382,16.774852,1865,Thornbush Savanna
 A01,Dieprivier,NULL,NA,NULL,NULL,NULL,NULL,NULL,-24.1296,15.8947,NULL,Desert
 S40,Duruchaus,2004,NA,Khomas,Windhoek,near Rehoboth,Duruchaus,Summer,-23.133184,16.899996,1614,Nama Karoo

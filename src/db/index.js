@@ -77,7 +77,15 @@ Promise.resolve(
 
     // Update the database from the CSVs
     const cleanUp = []
-    const DIRECTORIES = ['jcommops', 'simple_sites', 'wmo']
+    const DIRECTORIES = [
+      'jcommops',
+      'simple_sites',
+      'wmo',
+      'ars_africae',
+      'bsrn',
+      'casn',
+      'ec_flux'
+    ]
 
     for (const D of DIRECTORIES) {
       log(`\nParsing ${D} directory`)
