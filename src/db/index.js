@@ -9,10 +9,6 @@ import DataLoader from 'dataloader'
 import sift from 'sift'
 config()
 
-String.prototype.sqlize = function() {
-  return `'${this.replace(/'/g, "''")}'`
-}
-
 const makeSql = (tableName, headers, contents) => {
   const ddlDrop = `drop table if exists "${tableName}";`
   const ddlMake = `create table ${tableName} (${headers.map(h => `"${h}" text`).join(',')});`

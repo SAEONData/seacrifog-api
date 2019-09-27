@@ -12,7 +12,11 @@ import resolvers from './resolvers'
 import { log, logError } from './lib/log'
 import { pool, execSqlFile, initializeLoaders, findVariables } from './db'
 import { config } from 'dotenv'
+import nativeExtensions from './lib/native-extensions'
+
+// Configure the app
 config()
+nativeExtensions()
 
 // Helper for allowing async / await with middleware
 const asyncHandler = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
