@@ -116,6 +116,67 @@ select distinct status2 status from src where status2 is not null
 on conflict on constraint site_status_unique_col do nothing;
 
 
+;with src as (
+  select
+  "Station" "name",
+  ST_SetSRID(st_makepoint(cast("Longitude" as float), cast("Latitude" as float), cast("Elevation" as float)), 4326) xyz,
+  'GAW' network
+  from public.wmo_gaw_temp
+
+  union
+
+  select
+  "Station" "name",
+  ST_SetSRID(st_makepoint(cast("Longitude" as float), cast("Latitude" as float), cast("Elevation" as float)), 4326) xyz,
+  'GCOS' network
+  from public.wmo_gcos_temp
+
+  union
+
+  select
+  "Station" "name",
+  case
+    when "Elevation" = '' then ST_SetSRID(st_makepoint(cast("Longitude" as float), cast("Latitude" as float), cast('0' as float)), 4326)
+    else ST_SetSRID(st_makepoint(cast("Longitude" as float), cast("Latitude" as float), cast("Elevation" as float)), 4326)
+  end z,
+  'GOS' network
+  from public.wmo_gos_temp
+
+  union
+
+  select
+  "Station" "name",
+  case
+    when "Elevation" = '' then ST_SetSRID(st_makepoint(cast("Longitude" as float), cast("Latitude" as float), cast('0' as float)), 4326)
+    else ST_SetSRID(st_makepoint(cast("Longitude" as float), cast("Latitude" as float), cast("Elevation" as float)), 4326)
+  end z,
+  'GSN' network
+  from public.wmo_gsn_temp
+
+  union
+
+  select
+  "Station" "name",
+  ST_SetSRID(st_makepoint(cast("Longitude" as float), cast("Latitude" as float), cast("Elevation" as float)), 4326) xyz,
+  'GUAN' network
+  from public.wmo_guan_temp
+
+  union
+
+  select
+  "Name" "name",
+  ST_SetSRID(st_makepoint(cast("Longitude" as float), cast("Latitude" as float), cast(regexp_replace(replace("Altitude", 'm', ''), '\s+$', '') as float)), 4326) xyz,
+  'GRUAN' network
+  from public.wmo_gruan_temp
+)
+insert into public.site_network_xref (site_id, network_id)
+select
+s.id site_id,
+n.id network_id
+from src t
+join sites s on s."name" = t."name" and st_equals(t.xyz, s.xyz)
+join networks n on upper(n.acronym) = upper(t.network)
+on conflict on constraint site_network_xref_unique_cols do nothing;
 
 
 ;with src as (
