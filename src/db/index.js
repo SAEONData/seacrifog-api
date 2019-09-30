@@ -221,7 +221,7 @@ export const initializeLoaders = () => {
     n.url_info_id,
     n.url_data_id,
     n.abstract,
-    ST_AsGeoJSON(st_transform(n.coverage_spatial, 3857)) coverage_spatial,
+    n.coverage_spatial, -- TODO: Can't transform from 4326 to 3857 (ST_AsGeoJSON(st_transform(n.coverage_spatial, 3857)) coverage_spatial)
     n.url_sites_id,
     n.parent_id,
     n.created_by,
@@ -231,9 +231,7 @@ export const initializeLoaders = () => {
     x.site_id
     from public.site_network_xref x
     join public.networks n on n.id = x.network_id
-    where
-    not ( ST_Equals(n.coverage_spatial, ST_GeomFromText('POLYGON ((-180 -90, -180 90, 180 90, 180 -90, -180 -90))', 4326)) )
-    and x.site_id in (${keys.join(',')});`
+    where x.site_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ site_id: key })) || [])
   }, dataLoaderOptions)
