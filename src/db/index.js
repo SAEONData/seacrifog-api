@@ -221,7 +221,7 @@ export const initializeLoaders = () => {
     n.url_info_id,
     n.url_data_id,
     n.abstract,
-    st_transform(n.coverage_spatial, 4326) coverage_spatial,
+    ST_AsGeoJSON(st_transform(n.coverage_spatial, 4326)) coverage_spatial,
     n.url_sites_id,
     n.parent_id,
     n.created_by,
@@ -320,9 +320,7 @@ export const initializeLoaders = () => {
     
     from public.dataproducts
     
-    where
-    not ( ST_Equals(coverage_spatial, ST_GeomFromText('POLYGON ((-180 -90, -180 90, 180 90, 180 -90, -180 -90))', 4326)) )
-    and id in (${keys.join(',')});`
+    where id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ id: key })) || [])
   }, dataLoaderOptions)
