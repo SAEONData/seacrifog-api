@@ -221,7 +221,7 @@ export const initializeLoaders = () => {
     n.url_info_id,
     n.url_data_id,
     n.abstract,
-    n.coverage_spatial, -- TODO: Can't transform from 4326 to 3857 (ST_AsGeoJSON(st_transform(n.coverage_spatial, 3857)) coverage_spatial)
+    st_transform(n.coverage_spatial, 4326) coverage_spatial,
     n.url_sites_id,
     n.parent_id,
     n.created_by,
@@ -296,7 +296,7 @@ export const initializeLoaders = () => {
     provider,
     author,
     contact,
-    ST_AsGeoJSON(st_transform(coverage_spatial, 3857)) coverage_spatial,
+    ST_AsGeoJSON(st_transform(coverage_spatial, 4326)) coverage_spatial,
     coverage_temp_start,
     coverage_temp_end,
     res_spatial,

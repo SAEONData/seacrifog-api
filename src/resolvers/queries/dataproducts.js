@@ -13,7 +13,7 @@ export default async (self, args, req) => {
   provider,
   author,
   contact,
-  ST_AsGeoJSON(st_transform(coverage_spatial, 3857)) coverage_spatial,
+  ST_AsGeoJSON(st_transform(coverage_spatial, 4326)) coverage_spatial,
   coverage_temp_start,
   coverage_temp_end,
   res_spatial,
