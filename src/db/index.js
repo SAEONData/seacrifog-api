@@ -302,6 +302,9 @@ export const initializeLoaders = () => {
   })
 
   return {
+    // Keeping these here means that SQL is all in one place. These aren't DataLoaders
+    allVariables: async () => (await pool.query('select * from public.variables;')).rows,
+
     // VARIABLES
     findVariables: key => findVariables.load(key),
     findVariablesOfNetworks: key => findVariablesOfNetworks.load(key),
