@@ -149,6 +149,12 @@ Promise.resolve(
  * I don't know why it was difficult to get that done
  */
 export const initializeLoaders = () => {
+  const dataLoaderOptions = {
+    batch: true,
+    maxBatchSize: 250,
+    cache: true
+  }
+
   const findVariablesOfProtocols = new DataLoader(async keys => {
     const sql = `
     select
@@ -162,7 +168,7 @@ export const initializeLoaders = () => {
     where x.protocol_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ protocol_id: key })) || [])
-  })
+  }, dataLoaderOptions)
 
   const findProtocolsOfVariables = new DataLoader(async keys => {
     const sql = `
@@ -177,7 +183,7 @@ export const initializeLoaders = () => {
     where x.variable_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ variable_id: key })) || [])
-  })
+  }, dataLoaderOptions)
 
   const findRForcingsOfVariables = new DataLoader(async keys => {
     const sql = `
@@ -188,7 +194,7 @@ export const initializeLoaders = () => {
     where x.variable_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ variable_id: key })) || [])
-  })
+  }, dataLoaderOptions)
 
   const findVariablesOfNetworks = new DataLoader(async keys => {
     const sql = `
@@ -200,19 +206,37 @@ export const initializeLoaders = () => {
     where x.network_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ network_id: key })) || [])
-  })
+  }, dataLoaderOptions)
 
   const findNetworksOfSites = new DataLoader(async keys => {
     const sql = `
     select
-    n.*,
+    n.id,
+    n.title,
+    n.acronym,
+    n.type,
+    n.status,
+    n.start_year,
+    n.end_year,
+    n.url_info_id,
+    n.url_data_id,
+    n.abstract,
+    ST_AsGeoJSON(st_transform(n.coverage_spatial, 3857)) coverage_spatial,
+    n.url_sites_id,
+    n.parent_id,
+    n.created_by,
+    n.created_at,
+    n.modified_by,
+    n.modified_at,
     x.site_id
     from public.site_network_xref x
     join public.networks n on n.id = x.network_id
-    where x.site_id in (${keys.join(',')});`
+    where
+    not ( ST_Equals(n.coverage_spatial, ST_GeomFromText('POLYGON ((-180 -90, -180 90, 180 90, 180 -90, -180 -90))', 4326)) )
+    and x.site_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ site_id: key })) || [])
-  })
+  }, dataLoaderOptions)
 
   const findVariablesOfRadiativeForcings = new DataLoader(async keys => {
     const sql = `
@@ -224,7 +248,7 @@ export const initializeLoaders = () => {
     where x.rforcing_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ rforcing_id: key })) || [])
-  })
+  }, dataLoaderOptions)
 
   const findVariablesOfDataproducts = new DataLoader(async keys => {
     const sql = `
@@ -236,7 +260,7 @@ export const initializeLoaders = () => {
     where x.dataproduct_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ dataproduct_id: key })) || [])
-  })
+  }, dataLoaderOptions)
 
   const findDataproductsOfVariables = new DataLoader(async keys => {
     const sql = `
@@ -248,19 +272,19 @@ export const initializeLoaders = () => {
     where x.variable_id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ variable_id: key })) || [])
-  })
+  }, dataLoaderOptions)
 
   const findVariables = new DataLoader(async keys => {
     const sql = `select * from public.variables where id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ id: key })) || [])
-  })
+  }, dataLoaderOptions)
 
   const findProtocols = new DataLoader(async keys => {
     const sql = `select * from public.protocols where id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ id: key })) || [])
-  })
+  }, dataLoaderOptions)
 
   const findDataproducts = new DataLoader(async keys => {
     const sql = `
@@ -303,7 +327,7 @@ export const initializeLoaders = () => {
     and id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ id: key })) || [])
-  })
+  }, dataLoaderOptions)
 
   return {
     findVariables: key => findVariables.load(key),
