@@ -1,9 +1,9 @@
 ;with src as (
 	select
-	concat("Name", ', ', "Code") "name",
-	ST_SetSRID(st_makepoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) xyz,
-	'CASN' network
-	from casn_casn_temp
+	"Site" "name",
+	ST_SetSRID(st_makepoint(cast("Longitude" as float), cast("Latitude" as float), cast("Elevation" as float)), 4326) xyz,
+	'TCCON' network
+	from tccon_tccon_temp
 )
 insert into public.sites ("name", xyz)
 select distinct
@@ -13,12 +13,13 @@ from src
 on conflict on constraint sites_unique_cols do nothing;
 
 
+
 ;with src as (
 	select
-	concat("Name", ', ', "Code") "name",
-	ST_SetSRID(st_makepoint(cast("Longitude" as float), cast("Latitude" as float)), 4326) xyz,
-	'CASN' network
-	from casn_casn_temp
+	"Site" "name",
+	ST_SetSRID(st_makepoint(cast("Longitude" as float), cast("Latitude" as float), cast("Elevation" as float)), 4326) xyz,
+	'TCCON' network
+	from tccon_tccon_temp
 )
 insert into public.site_network_xref (site_id, network_id)
 select

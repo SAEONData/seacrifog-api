@@ -31,20 +31,24 @@ const corsMiddleware = (req, res, next) => {
   const origin = req.headers.origin
   const httpVerb = req.method
   log(`Checking CORS policy`, `${origin}`, `${ALLOWED_ORIGINS.includes(origin)}`)
-  if (ALLOWED_ORIGINS.includes(origin)) res.setHeader('Access-Control-Allow-Origin', origin)
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   res.header('Access-Control-Allow-Credentials', true)
-  if (httpVerb === 'OPTIONS') res.sendStatus(200)
-  else next()
+  if (httpVerb === 'OPTIONS') {
+    res.sendStatus(200)
+  } else {
+    next()
+  }
 }
 
+const compressionFilter = (req, res) =>
+  req.headers['x-no-compression'] ? false : compression.filter(req, res)
+
 const app = express()
-app.use(
-  compression({
-    filter: (req, res) => (req.headers['x-no-compression'] ? false : compression.filter(req, res))
-  })
-)
+app.use(compression({ filter: compressionFilter }))
 app.use(morgan('short'))
 app.use(corsMiddleware)
 app.use(express.json())
@@ -61,8 +65,6 @@ app.use(
     req.ctx = {
       db: {
         pool,
-        execSqlFile,
-        findVariables,
         dataLoaders: initializeLoaders()
       }
     }

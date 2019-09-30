@@ -84,7 +84,11 @@ Promise.resolve(
       'ars_africae',
       'bsrn',
       'casn',
-      'ec_flux'
+      'ec_flux',
+      'gtn_r',
+      'sasscal_on',
+      'sasscal_wn',
+      'tccon'
     ]
 
     for (const D of DIRECTORIES) {
@@ -302,26 +306,19 @@ export const initializeLoaders = () => {
   })
 
   return {
-    // Keeping these here means that SQL is all in one place. These aren't DataLoaders
-    allVariables: async () => (await pool.query('select * from public.variables;')).rows,
-
-    // VARIABLES
     findVariables: key => findVariables.load(key),
     findVariablesOfNetworks: key => findVariablesOfNetworks.load(key),
     findVariablesOfProtocols: key => findVariablesOfProtocols.load(key),
     findVariablesOfDataproducts: key => findVariablesOfDataproducts.load(key),
     findVariablesOfRadiativeForcings: key => findVariablesOfRadiativeForcings.load(key),
+    findDataproducts: key => findDataproducts.load(key),
     findDataproductsOfVariables: key => findDataproductsOfVariables.load(key),
     findRForcingsOfVariables: key => findRForcingsOfVariables.load(key),
-
-    // DATAPRODUCTS
-    findDataproducts: key => findDataproducts.load(key),
-
-    // SITES
     findNetworksOfSites: key => findNetworksOfSites.load(key),
-
-    // PROTOCOLS
     findProtocols: key => findProtocols.load(key),
-    findProtocolsOfVariables: key => findProtocolsOfVariables.load(key)
+    findProtocolsOfVariables: key => findProtocolsOfVariables.load(key),
+
+    // Keeping these here means that SQL is all in one place. These aren't DataLoaders
+    allVariables: async () => (await pool.query('select * from public.variables;')).rows
   }
 }
