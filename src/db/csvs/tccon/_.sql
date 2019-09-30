@@ -12,8 +12,6 @@ xyz
 from src
 on conflict on constraint sites_unique_cols do nothing;
 
-
-
 ;with src as (
 	select
 	"Site" "name",
