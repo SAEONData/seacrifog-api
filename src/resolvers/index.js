@@ -25,11 +25,15 @@ import networks from './queries/networks'
 import RadiativeForcing from './types/radiative-forcing'
 import radiativeForcings from './queries/radiative-forcings'
 
-import ProtocolXrefVariable from './types/protocol-xref-variable'
-import protocolsXrefVariables from './queries/protocols-xref-variables'
+import XrefProtocolVariable from './types/xref-protocol-variable'
+import XrefDataproductVariable from './types/xref-dataproduct-variable'
+import XrefSiteNetwork from './types/xref-site-network'
+import XrefNetworkVariable from './types/xref-network-variable'
 
-import DataproductXrefVariable from './types/dataproduct-xref-variable'
-import dataproductsXrefVariables from './queries/dataproducts-xref-variables'
+import xrefProtocolsVariables from './queries/xref-protocols-variables'
+import xrefDataproductsVariables from './queries/xref-dataproducts-variables'
+import xrefSitesNetworks from './queries/xref-sites-networks'
+import xrefNetworksVariables from './queries/xref-networks-variables'
 
 export default {
   // Mutations
@@ -55,8 +59,10 @@ export default {
     networks,
     radiativeForcings,
 
-    protocolsXrefVariables,
-    dataproductsXrefVariables
+    xrefProtocolsVariables,
+    xrefDataproductsVariables,
+    xrefSitesNetworks,
+    xrefNetworksVariables
   },
 
   // Types
@@ -70,6 +76,8 @@ export default {
   Dataproduct,
   RadiativeForcing,
 
-  ProtocolXrefVariable,
-  DataproductXrefVariable
+  XrefProtocolVariable,
+  XrefDataproductVariable,
+  XrefSiteNetwork,
+  XrefNetworkVariable
 }

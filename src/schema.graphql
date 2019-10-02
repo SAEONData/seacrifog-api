@@ -132,20 +132,35 @@ type Query {
   networks: [Network!]!
   radiativeForcings: [RadiativeForcing!]!
 
-  protocolsXrefVariables: [ProtocolXrefVariable!]!
-  dataproductsXrefVariables: [DataproductXrefVariable!]!
+  xrefSitesNetworks: [XrefSiteNetwork!]!
+  xrefNetworksVariables: [XrefNetworkVariable!]!
+  xrefProtocolsVariables: [XrefProtocolVariable!]!
+  xrefDataproductsVariables: [XrefDataproductVariable!]!
 }
 
-type DataproductXrefVariable {
+type XrefSiteNetwork {
+  id: Int!
+  site_id: Int!
+  network_id: Int!
+}
+
+type XrefNetworkVariable {
+  id: Int!
+  network_id: Int!
+  variable_id: Int!
+}
+
+type XrefDataproductVariable {
   id: Int
   dataproduct_id: Int
   variable_id: Int
 }
 
-type ProtocolXrefVariable {
+type XrefProtocolVariable {
   id: Int
   protocol_id: Int
   variable_id: Int
+  relationship_type: String
 }
 
 type Site {
