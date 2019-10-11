@@ -127,6 +127,7 @@ type Query {
   dataproduct(id: Int!): Dataproduct
   dataproducts: [Dataproduct!]!
 
+  site(id: Int!): Site
   sites: [Site!]!
 
   networks: [Network!]!
