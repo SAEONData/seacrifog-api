@@ -17,6 +17,7 @@ import dataproducts from './queries/dataproducts'
 import updateDataproducts from './mutations/update-dataproducts'
 
 import Site from './types/site'
+import site from './queries/site'
 import sites from './queries/sites'
 
 import Network from './types/network'
@@ -54,6 +55,7 @@ export default {
     dataproduct,
     dataproducts,
 
+    site,
     sites,
 
     networks,

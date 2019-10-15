@@ -284,6 +284,12 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ id: key })) || [])
   }, dataLoaderOptions)
 
+  const findSites = new DataLoader(async keys => {
+    const sql = `select * from public.sites where id in (${keys.join(',')});`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ id: key })) || [])
+  }, dataLoaderOptions)
+
   const findDataproducts = new DataLoader(async keys => {
     const sql = `
     select
@@ -337,6 +343,7 @@ export const initializeLoaders = () => {
     findNetworksOfSites: key => findNetworksOfSites.load(key),
     findProtocols: key => findProtocols.load(key),
     findProtocolsOfVariables: key => findProtocolsOfVariables.load(key),
+    findSites: key => findSites.load(key),
 
     // Keeping these here means that SQL is all in one place. These aren't DataLoaders
     allVariables: async () => (await pool.query('select * from public.variables;')).rows
