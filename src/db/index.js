@@ -285,7 +285,13 @@ export const initializeLoaders = () => {
   }, dataLoaderOptions)
 
   const findSites = new DataLoader(async keys => {
-    const sql = `select * from public.sites where id in (${keys.join(',')});`
+    const sql = `
+      select
+      id,
+      "name",
+      ST_AsGeoJSON(st_transform(xyz, 4326)) xyz
+      from public.sites
+      where id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ id: key })) || [])
   }, dataLoaderOptions)

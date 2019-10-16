@@ -128,7 +128,7 @@ type Query {
   dataproducts: [Dataproduct!]!
 
   site(id: Int!): Site
-  sites: [Site!]!
+  sites(ids: [Int!]): [Site!]!
 
   networks: [Network!]!
   radiativeForcings: [RadiativeForcing!]!
