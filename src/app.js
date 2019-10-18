@@ -10,7 +10,7 @@ import { readFileSync } from 'fs'
 import { normalize, join } from 'path'
 import resolvers from './resolvers'
 import { log, logError } from './lib/log'
-import { pool, execSqlFile, initializeLoaders, findVariables } from './db'
+import { pool, initializeLoaders } from './db'
 import { config } from 'dotenv'
 import nativeExtensions from './lib/native-extensions'
 
