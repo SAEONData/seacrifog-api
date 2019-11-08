@@ -126,6 +126,7 @@ type Query {
 
   dataproduct(id: Int!): Dataproduct
   dataproducts: [Dataproduct!]!
+  dataproductsSummary: DataproductsSummary!
 
   site(id: Int!): Site
   sites(ids: [Int!]): [Site!]!
@@ -137,6 +138,10 @@ type Query {
   xrefNetworksVariables: [XrefNetworkVariable!]!
   xrefProtocolsVariables: [XrefProtocolVariable!]!
   xrefDataproductsVariables: [XrefDataproductVariable!]!
+}
+
+type DataproductsSummary {
+  count: Int!
 }
 
 type XrefSiteNetwork {

@@ -15,6 +15,8 @@ import Dataproduct from './types/dataproduct'
 import dataproduct from './queries/dataproduct'
 import dataproducts from './queries/dataproducts'
 import updateDataproducts from './mutations/update-dataproducts'
+import DataproductsSummary from './types/dataproducts-summary'
+import dataproductsSummary from './queries/dataproducts-summary'
 
 import Site from './types/site'
 import site from './queries/site'
@@ -54,6 +56,7 @@ export default {
 
     dataproduct,
     dataproducts,
+    dataproductsSummary,
 
     site,
     sites,
@@ -76,6 +79,7 @@ export default {
   Network,
   Site,
   Dataproduct,
+  DataproductsSummary,
   RadiativeForcing,
 
   XrefProtocolVariable,
