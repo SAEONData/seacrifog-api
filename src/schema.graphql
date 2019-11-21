@@ -131,7 +131,9 @@ type Query {
   site(id: Int!): Site
   sites(ids: [Int!]): [Site!]!
 
+  network(id: Int!): Network
   networks: [Network!]!
+
   radiativeForcings: [RadiativeForcing!]!
 
   xrefSitesNetworks: [XrefSiteNetwork!]!

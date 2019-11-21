@@ -23,6 +23,7 @@ import site from './queries/site'
 import sites from './queries/sites'
 
 import Network from './types/network'
+import network from './queries/network'
 import networks from './queries/networks'
 
 import RadiativeForcing from './types/radiative-forcing'
@@ -61,7 +62,9 @@ export default {
     site,
     sites,
 
+    network,
     networks,
+
     radiativeForcings,
 
     xrefProtocolsVariables,

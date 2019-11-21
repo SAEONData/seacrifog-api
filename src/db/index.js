@@ -313,6 +313,31 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ id: key })) || [])
   }, dataLoaderOptions)
 
+  const findNetworks = new DataLoader(async keys => {
+    const sql = `
+    select
+    id,
+    title,
+    acronym,
+    "type",
+    status,
+    start_year,
+    end_year,
+    url_info_id,
+    url_data_id,
+    abstract,
+    ST_AsGeoJSON(st_transform(coverage_spatial, 4326)) coverage_spatial,
+    url_sites_id,
+    parent_id,
+    created_by,
+    created_at,
+    modified_by,
+    modified_at
+    from public.networks where id in (${keys.join(',')});`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ id: key })) || [])
+  }, dataLoaderOptions)
+
   const findSites = new DataLoader(async keys => {
     const sql = `
       select
@@ -378,6 +403,7 @@ export const initializeLoaders = () => {
     findNetworksOfSites: key => findNetworksOfSites.load(key),
     findProtocols: key => findProtocols.load(key),
     findProtocolsOfVariables: key => findProtocolsOfVariables.load(key),
+    findNetworks: key => findNetworks.load(key),
     findSites: key => findSites.load(key),
 
     // Keeping these here means that SQL is all in one place. These aren't DataLoaders
