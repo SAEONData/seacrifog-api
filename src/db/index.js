@@ -263,7 +263,36 @@ export const initializeLoaders = () => {
   const findDataproductsOfVariables = new DataLoader(async keys => {
     const sql = `
     select
-    d.*,
+    d.id,
+    d.title,
+    d.publish_year,
+    d.publish_date,
+    d.keywords,
+    d.abstract,
+    d.provider,
+    d.author,
+    d.contact,
+    ST_AsGeoJSON(st_transform(d.coverage_spatial, 4326)) coverage_spatial,
+    d.coverage_temp_start,
+    d.coverage_temp_end,
+    d.res_spatial,
+    d.res_spatial_unit,
+    d.res_temperature,
+    d.res_temperature_unit,
+    d.uncertainty,
+    d.uncertainty_unit,
+    d.doi,
+    d.license,
+    d.url_download,
+    d.file_format,
+    d.file_size,
+    d.file_size_unit,
+    d.url_info,
+    d.created_by,
+    d.created_at,
+    d.modified_by,
+    d.modified_at,
+    d.present,    
     x.variable_id
     from public.dataproduct_variable_xref x
     join public.dataproducts d on d.id = x.dataproduct_id
@@ -280,6 +309,31 @@ export const initializeLoaders = () => {
 
   const findProtocols = new DataLoader(async keys => {
     const sql = `select * from public.protocols where id in (${keys.join(',')});`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ id: key })) || [])
+  }, dataLoaderOptions)
+
+  const findNetworks = new DataLoader(async keys => {
+    const sql = `
+    select
+    id,
+    title,
+    acronym,
+    "type",
+    status,
+    start_year,
+    end_year,
+    url_info_id,
+    url_data_id,
+    abstract,
+    ST_AsGeoJSON(st_transform(coverage_spatial, 4326)) coverage_spatial,
+    url_sites_id,
+    parent_id,
+    created_by,
+    created_at,
+    modified_by,
+    modified_at
+    from public.networks where id in (${keys.join(',')});`
     const rows = (await pool.query(sql)).rows
     return keys.map(key => rows.filter(sift({ id: key })) || [])
   }, dataLoaderOptions)
@@ -349,6 +403,7 @@ export const initializeLoaders = () => {
     findNetworksOfSites: key => findNetworksOfSites.load(key),
     findProtocols: key => findProtocols.load(key),
     findProtocolsOfVariables: key => findProtocolsOfVariables.load(key),
+    findNetworks: key => findNetworks.load(key),
     findSites: key => findSites.load(key),
 
     // Keeping these here means that SQL is all in one place. These aren't DataLoaders

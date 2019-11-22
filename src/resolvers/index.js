@@ -15,12 +15,15 @@ import Dataproduct from './types/dataproduct'
 import dataproduct from './queries/dataproduct'
 import dataproducts from './queries/dataproducts'
 import updateDataproducts from './mutations/update-dataproducts'
+import DataproductsSummary from './types/dataproducts-summary'
+import dataproductsSummary from './queries/dataproducts-summary'
 
 import Site from './types/site'
 import site from './queries/site'
 import sites from './queries/sites'
 
 import Network from './types/network'
+import network from './queries/network'
 import networks from './queries/networks'
 
 import RadiativeForcing from './types/radiative-forcing'
@@ -54,11 +57,14 @@ export default {
 
     dataproduct,
     dataproducts,
+    dataproductsSummary,
 
     site,
     sites,
 
+    network,
     networks,
+
     radiativeForcings,
 
     xrefProtocolsVariables,
@@ -76,6 +82,7 @@ export default {
   Network,
   Site,
   Dataproduct,
+  DataproductsSummary,
   RadiativeForcing,
 
   XrefProtocolVariable,

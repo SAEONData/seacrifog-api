@@ -35,8 +35,6 @@ export default async (self, args, req) => {
   modified_at,
   present
   
-  from public.dataproducts
-  
-  where not ( ST_Equals(coverage_spatial, ST_GeomFromText('POLYGON ((-180 -90, -180 90, 180 90, 180 -90, -180 -90))', 4326)) );`)
+  from public.dataproducts`)
   return result.rows
 }
