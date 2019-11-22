@@ -33,12 +33,10 @@ export default new GraphQLScalarType({
   //value sent to the client(output). Value is a Date here as it comes from the DB, it is returned to the user as a String
   serialize(value) {
     try {
-      return value.toDateString()
+      return value.toISOString()
     } catch (error) {
       /* TODO */
       console.log('serialize error!')
-      console.log(typeof value)
-      console.log(value)
     }
     return null
   },
