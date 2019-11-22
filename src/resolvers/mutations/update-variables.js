@@ -1,4 +1,7 @@
 import { pickBy } from 'ramda'
+import { log, logError } from '../../lib/log'
+
+// TODO: Strings need to be escaped and handled properly
 
 /**
  * args.input
@@ -32,13 +35,22 @@ export default async (self, args, req) => {
 
     // Update the Variable entity
     const update = pickBy((v, k) => (nonDynamicUpdateCols.includes(k) ? false : true), input)
-    if (Object.keys(update).length > 0)
-      await pool.query(`
+
+    let fieldUpdateResult
+    try {
+      fieldUpdateResult =
+        Object.keys(update).length > 0
+          ? await pool.query(`
         update public.variables
         set ${Object.keys(update)
           .map(attr => `${attr} = '${input[attr]}'`)
           .join(',')}
         where id = ${input.id}`)
+          : null
+    } catch (error) {
+      logError(error)
+    }
+    log(fieldUpdateResult)
 
     // Add dataproducts
     if (addDataproducts)

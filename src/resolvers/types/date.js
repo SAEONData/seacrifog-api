@@ -9,7 +9,7 @@ export default new GraphQLScalarType({
     const parsed = new Date(value)
     if (isNaN(parsed.getTime()))
       throw new Error('GraphQL scalar type (Date) error: Cannot parse value')
-    return parsed
+    return parsed.toISOString()
   },
   serialize(value) {
     try {
