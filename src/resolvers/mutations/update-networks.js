@@ -6,7 +6,6 @@ import { pickBy } from 'ramda'
  */
 export default async (self, args, req) => {
   const { pool } = await req.ctx.db
-  console.log(req.ctx.db.dataLoaders)
   const { findNetworks } = req.ctx.db.dataLoaders
   const { input: inputs } = args
   const nonDynamicUpdateCols = ['id', 'newVariables', 'removeVariables']
