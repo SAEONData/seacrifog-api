@@ -25,6 +25,7 @@ import sites from './queries/sites'
 import Network from './types/network'
 import network from './queries/network'
 import networks from './queries/networks'
+import updateNetworks from './mutations/update-networks'
 
 import RadiativeForcing from './types/radiative-forcing'
 import radiativeForcings from './queries/radiative-forcings'
@@ -44,7 +45,8 @@ export default {
   Mutation: {
     updateVariables,
     updateProtocols,
-    updateDataproducts
+    updateDataproducts,
+    updateNetworks
   },
 
   // Queries

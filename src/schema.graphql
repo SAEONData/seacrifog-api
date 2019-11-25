@@ -111,10 +111,36 @@ input DataproductInput {
   removeVariables: [Int!]
 }
 
+# coverage spatial should be JSON?
+input NetworkInput {
+  id: Int!
+  title: String
+  acronym: String
+  type: String
+  status: String
+  start_year: Int
+  end_year: Int
+  url_info_id: Int
+  url_data_id: Int
+  abstract: String
+  coverage_spatial: String
+  url_sites_id: Int
+  parent_id: Int
+  created_by: String
+  created_at: Date
+  modified_by: String
+  modified_at: Date
+
+  # For updating mappings
+  addVariables: [Int!]
+  removeVariables: [Int!]
+}
+
 type Mutation {
   updateDataproducts(input: [DataproductInput!]!): [Dataproduct!]!
   updateVariables(input: [VariableInput!]!): [Variable!]!
   updateProtocols(input: [ProtocolInput!]!): [Protocol!]!
+  updateNetworks(input: [NetworkInput!]!): [Network!]!
 }
 
 type Query {
@@ -188,6 +214,7 @@ type RadiativeForcing {
   variables: [Variable!]!
 }
 
+# coverage spatial should be JSON?
 type Network {
   id: Int
   title: String
