@@ -25,7 +25,7 @@
   "dependencies": {
     "compression": "^1.7.4",
     "cookie-parser": "~1.4.4",
-    "core-js": "^3.4.1",
+    "core-js": "^3.4.2",
     "csv": "^5.3.0",
     "csv-parse": "^4.8.2",
     "dataloader": "^2.0.0",
@@ -35,20 +35,20 @@
     "express-graphql": "^0.9.0",
     "graphql": "^14.5.8",
     "graphql-tools": "^4.0.6",
-    "graphql-type-json": "^0.3.0",
+    "graphql-type-json": "^0.3.1",
     "morgan": "~1.9.1",
-    "pg": "^7.12.1",
+    "pg": "^7.14.0",
     "ramda": "^0.26.1",
     "rimraf": "^3.0.0",
-    "sift": "^8.5.1"
+    "sift": "^9.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.0",
-    "@babel/core": "^7.7.2",
-    "@babel/node": "^7.7.0",
-    "@babel/preset-env": "^7.7.1",
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/node": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
     "copyfiles": "^2.1.1",
-    "eslint": "^6.6.0",
+    "eslint": "^6.7.1",
     "eslint-config-prettier": "^6.7.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",
@@ -56,7 +56,7 @@
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "nodemon": "^1.19.4",
+    "nodemon": "^2.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.19.1"
   }
