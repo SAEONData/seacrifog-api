@@ -15,7 +15,7 @@ router.get('/http/variables', async (req, res, next) => {
   res.send(result)
 })
 
-router.get('/http/variables/:id*?', async (req, res, next) => {
+router.get('/http/variables/:id', async (req, res, next) => {
   const id = req.params.id
   const { findVariables } = await req.ctx.db.dataLoaders
   const result = await findVariables(parseInt(id, 10))
