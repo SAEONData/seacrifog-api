@@ -18,6 +18,11 @@ import nativeExtensions from './lib/native-extensions'
 config()
 nativeExtensions()
 
+// Load GraphQL schema
+const typeDefsPath = normalize(join(__dirname, './schema.graphql'))
+const typeDefs = readFileSync(typeDefsPath, { encoding: 'utf8' })
+const schema = makeExecutableSchema({ typeDefs, resolvers })
+
 // Helper for allowing async / await with middleware
 const asyncHandler = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
 
@@ -66,7 +71,8 @@ app.use(
       db: {
         pool,
         dataLoaders: initializeLoaders()
-      }
+      },
+      schema
     }
     next()
   })
@@ -74,11 +80,6 @@ app.use(
 
 // Setup HTTP router
 app.use('/', asyncHandler(router))
-
-// Load GraphQL schema
-const typeDefsPath = normalize(join(__dirname, './schema.graphql'))
-const typeDefs = readFileSync(typeDefsPath, { encoding: 'utf8' })
-const schema = makeExecutableSchema({ typeDefs, resolvers })
 
 // Make GraphiQL available
 app.use(

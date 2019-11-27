@@ -1,3 +1,5 @@
+import { execute } from 'graphql'
+import { SITES_DENORMALIZED } from '../reports/queries'
 import express from 'express'
 var router = express.Router()
 
@@ -20,6 +22,30 @@ router.get('/http/variables/:id', async (req, res, next) => {
   const { findVariables } = await req.ctx.db.dataLoaders
   const result = await findVariables(parseInt(id, 10))
   res.send(result[0] || null)
+})
+
+/**
+ * The sites report with denormalized data
+ */
+router.post('/downloads/SITES-DENORMALIZED', async (req, res, next) => {
+  const { schema } = req.ctx
+  let { ids } = req.body
+  ids = ids.split(',').map(id => parseInt(id, 10))
+  const result = await execute(schema, SITES_DENORMALIZED, null, req, { ids })
+  res.set({ 'Content-Type': 'application/json' })
+  res.status(200).send(JSON.stringify(result.data.sites))
+})
+
+router.get('/downloads/SITES-DENORMALIZED', async (req, res, next) => {
+  const { schema } = req.ctx
+  const queryParams = req.query
+  let { filename, ids } = queryParams
+  ids = ids.split(',').map(id => parseInt(id, 10))
+
+  const result = await execute(schema, SITES_DENORMALIZED, null, req, { ids })
+
+  res.set({ 'Content-Disposition': `attachment; filename=\"${filename}\"` })
+  res.status(200).send(JSON.stringify(result))
 })
 
 /**
