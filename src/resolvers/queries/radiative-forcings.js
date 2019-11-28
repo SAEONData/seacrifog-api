@@ -1,7 +1,6 @@
 import { log, logError } from '../../lib/log'
 
 export default async (self, args, req) => {
-  const { pool } = await req.ctx.db
-  const result = await pool.query('select * from public.rforcings;')
-  return result.rows
+  const { allRadiativeForcings } = req.ctx.db.dataLoaders
+  return await allRadiativeForcings()
 }

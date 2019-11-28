@@ -1,7 +1,7 @@
 import { log, logError } from '../../lib/log'
 
 export default async (self, args, req) => {
-  const { pool } = req.ctx.db
-  const result = (await pool.query('select count(*) count from public.dataproducts;')).rows
+  const { aggregationDataproducts } = req.ctx.db.dataLoaders
+  const result = await aggregationDataproducts()
   return result[0]
 }
