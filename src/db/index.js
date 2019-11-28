@@ -1,6 +1,6 @@
 'use strict'
 import csvReader from '../lib/csv-reader'
-import { Pool } from 'pg'
+import { Pool, Query } from 'pg'
 import { log, logError } from '../lib/log'
 import { readFileSync, readdirSync } from 'fs'
 import { config } from 'dotenv'
@@ -53,92 +53,106 @@ export const execSqlFile = async (filepath, ...args) => {
  * While the model is still being built it's helpful to refresh the database
  * on every Node.js restart. This should obviously be deleted at some point
  */
-// Promise.resolve(
-//   (async () => {
-//     log(
-//       '\n\n',
-//       '============================================ WARNING!!!!! ==================================================\n',
-//       "Dropping and recreating databases. If you see this as a log on the production server YOU'RE IN TROUBLE!!!!!!\n",
-//       '============================================================================================================\n\n'
-//     )
-//     // Drop and create seacrifog
-//     const configDbPool = getPool('postgres')
-//     await configDbPool.query(loadSqlFile('migration/db-setup/stop-db.sql', DB))
-//     await configDbPool.query(loadSqlFile('migration/db-setup/drop-db.sql', DB))
-//     await configDbPool.query(loadSqlFile('migration/db-setup/create-db.sql', DB))
-//     await configDbPool.end()
-//     log('seacrifog database dropped and re-created!')
+Promise.resolve(
+  (async () => {
+    log(
+      '\n\n',
+      '============================================ WARNING!!!!! ==================================================\n',
+      "Dropping and recreating databases. If you see this as a log on the production server YOU'RE IN TROUBLE!!!!!!\n",
+      '============================================================================================================\n\n'
+    )
+    // Drop and create seacrifog
+    const configDbPool = getPool('postgres')
+    await configDbPool.query(loadSqlFile('migration/db-setup/stop-db.sql', DB))
+    await configDbPool.query(loadSqlFile('migration/db-setup/drop-db.sql', DB))
+    await configDbPool.query(loadSqlFile('migration/db-setup/create-db.sql', DB))
+    await configDbPool.end()
+    log('seacrifog database dropped and re-created!')
 
-//     // Create the seacrifog schema, and populate database
-//     const seacrifogPool = getPool(DB)
-//     await seacrifogPool.query(loadSqlFile('migration/schema.sql'))
-//     await seacrifogPool.query(loadSqlFile('migration/etl.sql'))
-//     log('seacrifog schema re-created!')
+    // Create the seacrifog schema, and populate database
+    const seacrifogPool = getPool(DB)
+    await seacrifogPool.query(loadSqlFile('migration/schema.sql'))
+    await seacrifogPool.query(loadSqlFile('migration/etl.sql'))
+    log('seacrifog schema re-created!')
 
-//     // Update the database from the CSVs
-//     const cleanUp = []
-//     const DIRECTORIES = [
-//       'jcommops',
-//       'simple_sites',
-//       'wmo',
-//       'ars_africae',
-//       'bsrn',
-//       'casn',
-//       'ec_flux',
-//       'gtn_r',
-//       'sasscal_on',
-//       'sasscal_wn',
-//       'tccon'
-//     ]
+    // Update the database from the CSVs
+    const cleanUp = []
+    const DIRECTORIES = [
+      'jcommops',
+      'simple_sites',
+      'wmo',
+      'ars_africae',
+      'bsrn',
+      'casn',
+      'ec_flux',
+      'gtn_r',
+      'sasscal_on',
+      'sasscal_wn',
+      'tccon'
+    ]
 
-//     for (const D of DIRECTORIES) {
-//       log(`\nParsing ${D} directory`)
+    for (const D of DIRECTORIES) {
+      log(`\nParsing ${D} directory`)
 
-//       // Get the files in this directory
-//       const directoryPath = normalize(join(__dirname, `./csvs/${D}/`))
-//       const relatedFiles = readdirSync(directoryPath).filter(fName => fName.indexOf('csv') >= 0)
-//       for (const F of relatedFiles) {
-//         const csvPath = normalize(join(directoryPath, F))
-//         const csvContents = await csvReader(csvPath)
+      // Get the files in this directory
+      const directoryPath = normalize(join(__dirname, `./csvs/${D}/`))
+      const relatedFiles = readdirSync(directoryPath).filter(fName => fName.indexOf('csv') >= 0)
+      for (const F of relatedFiles) {
+        const csvPath = normalize(join(directoryPath, F))
+        const csvContents = await csvReader(csvPath)
 
-//         // Separate the headers from the CSV contents
-//         const csvHeaders = csvContents.splice(0, 1).flat()
+        // Separate the headers from the CSV contents
+        const csvHeaders = csvContents.splice(0, 1).flat()
 
-//         // Setup the temp table
-//         const tempTableName = `${D}_${F.replace('.csv', '')}_temp`.toLowerCase()
-//         log(`Creating ${tempTableName} with`, csvContents.length, 'rows')
-//         const sql = makeSql(tempTableName, csvHeaders, csvContents)
-//         try {
-//           await seacrifogPool.query(sql)
-//         } catch (error) {
-//           throw new Error(
-//             `Error inserting rows from ${csvPath} into ${tempTableName}, ${error}. SQL: ${sql}`
-//           )
-//         }
+        // Setup the temp table
+        const tempTableName = `${D}_${F.replace('.csv', '')}_temp`.toLowerCase()
+        log(`Creating ${tempTableName} with`, csvContents.length, 'rows')
+        const sql = makeSql(tempTableName, csvHeaders, csvContents)
+        try {
+          await seacrifogPool.query(sql)
+        } catch (error) {
+          throw new Error(
+            `Error inserting rows from ${csvPath} into ${tempTableName}, ${error}. SQL: ${sql}`
+          )
+        }
 
-//         // Register the temp table for cleanup
-//         cleanUp.push(tempTableName)
-//       }
+        // Register the temp table for cleanup
+        cleanUp.push(tempTableName)
+      }
 
-//       // Run the migration SQL to select from the temp table into the model
-//       try {
-//         const sql = readFileSync(normalize(`${directoryPath}/_.sql`), { encoding: 'utf8' })
-//         await seacrifogPool.query(sql)
-//       } catch (error) {
-//         logError(`ERROR executing ${directoryPath}_.sql`, error)
-//       }
+      // Run the migration SQL to select from the temp table into the model
+      try {
+        const sql = readFileSync(normalize(`${directoryPath}/_.sql`), { encoding: 'utf8' })
+        await seacrifogPool.query(sql)
+      } catch (error) {
+        logError(`ERROR executing ${directoryPath}_.sql`, error)
+      }
 
-//       // Clean up all the temp tables
-//       // const ddlDropStmt = `drop table ${tempTableName};`
-//       // await client.query(ddlDropStmt)
-//     }
-//     log("\nDev DB setup complete. If you don't see this message there was a problem")
-//     await seacrifogPool.end()
-//   })()
-// ).catch(err => {
-//   logError('Error initializing DEV database', err)
-//   process.exit(1)
-// })
+      // Clean up all the temp tables
+      // const ddlDropStmt = `drop table ${tempTableName};`
+      // await client.query(ddlDropStmt)
+    }
+    log("\nDev DB setup complete. If you don't see this message there was a problem")
+    await seacrifogPool.end()
+  })()
+).catch(err => {
+  logError('Error initializing DEV database', err)
+  process.exit(1)
+})
+
+export const query = ({ text, values, name }) =>
+  new Promise((resolve, reject) =>
+    pool.query(
+      new Query(
+        {
+          text,
+          values,
+          name
+        },
+        (err, result) => (err ? reject(err) : resolve(result))
+      )
+    )
+  )
 
 /**
  * TODO
