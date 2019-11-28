@@ -6,7 +6,7 @@ import { log, logError } from '../../lib/log'
  * [{input1}, {input2}, etc]
  */
 export default async (self, args, req) => {
-  const { pool, query } = await req.ctx.db
+  const { query } = await req.ctx.db
   const { findVariables } = req.ctx.db.dataLoaders
   const { input: inputs } = args
   const nonDynamicUpdateCols = [
