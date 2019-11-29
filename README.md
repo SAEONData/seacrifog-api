@@ -19,6 +19,7 @@ Once the PostgreSQL server is setup, start the app via the following steps:
 ## Configuration
 This is a sample of the environment variables that the app requires to run - specifically in the context of a `.env` file (with the default values shown).
 
+### Example `.env` file with defaults
 ```
 PORT=3000
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
@@ -28,3 +29,16 @@ POSTGRES_DATABASE=seacrifog
 POSTGRES_PASSWORD=password
 POSTGRES_PORT=5432
 ```
+
+### `Node.js` configuration
+The express server is started via either of two NPM scripts:
+
+```bash
+npm start # This starts the app for development purposes
+npm run start:prod  # This starts the app in production mode
+```
+
+In both cases an additional environment variable is made available:
+
+- In development environments: `process.env.NODE_ENV === 'development'`
+- In production environments: `process.env.NODE_ENV === 'production'`
