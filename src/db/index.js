@@ -1,6 +1,6 @@
 'use strict'
 import csvReader from '../lib/csv-reader'
-import { Pool } from 'pg'
+import { Pool, Query } from 'pg'
 import { log, logError } from '../lib/log'
 import { readFileSync, readdirSync } from 'fs'
 import { config } from 'dotenv'
@@ -139,6 +139,20 @@ Promise.resolve(
   logError('Error initializing DEV database', err)
   process.exit(1)
 })
+
+export const query = ({ text, values, name }) =>
+  new Promise((resolve, reject) =>
+    pool.query(
+      new Query(
+        {
+          text,
+          values,
+          name
+        },
+        (err, result) => (err ? reject(err) : resolve(result))
+      )
+    )
+  )
 
 /**
  * TODO
@@ -350,6 +364,16 @@ export const initializeLoaders = () => {
     return keys.map(key => rows.filter(sift({ id: key })) || [])
   }, dataLoaderOptions)
 
+  const findRadiativeForcings = new DataLoader(async keys => {
+    const sql = `
+      select
+      *
+      from public.rforcings
+      where id in (${keys.join(',')});`
+    const rows = (await pool.query(sql)).rows
+    return keys.map(key => rows.filter(sift({ id: key })) || [])
+  }, dataLoaderOptions)
+
   const findDataproducts = new DataLoader(async keys => {
     const sql = `
     select
@@ -406,7 +430,71 @@ export const initializeLoaders = () => {
     findNetworks: key => findNetworks.load(key),
     findSites: key => findSites.load(key),
 
-    // Keeping these here means that SQL is all in one place. These aren't DataLoaders
-    allVariables: async () => (await pool.query('select * from public.variables;')).rows
+    /**
+     * These aren't dataloaders, but putting them here means they can use the dataloaders
+     * This means the SQL attributes (other than id) only has to be defined once
+     * There is a limit => if there are many rows in a table another solution will be needed
+     */
+    allSites: async () =>
+      Promise.all(
+        (await pool.query('select id from public.sites;')).rows.map(
+          async ({ id }) => (await findSites.load(id))[0]
+        )
+      ),
+    allNetworks: async () =>
+      Promise.all(
+        (await pool.query('select id from public.networks;')).rows.map(
+          async ({ id }) => (await findNetworks.load(id))[0]
+        )
+      ),
+    allVariables: async () =>
+      Promise.all(
+        (await pool.query('select id from public.variables;')).rows.map(
+          async ({ id }) => (await findVariables.load(id))[0]
+        )
+      ),
+    allRadiativeForcings: async () =>
+      Promise.all(
+        (await pool.query('select id from public.rforcings;')).rows.map(
+          async ({ id }) => (await findRadiativeForcings.load(id))[0]
+        )
+      ),
+    allProtocols: async () =>
+      Promise.all(
+        (await pool.query('select id from public.protocols;')).rows.map(
+          async ({ id }) => (await findProtocols.load(id))[0]
+        )
+      ),
+    allDataproducts: async () =>
+      Promise.all(
+        (await pool.query('select id from public.dataproducts;')).rows.map(
+          async ({ id }) => (await findDataproducts.load(id))[0]
+        )
+      ),
+
+    // XREF queries. Currently they don't use dataLoaders, since there ARE
+    // dataLoaders that resolve relationships. But sometimes the mapping
+    // data is useful directly
+    xrefDataproductsVariables: async () =>
+      (await pool.query('select * from public.dataproduct_variable_xref;')).rows,
+    xrefNetworksVariables: async () =>
+      (await pool.query('select * from public.network_variable_xref;')).rows,
+    xrefProtocolsVariables: async () =>
+      (
+        await pool.query(`
+          select
+          x.id,
+          x.protocol_id,
+          x.variable_id,
+          r.name relationship_type
+          from public.protocol_variable_xref x
+          join public.relationship_types r on r.id = x.relationship_type_id`)
+      ).rows,
+    xrefSitesNetworks: async () =>
+      (await pool.query('select * from public.site_network_xref;')).rows,
+
+    // Aggregation queries
+    aggregationDataproducts: async () =>
+      (await pool.query('select count(*) count from public.dataproducts;')).rows
   }
 }

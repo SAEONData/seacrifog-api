@@ -1,7 +1,6 @@
 import { log, logError } from '../../lib/log'
 
 export default async (self, args, req) => {
-  const { pool } = await req.ctx.db
-  const result = await pool.query('select * from public.network_variable_xref;')
-  return result.rows
+  const { xrefNetworksVariables } = await req.ctx.db.dataLoaders
+  return await xrefNetworksVariables()
 }

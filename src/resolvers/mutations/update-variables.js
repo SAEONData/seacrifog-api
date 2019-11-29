@@ -1,14 +1,12 @@
 import { pickBy } from 'ramda'
 import { log, logError } from '../../lib/log'
 
-// TODO: Strings need to be escaped and handled properly
-
 /**
  * args.input
  * [{input1}, {input2}, etc]
  */
 export default async (self, args, req) => {
-  const { pool } = await req.ctx.db
+  const { query } = await req.ctx.db
   const { findVariables } = req.ctx.db.dataLoaders
   const { input: inputs } = args
   const nonDynamicUpdateCols = [
@@ -35,54 +33,53 @@ export default async (self, args, req) => {
 
     // Update the Variable entity
     const update = pickBy((v, k) => (nonDynamicUpdateCols.includes(k) ? false : true), input)
-
-    let fieldUpdateResult
-    try {
-      fieldUpdateResult =
-        Object.keys(update).length > 0
-          ? await pool.query(`
-        update public.variables
-        set ${Object.keys(update)
-          .map(attr => `${attr} = '${input[attr]}'`)
-          .join(',')}
-        where id = ${input.id}`)
-          : null
-    } catch (error) {
-      logError(error)
+    if (Object.keys(update).length > 0) {
+      const keyVals = Object.entries(update)
+      await query({
+        text: `update public.variables set ${keyVals
+          .map(([attr], i) => `"${attr}" = $${i + 1}`)
+          .join(',')} where id = $${keyVals.length + 1}`,
+        values: keyVals.map(([, val]) => val).concat(input.id)
+      })
     }
-    log(fieldUpdateResult)
 
     // Add dataproducts
     if (addDataproducts)
-      await pool.query(`
-      insert into public.dataproduct_variable_xref
-      (dataproduct_id, variable_id)
-      values (${addDataproducts.map(dId => [dId, input.id]).join('),(')})
-      on conflict on constraint dataproduct_variable_xref_unique_cols do nothing;`)
+      await query({
+        text: `insert into public.dataproduct_variable_xref (dataproduct_id, variable_id) values (${addDataproducts
+          .map((id, i) => ['$1', `$${i + 2}`])
+          .join(
+            '),('
+          )}) on conflict on constraint dataproduct_variable_xref_unique_cols do nothing;`,
+        values: [input.id].concat(addDataproducts.map(id => id))
+      })
 
     // Remove dataproducts
     if (removeDataproducts)
-      await pool.query(`
-      delete from public.dataproduct_variable_xref
-      where
-      variable_id = ${input.id}
-      and dataproduct_id in (${removeDataproducts.join(',')})`)
+      await query({
+        text: `delete from public.dataproduct_variable_xref where variable_id = $1 and dataproduct_id in (${removeDataproducts
+          .map((id, i) => `$${i + 2}`)
+          .join(',')});`,
+        values: [input.id].concat(removeDataproducts.map(id => id))
+      })
 
     // Add RForcings
     if (addRForicings)
-      await pool.query(`
-        insert into public.rforcing_variable_xref
-        (rforcing_id, variable_id)
-        values (${addRForicings.map(rId => [rId, input.id]).join('),(')})
-        on conflict on constraint rforcings_variable_xref_unique_cols do nothing;`)
+      await query({
+        text: `insert into public.rforcing_variable_xref (rforcing_id, variable_id) values (${addRForicings
+          .map((id, i) => ['$1', `$${i + 2}`])
+          .join('),(')}) on conflict on constraint rforcings_variable_xref_unique_cols do nothing;`,
+        values: [input.id].concat(addRForicings.map(id => id))
+      })
 
     // Remove RForcings
     if (removeRForcings)
-      await pool.query(`
-        delete from public.rforcing_variable_xref
-        where
-        variable_id = ${input.id}
-        and rforcing_id in (${removeRForcings.join(',')});`)
+      await query({
+        text: `delete from public.rforcing_variable_xref where variable_id = $1 and rforcing_id in (${removeRForcings
+          .map((id, i) => `$${i + 2}`)
+          .join(',')});`,
+        values: [input.id].concat(removeRForcings.map(id => id))
+      })
 
     // Add protocols
     if (addDirectlyRelatedProtocols || addIndirectlyRelatedProtocols) {
@@ -90,26 +87,26 @@ export default async (self, args, req) => {
         .map(id => [id, 'direct'])
         .concat((addIndirectlyRelatedProtocols || []).map(id => [id, 'indirect']))
 
-      await pool.query(`
-        insert into protocol_variable_xref
-        (protocol_id, variable_id, relationship_type_id)
-        values (${updates
-          .map(u => [
-            u[0],
-            input.id,
+      await query({
+        text: `insert into protocol_variable_xref (protocol_id, variable_id, relationship_type_id) values (${updates
+          .map((u, i) => [
+            `$${i + 2}`,
+            '$1',
             `(select id from public.relationship_types where "name" = '${u[1]}')`
           ])
-          .join('),(')})
-          on conflict on constraint protocol_variable_xref_unique_cols do nothing;`)
+          .join('),(')}) on conflict on constraint protocol_variable_xref_unique_cols do nothing;`,
+        values: [input.id].concat(updates.map(u => u[0]))
+      })
     }
 
     // Remove protocols
     if (removeProtocols)
-      await pool.query(`
-      delete from public.protocol_variable_xref
-      where
-      variable_id = ${input.id}
-      and protocol_id in (${removeProtocols.join(',')});`)
+      await query({
+        text: `delete from public.protocol_variable_xref where variable_id = $1 and protocol_id in (${removeProtocols
+          .map((id, i) => `$${i + 2}`)
+          .join(',')});`,
+        values: [input.id].concat(removeProtocols.map(id => id))
+      })
   }
 
   // Return the updated rows

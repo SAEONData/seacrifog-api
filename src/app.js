@@ -10,7 +10,7 @@ import { readFileSync } from 'fs'
 import { normalize, join } from 'path'
 import resolvers from './resolvers'
 import { log, logError } from './lib/log'
-import { pool, initializeLoaders } from './db'
+import { pool, initializeLoaders, query } from './db'
 import { config } from 'dotenv'
 import nativeExtensions from './lib/native-extensions'
 
@@ -70,6 +70,7 @@ app.use(
     req.ctx = {
       db: {
         pool,
+        query,
         dataLoaders: initializeLoaders()
       },
       schema
