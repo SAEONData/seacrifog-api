@@ -1,174 +1,34 @@
 'use strict'
-import csvReader from '../lib/csv-reader'
-import { Pool, Query } from 'pg'
-import { log, logError } from '../lib/log'
-import { readFileSync, readdirSync } from 'fs'
 import { config } from 'dotenv'
-import { join, normalize } from 'path'
+import setupDb from './_setup-db'
+import getPool from './_get-pool'
+export { default as query } from './_query'
 import DataLoader from 'dataloader'
 import sift from 'sift'
 config()
 
-const DB = process.env.POSTGRES_DATABASE || 'seacrifog'
+// Setup constants
 const NODE_ENV = process.env.NODE_ENV
-console.log(NODE_ENV)
+const FORCE_DB_RESET = process.env.FORCE_DB_RESET || false // TODO: This is only for development. Remove once app is deployed
+const DB = process.env.POSTGRES_DATABASE || 'seacrifog'
+const POSTGRES_HOST = process.env.POSTGRES_HOST || 'localhost'
+const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres'
+const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD || 'password'
+const POSTGRES_PORT = parseInt(process.env.POSTGRES_PORT, 10) || 5432
 
 if (!NODE_ENV || !['production', 'development'].includes(NODE_ENV))
   throw new Error(
     'The server MUST be started with a NODE_ENV environment variable, with a value of either "production" or "development"'
   )
 
-const makeSql = (tableName, headers, contents) => {
-  const ddlDrop = `drop table if exists "${tableName}";`
-  const ddlMake = `create table ${tableName} (${headers.map(h => `"${h}" text`).join(',')});`
-  const dmlInsert = `
-    insert into "${tableName}" (${headers.map(h => `"${h}"`)})
-    values ${contents.map(row => '(' + row.map(v => v.sqlize()).join(',') + ')').join(',')};`
-  return `${ddlDrop}${ddlMake}${dmlInsert}`
-}
+export const pool = getPool({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT })
 
-const getPool = database =>
-  new Pool({
-    host: process.env.POSTGRES_HOST || 'localhost',
-    user: process.env.POSTGRES_USER || 'postgres',
-    database,
-    password: process.env.POSTGRES_PASSWORD || 'password',
-    port: parseInt(process.env.POSTGRES_PORT, 10) || 5432,
-    max: 20,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000
-  })
-
-const loadSqlFile = (filepath, ...args) => {
-  let sql = readFileSync(normalize(join(__dirname, `./sql/${filepath}`))).toString('utf8')
-  args.forEach((arg, i) => {
-    const regex = new RegExp(`:${i + 1}`, 'g')
-    sql = sql.replace(regex, `${arg}`)
-  })
-  return sql
-}
-
-export const pool = getPool(DB)
-
-export const execSqlFile = async (filepath, ...args) => {
-  const sql = loadSqlFile(filepath, ...args)
-  return await pool.query(sql)
-}
+if (NODE_ENV === 'development' || FORCE_DB_RESET)
+  setupDb({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT })
 
 /**
- * For development purposes
- * While the model is still being built it's helpful to refresh the database
- * on every Node.js restart. This should obviously be deleted at some point
- */
-if (process)
-  Promise.resolve(
-    (async () => {
-      log(
-        '\n\n',
-        '============================================ WARNING!!!!! ==================================================\n',
-        "Dropping and recreating databases. If you see this as a log on the production server YOU'RE IN TROUBLE!!!!!!\n",
-        '============================================================================================================\n\n'
-      )
-      // Drop and create seacrifog
-      const configDbPool = getPool('postgres')
-      await configDbPool.query(loadSqlFile('migration/db-setup/stop-db.sql', DB))
-      await configDbPool.query(loadSqlFile('migration/db-setup/drop-db.sql', DB))
-      await configDbPool.query(loadSqlFile('migration/db-setup/create-db.sql', DB))
-      await configDbPool.end()
-      log('seacrifog database dropped and re-created!')
-
-      // Create the seacrifog schema, and populate database
-      const seacrifogPool = getPool(DB)
-      await seacrifogPool.query(loadSqlFile('migration/schema.sql'))
-      await seacrifogPool.query(loadSqlFile('migration/etl.sql'))
-      log('seacrifog schema re-created!')
-
-      // Update the database from the CSVs
-      const cleanUp = []
-      const DIRECTORIES = [
-        'jcommops',
-        'simple_sites',
-        'wmo',
-        'ars_africae',
-        'bsrn',
-        'casn',
-        'ec_flux',
-        'gtn_r',
-        'sasscal_on',
-        'sasscal_wn',
-        'tccon'
-      ]
-
-      for (const D of DIRECTORIES) {
-        log(`\nParsing ${D} directory`)
-
-        // Get the files in this directory
-        const directoryPath = normalize(join(__dirname, `./csvs/${D}/`))
-        const relatedFiles = readdirSync(directoryPath).filter(fName => fName.indexOf('csv') >= 0)
-        for (const F of relatedFiles) {
-          const csvPath = normalize(join(directoryPath, F))
-          const csvContents = await csvReader(csvPath)
-
-          // Separate the headers from the CSV contents
-          const csvHeaders = csvContents.splice(0, 1).flat()
-
-          // Setup the temp table
-          const tempTableName = `${D}_${F.replace('.csv', '')}_temp`.toLowerCase()
-          log(`Creating ${tempTableName} with`, csvContents.length, 'rows')
-          const sql = makeSql(tempTableName, csvHeaders, csvContents)
-          try {
-            await seacrifogPool.query(sql)
-          } catch (error) {
-            throw new Error(
-              `Error inserting rows from ${csvPath} into ${tempTableName}, ${error}. SQL: ${sql}`
-            )
-          }
-
-          // Register the temp table for cleanup
-          cleanUp.push(tempTableName)
-        }
-
-        // Run the migration SQL to select from the temp table into the model
-        try {
-          const sql = readFileSync(normalize(`${directoryPath}/_.sql`), { encoding: 'utf8' })
-          await seacrifogPool.query(sql)
-        } catch (error) {
-          logError(`ERROR executing ${directoryPath}_.sql`, error)
-        }
-
-        // Clean up all the temp tables
-        // const ddlDropStmt = `drop table ${tempTableName};`
-        // await client.query(ddlDropStmt)
-      }
-      log("\nDev DB setup complete. If you don't see this message there was a problem")
-      await seacrifogPool.end()
-    })()
-  ).catch(err => {
-    logError('Error initializing DEV database', err)
-    process.exit(1)
-  })
-
-export const query = ({ text, values, name }) =>
-  new Promise((resolve, reject) =>
-    pool.query(
-      new Query(
-        {
-          text,
-          values,
-          name
-        },
-        (err, result) => (err ? reject(err) : resolve(result))
-      )
-    )
-  )
-
-/**
- * TODO
- * I think these will work as intended. But the example is certainly better!
- * https://github.com/graphql/dataloader/blob/master/examples/SQL.md
- *
- * TODO: sift() should be used in a map function, not a filter function
- * I don't know why it was difficult to get that done
+ * This is called once per request
+ * DataLoader instances are configured here
  */
 export const initializeLoaders = () => {
   const dataLoaderOptions = {

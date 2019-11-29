@@ -15,8 +15,4 @@ export default () => {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ')
   }
-
-  String.prototype.sqlize = function() {
-    return `'${this.replace(/'/g, "''")}'`
-  }
 }

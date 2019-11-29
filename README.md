@@ -28,6 +28,7 @@ POSTGRES_USER=postgres
 POSTGRES_DATABASE=seacrifog
 POSTGRES_PASSWORD=password
 POSTGRES_PORT=5432
+FORCE_DB_RESET=false
 ```
 
 ### `Node.js` configuration
