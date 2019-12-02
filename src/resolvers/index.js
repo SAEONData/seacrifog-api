@@ -14,6 +14,7 @@ import updateProtocols from './mutations/update-protocols'
 import Dataproduct from './types/dataproduct'
 import dataproduct from './queries/dataproduct'
 import dataproducts from './queries/dataproducts'
+import dataproducts2 from './queries/dataproducts2'
 import updateDataproducts from './mutations/update-dataproducts'
 import DataproductsSummary from './types/dataproducts-summary'
 import dataproductsSummary from './queries/dataproducts-summary'
@@ -59,6 +60,7 @@ export default {
 
     dataproduct,
     dataproducts,
+    dataproducts2,
     dataproductsSummary,
 
     site,

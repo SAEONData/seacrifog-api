@@ -152,6 +152,7 @@ type Query {
 
   dataproduct(id: Int!): Dataproduct
   dataproducts: [Dataproduct!]!
+  dataproducts2(variables: [Int!], protocols: [Int!]): [Dataproduct!]!
   dataproductsSummary: DataproductsSummary!
 
   site(id: Int!): Site

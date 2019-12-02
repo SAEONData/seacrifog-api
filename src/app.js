@@ -70,7 +70,7 @@ app.use(
     req.ctx = {
       db: {
         pool,
-        query,
+        query: ({ text, values, name }) => query({ pool, text, values, name }),
         dataLoaders: initializeLoaders()
       },
       schema
