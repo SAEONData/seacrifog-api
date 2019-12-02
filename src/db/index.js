@@ -23,8 +23,7 @@ if (!NODE_ENV || !['production', 'development'].includes(NODE_ENV))
 
 export const pool = getPool({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT })
 
-if (NODE_ENV === 'development' || FORCE_DB_RESET)
-  setupDb({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT })
+if (FORCE_DB_RESET) setupDb({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT })
 
 /**
  * This is called once per request
