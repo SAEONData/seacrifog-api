@@ -1,25 +1,42 @@
 # SEACRIFOG API
-This is an Express.js application. The Express.js webserver is defined in `/src/bin/index.js`, tucked out the way. The web-server loads and serves the application - the application root is `./src/app.js`
+This is an Express.js application. The Express.js webserver is defined in `/src/bin/index.js`, tucked out the way. The web-server loads and serves the Express.js application - the application root is `./src/app.js`
 
-## Quick start (local dev environment)
-- Start PostGIS in a docker container `docker run -p 5432:5432 --name postgis -v postgres11:/var/lib/postgresql/data -e POSTGRES_PASSWORD=password -d mdillon/postgis`
-- Create a DB called `seacrifog_old`, and restore `./src/db/seacrifog-protoype.backup` to this DB
-- Install dependencies: `npm install`
-- Start the API dev server: `npm start`
+# Quick start (local dev environment)
+You need to have Docker and Node.js installed on your machine, then run the following commands / do the following steps:
 
-## Setup DEV environment
-The app will look for a PostgreSQL database server and, in accordance with the configuration, try to connect to a specific database. If that database doesn't exist it, then the app will create the database (hopefully) correctly. Note that part of this configuration involves reading data from an old version of the SEACRIFOG database currently, and inserting that into the new database. So to start the application in dev mode, you need a database called `seacrifog_old` to exist on the same PostgreSQL server. `seacrifog_old` is just a restore of the prototype database.
+### Start a PostGIS server
+```sh
+docker run -p 5432:5432 --name postgis -v postgres11:/var/lib/postgresql/data -e POSTGRES_PASSWORD=password -d mdillon/postgis
+```
 
-Once the PostgreSQL server is setup, start the app via the following steps:
+### Setup the DB
+(This is easiest to do with DBeaver, but any PostgreSQL client should work)
 
-1. Add a `.env` configuration file to the route of the source code directory (`touch .env`)
-2. Add appropriate configuration settings for your machine (see the section on configuration)
-3. Install all dependencies: `npm install`
-4. Start the dev server: `npm start`
+- Create a DB called `seacrifog_old`
+- Restore `./src/db/seacrifog-protoype.backup` to this database
 
-## Setup production environment
+### Install Node.js dependencies
+```sh
+npm install
+```
+
+### Configure the API to re-create the database on startup
+```sh
+echo FORCE_DB_RESET=true > .env
+```
+
+### Start the API
+```sh
+npm start
+```
+
+### Test that API is running
+Go to `http://localhost:3000`
+
+
+# Setup production environment
 1. Configure a Postgis database server somewhere
-2. Add a `.env` file with production-sensible values (that correspond with your Postgis server)
+2. Add a `.env` file with production-sensible values (refer to notes below on "Configuration")
 3. Start the app: `npm run start:prod`
 
 ## Configuration
@@ -36,16 +53,3 @@ POSTGRES_PASSWORD=password
 POSTGRES_PORT=5432
 FORCE_DB_RESET=false
 ```
-
-### `Node.js` configuration
-The express server is started via either of two NPM scripts:
-
-```bash
-npm start # This starts the app for development purposes
-npm run start:prod  # This starts the app in production mode
-```
-
-In both cases an additional environment variable is made available:
-
-- In development environments: `process.env.NODE_ENV === 'development'`
-- In production environments: `process.env.NODE_ENV === 'production'`
