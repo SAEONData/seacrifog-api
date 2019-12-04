@@ -1,6 +1,12 @@
 # SEACRIFOG API
 This is an Express.js application. The Express.js webserver is defined in `/src/bin/index.js`, tucked out the way. The web-server loads and serves the application - the application root is `./src/app.js`
 
+## Quick start (local dev environment)
+- Start PostGIS in a docker container `docker run -p 5432:5432 --name postgis -v postgres11:/var/lib/postgresql/data -e POSTGRES_PASSWORD=password -d mdillon/postgis`
+- Create a DB called `seacrifog_old`, and restore `./src/db/seacrifog-protoype.backup` to this DB
+- Install dependencies: `npm install`
+- Start the API dev server: `npm start`
+
 ## Setup DEV environment
 The app will look for a PostgreSQL database server and, in accordance with the configuration, try to connect to a specific database. If that database doesn't exist it, then the app will create the database (hopefully) correctly. Note that part of this configuration involves reading data from an old version of the SEACRIFOG database currently, and inserting that into the new database. So to start the application in dev mode, you need a database called `seacrifog_old` to exist on the same PostgreSQL server. `seacrifog_old` is just a restore of the prototype database.
 
