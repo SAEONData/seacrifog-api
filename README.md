@@ -9,6 +9,8 @@ You need to have Docker and Node.js installed on your machine, then run the foll
 docker run -p 5432:5432 --name postgis -v postgres11:/var/lib/postgresql/data -e POSTGRES_PASSWORD=password -d mdillon/postgis
 ```
 
+(And sometimes you need to restart the container on computer start up - use this command `docker container start postgis`)
+
 ### Setup the DB
 (This is easiest to do with DBeaver, but any PostgreSQL client should work)
 
