@@ -25,7 +25,7 @@
   "dependencies": {
     "compression": "^1.7.4",
     "cookie-parser": "~1.4.4",
-    "core-js": "^3.4.7",
+    "core-js": "^3.4.8",
     "csv": "^5.3.1",
     "csv-parse": "^4.8.2",
     "dataloader": "^2.0.0",
@@ -40,19 +40,19 @@
     "morgan": "~1.9.1",
     "pg": "^7.14.0",
     "ramda": "^0.26.1",
-    "sift": "^9.0.0"
+    "sift": "^9.0.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.4",
-    "@babel/core": "^7.7.4",
+    "@babel/cli": "^7.7.5",
+    "@babel/core": "^7.7.5",
     "@babel/node": "^7.7.4",
-    "@babel/preset-env": "^7.7.4",
+    "@babel/preset-env": "^7.7.6",
     "copyfiles": "^2.1.1",
     "rimraf": "^3.0.0",
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.7.0",
     "eslint-config-standard": "^14.1.0",
-    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-promise": "^4.2.1",
