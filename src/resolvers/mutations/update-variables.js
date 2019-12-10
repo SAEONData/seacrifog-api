@@ -16,7 +16,7 @@ export default async (self, args, req) => {
     'addDirectlyRelatedProtocols',
     'addIndirectlyRelatedProtocols',
     'removeProtocols',
-    'addRForicings',
+    'addRForcings',
     'removeRForcings'
   ]
 
@@ -27,7 +27,7 @@ export default async (self, args, req) => {
       addDirectlyRelatedProtocols,
       addIndirectlyRelatedProtocols,
       removeProtocols,
-      addRForicings,
+      addRForcings,
       removeRForcings
     } = input
 
@@ -64,12 +64,12 @@ export default async (self, args, req) => {
       })
 
     // Add RForcings
-    if (addRForicings)
+    if (addRForcings)
       await query({
-        text: `insert into public.rforcing_variable_xref (variable_id, rforcing_id) values (${addRForicings
+        text: `insert into public.rforcing_variable_xref (variable_id, rforcing_id) values (${addRForcings
           .map((id, i) => ['$1', `$${i + 2}`])
           .join('),(')}) on conflict on constraint rforcings_variable_xref_unique_cols do nothing;`,
-        values: [input.id].concat(addRForicings.map(id => id))
+        values: [input.id].concat(addRForcings.map(id => id))
       })
 
     // Remove RForcings

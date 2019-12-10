@@ -39,7 +39,7 @@ input VariableInput {
   addIndirectlyRelatedProtocols: [Int!]
   removeProtocols: [Int!]
 
-  addRForicings: [Int!]
+  addRForcings: [Int!]
   removeRForcings: [Int!]
 }
 
