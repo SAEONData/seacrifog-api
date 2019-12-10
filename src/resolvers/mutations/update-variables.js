@@ -46,7 +46,7 @@ export default async (self, args, req) => {
     // Add dataproducts
     if (addDataproducts)
       await query({
-        text: `insert into public.dataproduct_variable_xref (dataproduct_id, variable_id) values (${addDataproducts
+        text: `insert into public.dataproduct_variable_xref (variable_id, dataproduct_id) values (${addDataproducts
           .map((id, i) => ['$1', `$${i + 2}`])
           .join(
             '),('
@@ -66,7 +66,7 @@ export default async (self, args, req) => {
     // Add RForcings
     if (addRForicings)
       await query({
-        text: `insert into public.rforcing_variable_xref (rforcing_id, variable_id) values (${addRForicings
+        text: `insert into public.rforcing_variable_xref (variable_id, rforcing_id) values (${addRForicings
           .map((id, i) => ['$1', `$${i + 2}`])
           .join('),(')}) on conflict on constraint rforcings_variable_xref_unique_cols do nothing;`,
         values: [input.id].concat(addRForicings.map(id => id))
