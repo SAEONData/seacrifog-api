@@ -35,7 +35,7 @@ export default async (self, args, req) => {
     const update = pickBy((v, k) => (nonDynamicUpdateCols.includes(k) ? false : true), input)
     if (Object.keys(update).length > 0) {
       const keyVals = Object.entries(update)
-      await query({
+      const r = await query({
         text: `update public.variables set ${keyVals
           .map(([attr], i) => `"${attr}" = $${i + 1}`)
           .join(',')} where id = $${keyVals.length + 1}`,

@@ -1,8 +1,16 @@
+import { config } from 'dotenv'
 import { readFileSync, readdirSync } from 'fs'
 import csvReader from '../lib/csv-reader'
 import { join, normalize } from 'path'
 import { log, logError } from '../lib/log'
-import getPool from './_get-pool'
+import pool from './_pool'
+config()
+
+const DB = process.env.POSTGRES_DATABASE || 'seacrifog'
+const POSTGRES_HOST = process.env.POSTGRES_HOST || 'localhost'
+const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres'
+const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD || 'password'
+const POSTGRES_PORT = parseInt(process.env.POSTGRES_PORT, 10) || 5432
 
 const sqlize = str => `'${str.replace(/'/g, "''")}'`
 
@@ -35,7 +43,7 @@ const loadSqlFile = (filepath, ...args) => {
   return sql
 }
 
-export default ({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT }) =>
+export default () =>
   Promise.resolve(
     (async () => {
       log(
@@ -45,12 +53,15 @@ export default ({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_
         '============================================================================================================\n\n'
       )
       // Drop and create seacrifog
-      const configDbPool = getPool({
-        DB: 'postgres',
-        POSTGRES_HOST,
-        POSTGRES_USER,
-        POSTGRES_PASSWORD,
-        POSTGRES_PORT
+      const configDbPool = new Pool({
+        host: POSTGRES_HOST,
+        user: POSTGRES_USER,
+        database: 'postgres',
+        password: POSTGRES_PASSWORD,
+        port: POSTGRES_PORT,
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000
       })
       await configDbPool.query(loadSqlFile('migration/db-setup/stop-db.sql', DB))
       await configDbPool.query(loadSqlFile('migration/db-setup/drop-db.sql', DB))
@@ -59,13 +70,7 @@ export default ({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_
       log('seacrifog database dropped and re-created!')
 
       // Create the seacrifog schema, and populate database
-      const seacrifogPool = getPool({
-        DB,
-        POSTGRES_HOST,
-        POSTGRES_USER,
-        POSTGRES_PASSWORD,
-        POSTGRES_PORT
-      })
+      const seacrifogPool = pool
       await seacrifogPool.query(loadSqlFile('migration/schema.sql'))
       await seacrifogPool.query(loadSqlFile('migration/etl.sql'))
       log('seacrifog schema re-created!')

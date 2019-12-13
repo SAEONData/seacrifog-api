@@ -1,5 +1,3 @@
-import { Pool } from 'pg'
-
 export default ({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT }) =>
   new Pool({
     host: POSTGRES_HOST,

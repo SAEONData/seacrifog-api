@@ -10,9 +10,14 @@ import { readFileSync } from 'fs'
 import { normalize, join } from 'path'
 import resolvers from './resolvers'
 import { log, logError } from './lib/log'
-import { pool, initializeLoaders, query } from './db'
+import { initializeLoaders, query } from './db'
 import { config } from 'dotenv'
 import nativeExtensions from './lib/native-extensions'
+
+if (!process.env.NODE_ENV || !['production', 'development'].includes(process.env.NODE_ENV))
+  throw new Error(
+    'The server MUST be started with a NODE_ENV environment variable, with a value of either "production" or "development"'
+  )
 
 // Configure the app
 config()
@@ -69,8 +74,7 @@ app.use(
   asyncHandler(async (req, res, next) => {
     req.ctx = {
       db: {
-        pool,
-        query: ({ text, values, name }) => query({ pool, text, values, name }),
+        query,
         dataLoaders: initializeLoaders()
       },
       schema

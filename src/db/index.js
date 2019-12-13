@@ -1,30 +1,13 @@
-'use strict'
 import { config } from 'dotenv'
 import setupDb from './_setup-db'
-import getPool from './_get-pool'
+import pool from './_pool'
 export { default as query } from './_query'
 import DataLoader from 'dataloader'
 import sift from 'sift'
 config()
 
-// Setup constants
-const NODE_ENV = process.env.NODE_ENV
-const FORCE_DB_RESET = process.env.FORCE_DB_RESET || 'false' // TODO: This is only for development. Remove once app is deployed
-const DB = process.env.POSTGRES_DATABASE || 'seacrifog'
-const POSTGRES_HOST = process.env.POSTGRES_HOST || 'localhost'
-const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres'
-const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD || 'password'
-const POSTGRES_PORT = parseInt(process.env.POSTGRES_PORT, 10) || 5432
-
-if (!NODE_ENV || !['production', 'development'].includes(NODE_ENV))
-  throw new Error(
-    'The server MUST be started with a NODE_ENV environment variable, with a value of either "production" or "development"'
-  )
-
-export const pool = getPool({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT })
-
-if (FORCE_DB_RESET === 'true')
-  setupDb({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT })
+// SETUP DB
+if (process.env.FORCE_DB_RESET === 'true') setupDb()
 
 /**
  * This is called once per request
