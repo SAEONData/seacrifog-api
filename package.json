@@ -25,7 +25,7 @@
   "dependencies": {
     "compression": "^1.7.4",
     "cookie-parser": "~1.4.4",
-    "core-js": "^3.4.8",
+    "core-js": "^3.5.0",
     "csv": "^5.3.1",
     "csv-parse": "^4.8.2",
     "dataloader": "^2.0.0",
@@ -40,7 +40,7 @@
     "morgan": "~1.9.1",
     "pg": "^7.14.0",
     "ramda": "^0.26.1",
-    "sift": "^9.0.1"
+    "sift": "^9.0.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.5",
@@ -57,7 +57,7 @@
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "nodemon": "^2.0.1",
+    "nodemon": "^2.0.2",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.19.1"
   }

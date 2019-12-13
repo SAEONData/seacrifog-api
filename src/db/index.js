@@ -9,7 +9,7 @@ config()
 
 // Setup constants
 const NODE_ENV = process.env.NODE_ENV
-const FORCE_DB_RESET = process.env.FORCE_DB_RESET || false // TODO: This is only for development. Remove once app is deployed
+const FORCE_DB_RESET = process.env.FORCE_DB_RESET || 'false' // TODO: This is only for development. Remove once app is deployed
 const DB = process.env.POSTGRES_DATABASE || 'seacrifog'
 const POSTGRES_HOST = process.env.POSTGRES_HOST || 'localhost'
 const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres'
@@ -23,7 +23,8 @@ if (!NODE_ENV || !['production', 'development'].includes(NODE_ENV))
 
 export const pool = getPool({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT })
 
-if (FORCE_DB_RESET) setupDb({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT })
+if (FORCE_DB_RESET === 'true')
+  setupDb({ DB, POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT })
 
 /**
  * This is called once per request
