@@ -24,7 +24,6 @@
     "lint": "echo hi"
   },
   "pre-commit": [
-    "prettier",
     "lint"
   ],
   "dependencies": {
