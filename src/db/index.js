@@ -1,10 +1,12 @@
 import { config } from 'dotenv'
 import setupDb from './_setup-db'
 import pool from './_pool'
-export { default as query } from './_query'
+import _query from './_query'
 import DataLoader from 'dataloader'
 import sift from 'sift'
 config()
+
+export const query = _query
 
 // SETUP DB
 if (process.env.FORCE_DB_RESET === 'true') setupDb()
@@ -179,39 +181,47 @@ export const initializeLoaders = () => {
   }, dataLoaderOptions)
 
   const findNetworks = new DataLoader(async keys => {
-    const sql = `
-    select
-    id,
-    title,
-    acronym,
-    "type",
-    status,
-    start_year,
-    end_year,
-    url_info_id,
-    url_data_id,
-    abstract,
-    ST_AsGeoJSON(st_transform(coverage_spatial, 4326)) coverage_spatial,
-    url_sites_id,
-    parent_id,
-    created_by,
-    created_at,
-    modified_by,
-    modified_at
-    from public.networks where id in (${keys.join(',')});`
-    const rows = (await pool.query(sql)).rows
+    const rows = (
+      await query({
+        text: `
+          select
+          id,
+          title,
+          acronym,
+          "type",
+          status,
+          start_year,
+          end_year,
+          url_info_id,
+          url_data_id,
+          abstract,
+          ST_AsGeoJSON(st_transform(coverage_spatial, 4326)) coverage_spatial,
+          url_sites_id,
+          parent_id,
+          created_by,
+          created_at,
+          modified_by,
+          modified_at
+          from public.networks where id in (${keys.map((k, i) => `$${i + 1}`).join(',')});`,
+        values: keys.map(k => k)
+      })
+    ).rows
     return keys.map(key => rows.filter(sift({ id: key })) || [])
   }, dataLoaderOptions)
 
   const findSites = new DataLoader(async keys => {
-    const sql = `
-      select
-      id,
-      "name",
-      ST_AsGeoJSON(st_transform(xyz, 4326)) xyz
-      from public.sites
-      where id in (${keys.join(',')});`
-    const rows = (await pool.query(sql)).rows
+    const rows = (
+      await query({
+        text: `
+        select
+        id,
+        "name",
+        ST_AsGeoJSON(st_transform(xyz, 4326)) xyz
+        from public.sites
+        where id in (${keys.map((k, i) => `$${i + 1}`).join(',')});`,
+        values: keys.map(k => k)
+      })
+    ).rows
     return keys.map(key => rows.filter(sift({ id: key })) || [])
   }, dataLoaderOptions)
 
