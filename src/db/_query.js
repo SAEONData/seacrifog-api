@@ -1,13 +1,14 @@
-import { Query } from 'pg'
-
 export default async ({ pool, text, values, name }) => {
   let client
+  let result
   try {
     client = await pool.connect()
-    await client.query({ text, values, name })
+    result = await client.query({ text, values, name })
   } catch (error) {
     throw error
   } finally {
-    if (client) client.release()
+    console.log('releasing')
+    console.log(client.release())
   }
+  return result
 }
