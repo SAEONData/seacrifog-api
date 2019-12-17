@@ -1,5 +1,6 @@
 import { config } from 'dotenv'
 import { readFileSync, readdirSync } from 'fs'
+import { Pool } from 'pg'
 import csvReader from '../lib/csv-reader'
 import { join, normalize } from 'path'
 import { log, logError } from '../lib/log'
