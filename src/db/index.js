@@ -6,6 +6,7 @@ import {
   _findRadiativeForcings,
   _findDataproducts,
   _findNetworksOfSite,
+  _findSitesOfNetwork,
   _findVariablesOfNetwork,
   _findProtocolsOfVariable,
   _findRForcingsOfVariable,
@@ -30,6 +31,7 @@ export const initializeLoaders = () => {
   const findRadiativeForcings = _findRadiativeForcings()
   const findDataproducts = _findDataproducts()
   const findNetworksOfSite = _findNetworksOfSite()
+  const findSitesOfNetwork = _findSitesOfNetwork()
   const findVariablesOfNetwork = _findVariablesOfNetwork()
   const findProtocolsOfVariable = _findProtocolsOfVariable()
   const findRForcingsOfVariable = _findRForcingsOfVariable()
@@ -40,14 +42,15 @@ export const initializeLoaders = () => {
 
   return {
     findVariables: key => findVariables.load(key),
+    findSitesOfNetwork: key => findSitesOfNetwork.load(key),
     findVariablesOfNetwork: key => findVariablesOfNetwork.load(key),
     findVariablesOfProtocol: key => findVariablesOfProtocol.load(key),
     findVariablesOfDataproduct: key => findVariablesOfDataproduct.load(key),
     findVariablesOfRadiativeForcing: key => findVariablesOfRforcing.load(key),
     findDataproducts: key => findDataproducts.load(key),
     findDataproductsOfVariable: key => findDataproductsOfVariable.load(key),
-    findRForcingsOfVariables: key => findRForcingsOfVariable.load(key),
-    findNetworksOfSites: key => findNetworksOfSite.load(key),
+    findRForcingsOfVariable: key => findRForcingsOfVariable.load(key),
+    findNetworksOfSite: key => findNetworksOfSite.load(key),
     findProtocols: key => findProtocols.load(key),
     findProtocolsOfVariable: key => findProtocolsOfVariable.load(key),
     findNetworks: key => findNetworks.load(key),

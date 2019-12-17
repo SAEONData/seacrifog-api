@@ -234,7 +234,8 @@ type Network {
   created_at: Date
   modified_by: String
   modified_at: Date
-  variables: [Variable!]!
+  variables: [Variable]!
+  sites: [Site]!
 }
 
 type Variable {
