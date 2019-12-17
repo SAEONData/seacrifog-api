@@ -10,6 +10,7 @@ import {
   _findVariablesOfNetwork,
   _findProtocolsOfVariable,
   _findRForcingsOfVariable,
+  _findDataproductsOfVariable,
   _findVariablesOfRforcing,
   _findVariablesOfProtocol,
   _findVariablesOfDataproduct
