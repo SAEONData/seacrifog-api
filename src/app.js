@@ -10,18 +10,22 @@ import { readFileSync } from 'fs'
 import { normalize, join } from 'path'
 import resolvers from './resolvers'
 import { log, logError } from './lib/log'
-import { initializeLoaders, query } from './db'
+import { initializeLoaders, query, setupDb } from './db'
 import { config } from 'dotenv'
 import nativeExtensions from './lib/native-extensions'
+config()
+nativeExtensions()
 
-if (!process.env.NODE_ENV || !['production', 'development'].includes(process.env.NODE_ENV))
+if (!process.env.NODE_ENV || !['production', 'development'].includes(process.env.NODE_ENV)) {
   throw new Error(
     'The server MUST be started with a NODE_ENV environment variable, with a value of either "production" or "development"'
   )
+}
 
-// Configure the app
-config()
-nativeExtensions()
+// Setup DB
+if (process.env.FORCE_DB_RESET === 'true') {
+  setupDb()
+}
 
 // Load GraphQL schema
 const typeDefsPath = normalize(join(__dirname, './schema.graphql'))

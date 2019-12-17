@@ -1,5 +1,3 @@
-import { config } from 'dotenv'
-import setupDb from './_setup-db'
 import query from './_query'
 import {
   _findSites,
@@ -16,10 +14,8 @@ import {
   _findVariablesOfProtocol,
   _findVariablesOfDataproduct
 } from './finders'
-config()
 
-// SETUP DB
-if (process.env.FORCE_DB_RESET === 'true') setupDb()
+export { default as setupDb } from './_setup-db'
 
 /**
  * This is called once per request
