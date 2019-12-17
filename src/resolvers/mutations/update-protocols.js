@@ -31,7 +31,10 @@ export default async (self, args, req) => {
     }
 
     // Add Variables
-    if (addDirectlyRelatedVariables || addIndirectlyRelatedVariables) {
+    if (
+      (addDirectlyRelatedVariables && addDirectlyRelatedVariables.length) ||
+      (addIndirectlyRelatedVariables && addIndirectlyRelatedVariables.length)
+    ) {
       const updates = (addDirectlyRelatedVariables || [])
         .map(id => [id, 'direct'])
         .concat((addIndirectlyRelatedVariables || []).map(id => [id, 'indirect']))
@@ -49,7 +52,7 @@ export default async (self, args, req) => {
     }
 
     // Remove Variables
-    if (removeVariables)
+    if (removeVariables && removeVariables.length)
       await query({
         text: `delete from public.protocol_variable_xref where protocol_id = $1 and variable_id in (${removeVariables
           .map((id, i) => `$${i + 2}`)
