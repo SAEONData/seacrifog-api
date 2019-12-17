@@ -1,6 +1,11 @@
-import pool from '../db/_pool'
-export default ({ text, values, name }) =>
-  new Promise((resolve, reject) =>
+import createPool from '../db/_pool'
+var pool
+
+export default ({ text, values, name }) => {
+  if (!pool) {
+    pool = createPool()
+  }
+  return new Promise((resolve, reject) =>
     pool
       .connect()
       .then(client =>
@@ -12,3 +17,4 @@ export default ({ text, values, name }) =>
       .then(client => client.release())
       .catch(err => reject(err))
   )
+}
