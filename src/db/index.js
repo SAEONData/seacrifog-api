@@ -1,4 +1,3 @@
-import query from './_query'
 import {
   _findSites,
   _findNetworks,
@@ -15,8 +14,9 @@ import {
   _findVariablesOfProtocol,
   _findVariablesOfDataproduct
 } from './finders'
-
+import { default as _query } from './_query'
 export { default as setupDb } from './_setup-db'
+export const query = _query
 
 /**
  * This is called once per request
@@ -40,16 +40,16 @@ export const initializeLoaders = () => {
 
   return {
     findVariables: key => findVariables.load(key),
-    findVariablesOfNetworks: key => findVariablesOfNetwork.load(key),
-    findVariablesOfProtocols: key => findVariablesOfProtocol.load(key),
-    findVariablesOfDataproducts: key => findVariablesOfDataproduct.load(key),
-    findVariablesOfRadiativeForcings: key => findVariablesOfRforcing.load(key),
+    findVariablesOfNetwork: key => findVariablesOfNetwork.load(key),
+    findVariablesOfProtocol: key => findVariablesOfProtocol.load(key),
+    findVariablesOfDataproduct: key => findVariablesOfDataproduct.load(key),
+    findVariablesOfRadiativeForcing: key => findVariablesOfRforcing.load(key),
     findDataproducts: key => findDataproducts.load(key),
-    findDataproductsOfVariables: key => findDataproductsOfVariable.load(key),
+    findDataproductsOfVariable: key => findDataproductsOfVariable.load(key),
     findRForcingsOfVariables: key => findRForcingsOfVariable.load(key),
     findNetworksOfSites: key => findNetworksOfSite.load(key),
     findProtocols: key => findProtocols.load(key),
-    findProtocolsOfVariables: key => findProtocolsOfVariable.load(key),
+    findProtocolsOfVariable: key => findProtocolsOfVariable.load(key),
     findNetworks: key => findNetworks.load(key),
     findSites: key => findSites.load(key),
 
