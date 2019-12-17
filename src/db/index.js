@@ -32,7 +32,7 @@ export const initializeLoaders = () => {
   const findVariablesOfNetwork = _findVariablesOfNetwork()
   const findProtocolsOfVariable = _findProtocolsOfVariable()
   const findRForcingsOfVariable = _findRForcingsOfVariable()
-  const findDataproductsOfVariable = _findProtocolsOfVariable()
+  const findDataproductsOfVariable = _findDataproductsOfVariable()
   const findVariablesOfRforcing = _findVariablesOfRforcing()
   const findVariablesOfProtocol = _findVariablesOfProtocol()
   const findVariablesOfDataproduct = _findVariablesOfDataproduct()
