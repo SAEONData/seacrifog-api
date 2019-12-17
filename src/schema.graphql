@@ -134,6 +134,8 @@ input NetworkInput {
   # For updating mappings
   addVariables: [Int!]
   removeVariables: [Int!]
+  addSites: [Int!]
+  removeSites: [Int!]
 }
 
 type Mutation {
