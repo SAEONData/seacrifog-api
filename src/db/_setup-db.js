@@ -4,7 +4,7 @@ import { Pool } from 'pg'
 import csvReader from '../lib/csv-reader'
 import { join, normalize } from 'path'
 import { log, logError } from '../lib/log'
-import pool from './_pool'
+import query from './_query'
 config()
 
 const DB = process.env.POSTGRES_DATABASE || 'seacrifog'
@@ -71,9 +71,8 @@ export default () =>
       log('seacrifog database dropped and re-created!')
 
       // Create the seacrifog schema, and populate database
-      const seacrifogPool = pool
-      await seacrifogPool.query(loadSqlFile('migration/schema.sql'))
-      await seacrifogPool.query(loadSqlFile('migration/etl.sql'))
+      await query({ text: loadSqlFile('migration/schema.sql') })
+      await query({ text: loadSqlFile('migration/etl.sql') })
       log('seacrifog schema re-created!')
 
       // Update the database from the CSVs
@@ -110,7 +109,7 @@ export default () =>
           log(`Creating ${tempTableName} with`, csvContents.length, 'rows')
           const sql = makeSql(tempTableName, csvHeaders, csvContents)
           try {
-            await seacrifogPool.query(sql)
+            await query({ text: sql })
           } catch (error) {
             throw new Error(
               `Error inserting rows from ${csvPath} into ${tempTableName}, ${error}. SQL: ${sql}`
@@ -124,17 +123,19 @@ export default () =>
         // Run the migration SQL to select from the temp table into the model
         try {
           const sql = readFileSync(normalize(`${directoryPath}/_.sql`), { encoding: 'utf8' })
-          await seacrifogPool.query(sql)
+          await query({ text: sql })
         } catch (error) {
           logError(`ERROR executing ${directoryPath}_.sql`, error)
         }
-
-        // Clean up all the temp tables
-        // const ddlDropStmt = `drop table ${tempTableName};`
-        // await client.query(ddlDropStmt)
       }
+
+      // Clean up all the temp tables
+      log('\nCleaning up TEMP tables')
+      for (const table of cleanUp) {
+        await query({ text: `drop table public.${table};` })
+      }
+
       log("\nDev DB setup complete. If you don't see this message there was a problem")
-      await seacrifogPool.end()
     })()
   ).catch(err => {
     logError('Error initializing DEV database', err)
