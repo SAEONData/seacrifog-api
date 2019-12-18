@@ -145,6 +145,23 @@ type Mutation {
   updateNetworks(input: [NetworkInput!]!): [Network!]!
 }
 
+type Metadata {
+  id: Int
+}
+
+type VariableSearch {
+  id: Int!
+}
+type ProtocolSearch {
+  id: Int!
+}
+type SiteSearch {
+  id: Int!
+}
+type NetworkSearch {
+  id: Int!
+}
+
 type Query {
   variable(id: Int!): Variable
   variables: [Variable]!
@@ -154,7 +171,14 @@ type Query {
 
   dataproduct(id: Int!): Dataproduct
   dataproducts: [Dataproduct!]!
-  dataproducts2(variables: [Int!], protocols: [Int!]): [Dataproduct!]!
+
+  searchMetadata(
+    byVariables: [VariableSearch]
+    byProtocols: [ProtocolSearch]
+    bySites: [SiteSearch]
+    byNetworks: [NetworkSearch]
+  ): [Metadata!]!
+
   dataproductsSummary: DataproductsSummary!
 
   site(id: Int!): Site
@@ -217,7 +241,6 @@ type RadiativeForcing {
   variables: [Variable!]!
 }
 
-# coverage spatial should be JSON?
 type Network {
   id: Int
   title: String
