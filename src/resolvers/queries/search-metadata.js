@@ -16,6 +16,5 @@ export default async (self, args, req) => {
 
   const { data } = response
 
-  console.log(data)
-  return []
+  return [{ id: 1 }]
 }
