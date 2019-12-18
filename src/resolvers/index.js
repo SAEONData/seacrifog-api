@@ -19,10 +19,6 @@ import DataproductsSummary from './types/dataproducts-summary'
 import dataproductsSummary from './queries/dataproducts-summary'
 
 import Metadata from './types/metadata'
-import VariableSearch from './types/variable-search'
-import ProtocolSearch from './types/protocol-search'
-import SiteSearch from './types/site-search'
-import NetworkSearch from './types/network-search'
 import searchMetadata from './queries/search-metadata'
 
 import Site from './types/site'
@@ -86,11 +82,6 @@ export default {
   // Types
   JSON: GraphQLJSON,
   Date,
-
-  VariableSearch,
-  ProtocolSearch,
-  SiteSearch,
-  NetworkSearch,
 
   Variable,
   Protocol,

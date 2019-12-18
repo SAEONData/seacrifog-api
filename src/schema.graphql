@@ -149,16 +149,16 @@ type Metadata {
   id: Int
 }
 
-type VariableSearch {
+input VariableSearch {
   id: Int!
 }
-type ProtocolSearch {
+input ProtocolSearch {
   id: Int!
 }
-type SiteSearch {
+input SiteSearch {
   id: Int!
 }
-type NetworkSearch {
+input NetworkSearch {
   id: Int!
 }
 
