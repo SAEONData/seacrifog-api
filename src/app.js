@@ -33,7 +33,11 @@ const typeDefs = readFileSync(typeDefsPath, { encoding: 'utf8' })
 const schema = makeExecutableSchema({ typeDefs, resolvers })
 
 // Helper for allowing async / await with middleware
-const asyncHandler = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
+const asyncHandler = fn => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(error => {
+    logError('Top level application error', error)
+    return next()
+  })
 
 // Env config
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
