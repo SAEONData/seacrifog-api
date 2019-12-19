@@ -1,5 +1,6 @@
-import { parentPort, workerData } from 'worker_threads'
-import axios from 'axios'
+const { parentPort, workerData } = require('worker_threads')
+const axios = require('axios')
+
 ;(async search => {
   const { data } = await axios({
     baseURL: 'http://192.168.116.66:9210/search',

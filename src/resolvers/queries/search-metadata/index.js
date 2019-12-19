@@ -20,7 +20,10 @@ export default async (self, args, req) => {
 
   // Search SAEON
   const data = await new Promise((resolve, reject) => {
-    const worker = new Worker(__dirname + '/executors/_saeon-search.mjs', { workerData: search })
+    const worker = new Worker(__dirname + '/executors/_saeon-search.js', {
+      workerData: search,
+      type: 'module'
+    })
     worker.on('message', resolve)
     worker.on('error', reject)
     worker.on('exit', code => {
