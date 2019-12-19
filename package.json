@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "nodemon",
-    "prettier": "prettier --write \"src/**/*.@(js|graphql)\"",
+    "prettier": "prettier --write \"src/**/*.@(js|mjs|graphql)\"",
     "run:dev": "NODE_ENV=development npm-run-all server:dev",
     "server:dev": "TZ=utc babel-node ./src/bin",
     "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:gqlschema copy:sql copy:csvs copy:env server:prod",

@@ -1,5 +1,4 @@
-import { log, logError } from '../../lib/log'
-import axios from 'axios'
+import { Worker } from 'worker_threads'
 
 export default async (self, args, req) => {
   const { findNetworks, findVariables, findProtocols } = req.ctx.db.dataLoaders
@@ -19,19 +18,14 @@ export default async (self, args, req) => {
 
   const search = [...new Set([...ns, ...vs, ...ps])]
 
-  const { data } = await axios({
-    baseURL: 'http://192.168.116.66:9210/search',
-    params: {
-      index: 'saeon-odp-4-2',
-      size: 10000,
-      fields: 'metadata_json,record_id,organization',
-      'metadata_json.subjects.subject': search.join(',')
-    },
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' }
-  }).catch(error => {
-    logError('Error searching metadata', error)
-    throw error
+  // Search SAEON
+  const data = await new Promise((resolve, reject) => {
+    const worker = new Worker(__dirname + '/executors/_saeon-search.mjs', { workerData: search })
+    worker.on('message', resolve)
+    worker.on('error', reject)
+    worker.on('exit', code => {
+      if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`))
+    })
   })
 
   return data.results.map((item, i) => ({ id: i + 1 }))
