@@ -149,19 +149,6 @@ type Metadata {
   id: Int
 }
 
-input VariableSearch {
-  id: Int!
-}
-input ProtocolSearch {
-  id: Int!
-}
-input SiteSearch {
-  id: Int!
-}
-input NetworkSearch {
-  id: Int!
-}
-
 type Query {
   variable(id: Int!): Variable
   variables: [Variable]!
@@ -172,12 +159,7 @@ type Query {
   dataproduct(id: Int!): Dataproduct
   dataproducts: [Dataproduct!]!
 
-  searchMetadata(
-    byVariables: [VariableSearch]
-    byProtocols: [ProtocolSearch]
-    bySites: [SiteSearch]
-    byNetworks: [NetworkSearch]
-  ): [Metadata!]!
+  searchMetadata(byVariables: [Int!], byProtocols: [Int!], byNetworks: [Int!]): [Metadata!]!
 
   dataproductsSummary: DataproductsSummary!
 
