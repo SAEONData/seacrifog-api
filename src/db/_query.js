@@ -1,13 +1,18 @@
-import { Query } from 'pg'
+import createPool from '../db/_pool'
+var pool
 
-export default async ({ pool, text, values, name }) => {
-  let client
-  try {
-    client = await pool.connect()
-    await client.query({ text, values, name })
-  } catch (error) {
-    throw error
-  } finally {
-    if (client) client.release()
-  }
+export default ({ text, values, name }) => {
+  if (!pool) pool = createPool()
+  return new Promise((resolve, reject) =>
+    pool
+      .connect()
+      .then(client =>
+        client
+          .query({ text, values, name })
+          .then(res => resolve(res))
+          .then(() => client)
+      )
+      .then(client => client.release())
+      .catch(err => reject(err))
+  )
 }

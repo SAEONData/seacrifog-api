@@ -1,5 +1,3 @@
-import { log, logError } from '../../lib/log'
-
 export default async (self, args, req) => {
   const { findSites, allSites } = req.ctx.db.dataLoaders
   const { ids } = args

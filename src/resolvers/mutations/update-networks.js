@@ -8,7 +8,7 @@ export default async (self, args, req) => {
   const { query } = await req.ctx.db
   const { findNetworks } = req.ctx.db.dataLoaders
   const { input: inputs } = args
-  const nonDynamicUpdateCols = ['id', 'addVariables', 'removeVariables']
+  const nonDynamicUpdateCols = ['id', 'addVariables', 'removeVariables', 'addSites', 'removeSites']
 
   for (const input of inputs) {
     const { addVariables, removeVariables } = input
@@ -25,22 +25,28 @@ export default async (self, args, req) => {
       })
     }
 
-    // Add new variable mappings
-    if (addVariables)
-      await query({
-        text: `insert into public.network_variable_xref (network_id, variable_id) values (${addVariables
-          .map((id, i) => ['$1', `$${i + 2}`])
-          .join('),(')}) on conflict on constraint network_variable_xref_unique_cols do nothing;`,
-        values: [input.id].concat(addVariables.map(id => id))
-      })
+    // Remove old sites mappings
+    // TODO
+
+    // Add new sites mappings
+    // TODO
 
     // Remove old variable mappings
-    if (removeVariables)
+    if (removeVariables && removeVariables.length)
       await query({
         text: `delete from public.network_variable_xref where network_id = $1 and variable_id in (${removeVariables
           .map((id, i) => `$${i + 2}`)
           .join(',')});`,
         values: [input.id].concat(removeVariables.map(id => id))
+      })
+
+    // Add new variable mappings
+    if (addVariables && addVariables.length)
+      await query({
+        text: `insert into public.network_variable_xref (network_id, variable_id) values (${addVariables
+          .map((id, i) => ['$1', `$${i + 2}`])
+          .join('),(')}) on conflict on constraint network_variable_xref_unique_cols do nothing;`,
+        values: [input.id].concat(addVariables.map(id => id))
       })
   }
   // Return the updated rows

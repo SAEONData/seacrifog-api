@@ -14,10 +14,12 @@ import updateProtocols from './mutations/update-protocols'
 import Dataproduct from './types/dataproduct'
 import dataproduct from './queries/dataproduct'
 import dataproducts from './queries/dataproducts'
-import dataproducts2 from './queries/dataproducts2'
 import updateDataproducts from './mutations/update-dataproducts'
 import DataproductsSummary from './types/dataproducts-summary'
 import dataproductsSummary from './queries/dataproducts-summary'
+
+import Metadata from './types/metadata'
+import searchMetadata from './queries/search-metadata'
 
 import Site from './types/site'
 import site from './queries/site'
@@ -63,7 +65,7 @@ export default {
 
     dataproduct,
     dataproducts,
-    dataproducts2,
+    searchMetadata,
     dataproductsSummary,
 
     site,
@@ -91,6 +93,7 @@ export default {
   Network,
   Site,
   SitesAggregation,
+  Metadata,
   Dataproduct,
   DataproductsSummary,
   RadiativeForcing,

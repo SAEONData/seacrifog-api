@@ -134,6 +134,8 @@ input NetworkInput {
   # For updating mappings
   addVariables: [Int!]
   removeVariables: [Int!]
+  addSites: [Int!]
+  removeSites: [Int!]
 }
 
 type Mutation {
@@ -141,6 +143,10 @@ type Mutation {
   updateVariables(input: [VariableInput!]!): [Variable!]!
   updateProtocols(input: [ProtocolInput!]!): [Protocol!]!
   updateNetworks(input: [NetworkInput!]!): [Network!]!
+}
+
+type Metadata {
+  id: Int
 }
 
 type Query {
@@ -152,7 +158,9 @@ type Query {
 
   dataproduct(id: Int!): Dataproduct
   dataproducts: [Dataproduct!]!
-  dataproducts2(variables: [Int!], protocols: [Int!]): [Dataproduct!]!
+
+  searchMetadata(byVariables: [Int!], byProtocols: [Int!], byNetworks: [Int!]): [Metadata!]!
+
   dataproductsSummary: DataproductsSummary!
 
   site(id: Int!): Site
@@ -221,7 +229,6 @@ type RadiativeForcing {
   variables: [Variable!]!
 }
 
-# coverage spatial should be JSON?
 type Network {
   id: Int
   title: String
@@ -240,7 +247,8 @@ type Network {
   created_at: Date
   modified_by: String
   modified_at: Date
-  variables: [Variable!]!
+  variables: [Variable]!
+  sites: [Site]!
 }
 
 type Variable {
