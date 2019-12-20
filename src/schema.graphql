@@ -158,6 +158,8 @@ type Query {
   site(id: Int!): Site
   sites(ids: [Int!]): [Site!]!
 
+  sitesAggregation(ids: [Int!]): SitesAggregation!
+
   network(id: Int!): Network
   networks: [Network!]!
 
@@ -169,6 +171,10 @@ type Query {
   xrefDataproductsVariables: [XrefDataproductVariable!]!
 }
 
+type SitesAggregation {
+  site_id: Int!
+  networks_count: Int!
+}
 type DataproductsSummary {
   count: Int!
 }

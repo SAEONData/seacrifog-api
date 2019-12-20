@@ -23,6 +23,9 @@ import Site from './types/site'
 import site from './queries/site'
 import sites from './queries/sites'
 
+import SitesAggregation from './types/sites-aggregation'
+import sitesAggregation from './queries/sites-aggregation'
+
 import Network from './types/network'
 import network from './queries/network'
 import networks from './queries/networks'
@@ -66,6 +69,8 @@ export default {
     site,
     sites,
 
+    sitesAggregation,
+
     network,
     networks,
 
@@ -85,6 +90,7 @@ export default {
   Protocol,
   Network,
   Site,
+  SitesAggregation,
   Dataproduct,
   DataproductsSummary,
   RadiativeForcing,

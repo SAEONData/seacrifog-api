@@ -363,6 +363,18 @@ export const initializeLoaders = () => {
 
     // Aggregation queries
     aggregationDataproducts: async () =>
-      (await pool.query('select count(*) count from public.dataproducts;')).rows
+      (await pool.query('select count(*) count from public.dataproducts;')).rows,
+    //Site Aggregation test
+    aggregationSites: async keys => {
+      const sql = `
+          SELECT site_id,
+          COUNT(id) AS network_count
+          FROM public.site_network_xref
+          WHERE site_id IN (${keys.join(',')})
+          GROUP BY site_id`
+      const rows = (await pool.query(sql)).rows
+      return rows
+      //return keys.map(key => rows.filter(sift({ id: key })) || []) //surely only returns id array and therefore not what is wanted?
+    }
   }
 }
