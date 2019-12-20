@@ -1,5 +1,3 @@
-import { log, logError } from '../../lib/log'
-
 export default {
   networks: async (self, args, req) => {
     const { findNetworksOfSite } = req.ctx.db.dataLoaders

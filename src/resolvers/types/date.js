@@ -1,6 +1,5 @@
 import { GraphQLScalarType } from 'graphql'
 import { Kind } from 'graphql/language'
-import { logError } from '../../lib/log'
 
 export default new GraphQLScalarType({
   name: 'Date',

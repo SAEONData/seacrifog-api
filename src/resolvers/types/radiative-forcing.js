@@ -1,5 +1,3 @@
-import { log, logError } from '../../lib/log'
-
 export default {
   variables: async (self, args, req) => {
     const { findVariablesOfRadiativeForcing } = req.ctx.db.dataLoaders

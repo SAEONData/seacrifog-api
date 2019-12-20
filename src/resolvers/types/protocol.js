@@ -1,5 +1,3 @@
-import { log, logError } from '../../lib/log'
-
 export default {
   directly_related_variables: async (self, args, req) => {
     const { findVariablesOfProtocol } = req.ctx.db.dataLoaders
