@@ -125,16 +125,19 @@ export const initializeLoaders = () => {
     aggregationDataproducts: async () =>
       (await query({ text: 'select count(*) count from public.dataproducts;' })).rows,
 
-      //Site Aggregation test
-      aggregationSites: async keys => {
-        const sql = `
-            SELECT site_id,
-            COUNT(id) AS network_count
-            FROM public.site_network_xref
-            WHERE site_id IN (${keys.join(',')})
-            GROUP BY site_id`
-        const rows = (await query({text: sql})).rows
-        return rows
-      }
+    //Site Aggregation test
+    aggregationSites: async keys => {
+      const sql = `
+        SELECT 
+        x.network_id,
+        n.acronym,
+        COUNT(x.id) AS site_count
+        FROM public.site_network_xref x
+        INNER JOIN networks n ON n.id =x.network_id
+        WHERE n.id IN (${keys.join(',')})
+        GROUP BY x.network_id,n.acronym`
+      const rows = (await query({ text: sql })).rows
+      return rows
+    }
   }
 }
