@@ -27,10 +27,10 @@
     "lint"
   ],
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.19.1",
     "compression": "^1.7.4",
     "cookie-parser": "~1.4.4",
-    "core-js": "^3.6.1",
+    "core-js": "^3.6.2",
     "csv": "^5.3.1",
     "csv-parse": "^4.8.3",
     "dataloader": "^2.0.0",
@@ -45,7 +45,7 @@
     "morgan": "~1.9.1",
     "pg": "^7.17.0",
     "ramda": "^0.26.1",
-    "sift": "^9.0.4"
+    "sift": "^9.0.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.7",
