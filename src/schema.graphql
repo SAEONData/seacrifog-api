@@ -147,6 +147,7 @@ type Mutation {
 
 type Metadata {
   id: Int
+  record: JSON
 }
 
 type Query {

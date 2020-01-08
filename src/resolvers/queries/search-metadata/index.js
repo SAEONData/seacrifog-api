@@ -28,5 +28,5 @@ export default async (self, args, req) => {
     })
   })
 
-  return data.results.map((item, i) => ({ id: i + 1 }))
+  return data.results.map((item, i) => ({ id: i + 1, record: item }))
 }
