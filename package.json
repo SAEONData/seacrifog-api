@@ -9,7 +9,7 @@
     "url": "http://saeon.ac.za"
   },
   "scripts": {
-    "start": "nodemon",
+    "start": "nodemon --exec \"npm-run-all prettier run:dev\"",
     "prettier": "prettier --write \"src/**/*.@(js|mjs|graphql)\"",
     "run:dev": "NODE_ENV=development npm-run-all server:dev",
     "server:dev": "TZ=utc babel-node ./src/bin",
