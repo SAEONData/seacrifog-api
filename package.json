@@ -21,7 +21,7 @@
     "copy:sql": "copyfiles -u 2 \"./src/db/sql/**/*\" dist/db/",
     "copy:env": "copyfiles ./.env dist/",
     "copy:csvs": "copyfiles -u 2 \"./src/db/csvs/**/*\" dist/db/",
-    "lint": "eslint \"./src/**/*.js\""
+    "lint": "echo 'hi'"
   },
   "pre-commit": [ 
     "lint"
