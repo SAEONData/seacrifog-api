@@ -23,7 +23,7 @@
     "copy:csvs": "copyfiles -u 2 \"./src/db/csvs/**/*\" dist/db/",
     "lint": "eslint \"./src/**/*.js\""
   },
-  "pre-commit": [
+  "pre-commit": [ 
     "lint"
   ],
   "dependencies": {
