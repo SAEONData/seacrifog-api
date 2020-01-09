@@ -5,7 +5,7 @@ import { readdirSync } from 'fs'
  * A list of executors to search metadata endpoints
  */
 const executors = readdirSync(__dirname + '/executors').filter(
-  filename => filename.indexOf('s_example') !== 0
+  filename => filename.indexOf('_example') !== 0
 )
 
 /**
