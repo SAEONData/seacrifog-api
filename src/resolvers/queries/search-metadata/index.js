@@ -1,4 +1,19 @@
 import { Worker } from 'worker_threads'
+import { readdirSync } from 'fs'
+
+/**
+ * A list of executors to search metadata endpoints
+ */
+const executors = readdirSync(__dirname + '/executors').filter(
+  filename => filename.indexOf('_example') !== 0
+)
+
+/**
+ * Target name  maps
+ */
+const targets = {
+  _saeon: 'SAEON CKAN: saeon-odp-4-2'
+}
 
 export default async (self, args, req) => {
   const { findNetworks, findVariables, findProtocols } = req.ctx.db.dataLoaders
@@ -18,15 +33,28 @@ export default async (self, args, req) => {
 
   const search = [...new Set([...ns, ...vs, ...ps])]
 
-  // Search SAEON
-  const data = await new Promise((resolve, reject) => {
-    const worker = new Worker(__dirname + '/executors/_saeon-search.js', { workerData: search })
-    worker.on('message', resolve)
-    worker.on('error', reject)
-    worker.on('exit', code => {
-      if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`))
-    })
-  })
+  /**
+   * An array or results that correspond to each executor
+   * [{saeon search results}, etc]
+   */
+  const searchResults = await Promise.all(
+    executors.map(
+      filename =>
+        new Promise((resolve, reject) => {
+          const worker = new Worker(`${__dirname}/executors/${filename}`, { workerData: search })
+          worker.on('message', resolve)
+          worker.on('error', reject)
+          worker.on('exit', code => {
+            if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`))
+          })
+        })
+    )
+  )
 
-  return data.results.map((item, i) => ({ id: i + 1 }))
+  // Currently only dealing with SAEON seach results
+  return executors.map((filename, i) => ({
+    id: i,
+    target: targets[filename.match(/(.*)\.([^.]*)$/, '')[1]] || filename,
+    result: searchResults[i]
+  }))
 }
