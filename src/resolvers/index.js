@@ -27,6 +27,8 @@ import sites from './queries/sites'
 
 import SitesAggregation from './types/sites-aggregation'
 import sitesAggregation from './queries/sites-aggregation'
+import NetworksTypes from './types/networks-types'
+import networksTypes from './queries/networks-types'
 
 import Network from './types/network'
 import network from './queries/network'
@@ -72,6 +74,7 @@ export default {
     sites,
 
     sitesAggregation,
+    networksTypes,
 
     network,
     networks,
@@ -93,6 +96,7 @@ export default {
   Network,
   Site,
   SitesAggregation,
+  NetworksTypes,
   Metadata,
   Dataproduct,
   DataproductsSummary,

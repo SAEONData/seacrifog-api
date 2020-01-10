@@ -167,6 +167,7 @@ type Query {
   sites(ids: [Int!]): [Site!]!
 
   sitesAggregation(ids: [Int!]): [SitesAggregation]!
+  networksTypes(ids: [Int!]): [NetworksTypes]!
 
   network(id: Int!): Network
   networks: [Network!]!
@@ -183,6 +184,10 @@ type SitesAggregation {
   network_id: Int
   acronym: String
   site_count: Int
+}
+type NetworksTypes {
+  network_count: Int
+  type: String
 }
 type DataproductsSummary {
   count: Int!

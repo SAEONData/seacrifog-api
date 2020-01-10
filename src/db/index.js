@@ -125,8 +125,8 @@ export const initializeLoaders = () => {
     aggregationDataproducts: async () =>
       (await query({ text: 'select count(*) count from public.dataproducts;' })).rows,
 
-    //Site Aggregation test
-    aggregationSites: async keys => {
+    //Site Aggregation of Network set
+    sitesAggregation: async keys => {
       const sql = `
         SELECT 
         x.network_id,
@@ -136,6 +136,20 @@ export const initializeLoaders = () => {
         INNER JOIN networks n ON n.id =x.network_id
         WHERE n.id IN (${keys.join(',')})
         GROUP BY x.network_id,n.acronym`
+      const rows = (await query({ text: sql })).rows
+      return rows
+    },
+
+    //type Aggregation of Network set
+    networksTypes: async keys => {
+      const sql = `
+        SELECT 
+        COUNT(networks.id) AS network_count,
+        networks."type" 
+        FROM networks
+        WHERE networks."type" IS NOT NULL
+        AND networks.id IN (${keys.join(',')})
+        GROUP BY networks."type"`
       const rows = (await query({ text: sql })).rows
       return rows
     }
