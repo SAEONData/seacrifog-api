@@ -25,10 +25,26 @@ import Site from './types/site'
 import site from './queries/site'
 import sites from './queries/sites'
 
+//Aggregations
 import SitesAggregation from './types/sites-aggregation'
 import sitesAggregation from './queries/sites-aggregation'
 import NetworksTypes from './types/networks-types'
 import networksTypes from './queries/networks-types'
+import VariablesDomains from './queries/variables-domains'
+import variablesDomains from './queries/variables-domains'
+import VariablesReqSources from './types/variables-req-sources'
+import variablesReqSources from './queries/variables-req-sources'
+import VariablesRfTypes from './types/variables-rf-types'
+import variablesRfTypes from './queries/variables-rf-types'
+import VariablesSets from './types/variables-sets'
+import variablesSets from './queries/variables-sets'
+
+import ProtocolsCoverages from './types/protocols-coverages'
+import protocolsCoverages from './queries/protocols-coverages'
+import ProtocolsCoverageTypes from './types/protocols-coverage-types'
+import protocolsCoverageTypes from './queries/protocols-coverage-types'
+import ProtocolsDomains from './types/protocols-domains'
+import protocolsDomains from './queries/protocols-domains'
 
 import Network from './types/network'
 import network from './queries/network'
@@ -73,8 +89,16 @@ export default {
     site,
     sites,
 
+    //Aggregations
     sitesAggregation,
     networksTypes,
+    protocolsCoverages,
+    protocolsCoverageTypes,
+    protocolsDomains,
+    variablesDomains,
+    variablesReqSources,
+    variablesRfTypes,
+    variablesSets,
 
     network,
     networks,
@@ -95,8 +119,18 @@ export default {
   Protocol,
   Network,
   Site,
+
+  //Aggregations
   SitesAggregation,
   NetworksTypes,
+  ProtocolsCoverages,
+  ProtocolsCoverageTypes,
+  ProtocolsDomains,
+  VariablesDomains,
+  VariablesReqSources,
+  VariablesRfTypes,
+  VariablesSets,
+
   Metadata,
   Dataproduct,
   DataproductsSummary,

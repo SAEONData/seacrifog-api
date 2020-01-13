@@ -168,8 +168,16 @@ type Query {
   site(id: Int!): Site
   sites(ids: [Int!]): [Site!]!
 
+  # Aggregations
   sitesAggregation(ids: [Int!]): [SitesAggregation]!
   networksTypes(ids: [Int!]): [NetworksTypes]!
+  protocolsCoverages(ids: [Int!]): [ProtocolsCoverages]!
+  protocolsCoverageTypes(ids: [Int!]): [ProtocolsCoverageTypes]!
+  protocolsDomains(ids: [Int!]): [ProtocolsDomains]!
+  variablesDomains(ids: [Int!]): [VariablesDomains]!
+  variablesReqSources(ids: [Int!]): [VariablesReqSources]!
+  variablesRfTypes(ids: [Int!]): [VariablesRfTypes]!
+  variablesSets(ids: [Int!]): [VariablesSets]!
 
   network(id: Int!): Network
   networks: [Network!]!
@@ -182,6 +190,7 @@ type Query {
   xrefDataproductsVariables: [XrefDataproductVariable!]!
 }
 
+#Aggregations
 type SitesAggregation {
   network_id: Int
   acronym: String
@@ -191,6 +200,35 @@ type NetworksTypes {
   network_count: Int
   type: String
 }
+type ProtocolsCoverages {
+  coverage: String
+  protocol_count: Int
+}
+type ProtocolsCoverageTypes {
+  coverage_type: String
+  protocol_count: Int
+}
+type ProtocolsDomains {
+  domain: String
+  protocol_count: Int
+}
+type VariablesDomains {
+  domain: String
+  variable_count: Int
+}
+type VariablesReqSources {
+  req_source: String
+  variable_count: Int
+}
+type VariablesRfTypes {
+  rftype: String
+  variable_count: Int
+}
+type VariablesSets {
+  set: String
+  variable_count: Int
+}
+
 type DataproductsSummary {
   count: Int!
 }

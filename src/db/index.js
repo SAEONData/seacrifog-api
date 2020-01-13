@@ -135,7 +135,8 @@ export const initializeLoaders = () => {
         FROM public.site_network_xref x
         INNER JOIN networks n ON n.id =x.network_id
         WHERE n.id IN (${keys.join(',')})
-        GROUP BY x.network_id,n.acronym`
+        GROUP BY x.network_id,n.acronym
+        ORDER BY site_count DESC`
       const rows = (await query({ text: sql })).rows
       return rows
     },
@@ -149,7 +150,98 @@ export const initializeLoaders = () => {
         FROM networks
         WHERE networks."type" IS NOT NULL
         AND networks.id IN (${keys.join(',')})
-        GROUP BY networks."type"`
+        GROUP BY networks."type"
+        ORDER BY network_count DESC`
+      const rows = (await query({ text: sql })).rows
+      return rows
+    },
+
+    //coverage aggregation of Protocol set
+    protocolsCoverages: async keys => {
+      const sql = `SELECT 
+      covs."name" coverage,
+      COUNT(xref.protocol_id) protocol_count
+      FROM protocol_coverage_xref xref
+      INNER JOIN protocol_coverages covs ON covs.id = xref.coverage_id
+      WHERE xref.protocol_id IN (${keys.join(',')})
+      GROUP BY covs."name"
+      ORDER BY protocol_count DESC`
+      const rows = (await query({ text: sql })).rows
+      return rows
+    },
+
+    //domain aggregation of Protocol set
+    protocolsDomains: async keys => {
+      const sql = `SELECT 
+        "domain",
+        COUNT(id) AS protocol_count
+        FROM protocols
+        WHERE protocols.id IN (${keys.join(',')})
+        GROUP BY "domain"
+        ORDER BY protocol_count DESC`
+      const rows = (await query({ text: sql })).rows
+      return rows
+    },
+
+    //Coverage Type aggregation of Protocol set
+    protocolsCoverageTypes: async keys => {
+      const sql = `SELECT 
+      coverage_type,
+      COUNT(id) AS protocol_count
+      FROM protocols
+      WHERE coverage_type !=''
+      AND protocols.id IN (${keys.join(',')})
+      GROUP BY coverage_type
+      ORDER BY protocol_count DESC`
+      const rows = (await query({ text: sql })).rows
+      return rows
+    },
+
+    //domain aggregation of Variable set
+    variablesDomains: async keys => {
+      const sql = `SELECT 
+          "domain",
+          COUNT(id) AS variable_count
+          FROM variables
+          WHERE variables.id IN (${keys.join(',')})
+          GROUP BY "domain"
+          ORDER BY variable_count DESC;`
+      const rows = (await query({ text: sql })).rows
+      return rows
+    },
+    //req_source aggregation of Variable set
+    variablesReqSources: async keys => {
+      const sql = `SELECT 
+          req_source,
+          COUNT(id) AS variable_count
+          FROM variables
+          WHERE variables.id IN (${keys.join(',')})
+          GROUP BY req_source
+          ORDER BY variable_count DESC`
+      const rows = (await query({ text: sql })).rows
+      return rows
+    },
+    //rftype aggregation of Variable set
+    variablesRfTypes: async keys => {
+      const sql = `SELECT 
+                  rftype,
+                  COUNT(id) AS variable_count
+                  FROM variables
+                  WHERE variables.id IN (${keys.join(',')})
+                  GROUP BY rftype
+                  ORDER BY variable_count DESC`
+      const rows = (await query({ text: sql })).rows
+      return rows
+    },
+    //Set aggregation of Variable set
+    variablesSets: async keys => {
+      const sql = `SELECT 
+          "set",
+          COUNT(id) AS variable_count
+          FROM variables
+          WHERE variables.id IN (${keys.join(',')})
+          GROUP BY "set"
+          ORDER BY variable_count DESC`
       const rows = (await query({ text: sql })).rows
       return rows
     }
