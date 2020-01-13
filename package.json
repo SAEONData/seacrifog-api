@@ -46,7 +46,7 @@
     "morgan": "~1.9.1",
     "pg": "^7.17.0",
     "ramda": "^0.26.1",
-    "sift": "^9.0.6"
+    "sift": "^10.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.7",
