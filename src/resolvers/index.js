@@ -32,12 +32,10 @@ import NetworksTypes from './types/networks-types'
 import networksTypes from './queries/networks-types'
 import VariablesDomains from './queries/variables-domains'
 import variablesDomains from './queries/variables-domains'
-import VariablesReqSources from './types/variables-req-sources'
-import variablesReqSources from './queries/variables-req-sources'
 import VariablesRfTypes from './types/variables-rf-types'
 import variablesRfTypes from './queries/variables-rf-types'
-import VariablesSets from './types/variables-sets'
-import variablesSets from './queries/variables-sets'
+import VariablesProtocols from './types/variables-protocols'
+import variablesProtocols from './queries/variables-protocols'
 
 import ProtocolsCoverages from './types/protocols-coverages'
 import protocolsCoverages from './queries/protocols-coverages'
@@ -45,6 +43,8 @@ import ProtocolsCoverageTypes from './types/protocols-coverage-types'
 import protocolsCoverageTypes from './queries/protocols-coverage-types'
 import ProtocolsDomains from './types/protocols-domains'
 import protocolsDomains from './queries/protocols-domains'
+import ProtocolsVariables from './types/protocols-variables'
+import protocolsVariables from './queries/protocols-variables'
 
 import Network from './types/network'
 import network from './queries/network'
@@ -95,10 +95,10 @@ export default {
     protocolsCoverages,
     protocolsCoverageTypes,
     protocolsDomains,
+    protocolsVariables,
     variablesDomains,
-    variablesReqSources,
     variablesRfTypes,
-    variablesSets,
+    variablesProtocols,
 
     network,
     networks,
@@ -126,10 +126,10 @@ export default {
   ProtocolsCoverages,
   ProtocolsCoverageTypes,
   ProtocolsDomains,
+  ProtocolsVariables,
   VariablesDomains,
-  VariablesReqSources,
   VariablesRfTypes,
-  VariablesSets,
+  VariablesProtocols,
 
   Metadata,
   Dataproduct,

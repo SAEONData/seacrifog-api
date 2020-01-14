@@ -174,10 +174,10 @@ type Query {
   protocolsCoverages(ids: [Int!]): [ProtocolsCoverages]!
   protocolsCoverageTypes(ids: [Int!]): [ProtocolsCoverageTypes]!
   protocolsDomains(ids: [Int!]): [ProtocolsDomains]!
+  protocolsVariables(ids: [Int!]): [ProtocolsVariables]!
   variablesDomains(ids: [Int!]): [VariablesDomains]!
-  variablesReqSources(ids: [Int!]): [VariablesReqSources]!
   variablesRfTypes(ids: [Int!]): [VariablesRfTypes]!
-  variablesSets(ids: [Int!]): [VariablesSets]!
+  variablesProtocols(ids: [Int!]): [VariablesProtocols]!
 
   network(id: Int!): Network
   networks: [Network!]!
@@ -212,21 +212,23 @@ type ProtocolsDomains {
   domain: String
   protocol_count: Int
 }
-type VariablesDomains {
-  domain: String
+type ProtocolsVariables {
+  protocol_id: Int
+  protocol_title: String
   variable_count: Int
 }
-type VariablesReqSources {
-  req_source: String
+type VariablesDomains {
+  domain: String
   variable_count: Int
 }
 type VariablesRfTypes {
   rftype: String
   variable_count: Int
 }
-type VariablesSets {
-  set: String
-  variable_count: Int
+type VariablesProtocols {
+  id: Int
+  variable_name: String
+  protocol_count: Int
 }
 
 type DataproductsSummary {

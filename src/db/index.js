@@ -209,18 +209,6 @@ export const initializeLoaders = () => {
       const rows = (await query({ text: sql })).rows
       return rows
     },
-    //req_source aggregation of Variable set
-    variablesReqSources: async keys => {
-      const sql = `SELECT 
-          req_source,
-          COUNT(id) AS variable_count
-          FROM variables
-          WHERE variables.id IN (${keys.join(',')})
-          GROUP BY req_source
-          ORDER BY variable_count DESC`
-      const rows = (await query({ text: sql })).rows
-      return rows
-    },
     //rftype aggregation of Variable set
     variablesRfTypes: async keys => {
       const sql = `SELECT 
@@ -233,15 +221,33 @@ export const initializeLoaders = () => {
       const rows = (await query({ text: sql })).rows
       return rows
     },
-    //Set aggregation of Variable set
-    variablesSets: async keys => {
-      const sql = `SELECT 
-          "set",
-          COUNT(id) AS variable_count
-          FROM variables
-          WHERE variables.id IN (${keys.join(',')})
-          GROUP BY "set"
-          ORDER BY variable_count DESC`
+    //Protocol aggregation of Variable set
+    variablesProtocols: async keys => {
+      const sql = `SELECT
+          vars.id,
+          vars."name" variable_name,
+          COUNT(prots.id) protocol_count
+          FROM variables vars
+          INNER JOIN protocol_variable_xref xref ON xref.variable_id = vars.id
+          INNER JOIN protocols prots ON xref.protocol_id = prots.id
+          WHERE vars.id IN (${keys.join(',')})
+          GROUP BY vars.id, vars."name"
+          ORDER BY protocol_count DESC`
+      const rows = (await query({ text: sql })).rows
+      return rows
+    },
+    //Variable aggregation of Protocol set
+    protocolsVariables: async keys => {
+      const sql = `SELECT
+      prots.id protocol_id,
+      prots.title protocol_title,
+      COUNT(vars.id) variable_count
+      FROM protocols prots
+      INNER JOIN protocol_variable_xref xref ON xref.protocol_id = prots.id
+      INNER JOIN variables vars ON xref.variable_id = vars.id
+      WHERE prots.id IN (${keys.join(',')})
+      GROUP BY prots.id, prots.title
+      ORDER BY variable_count DESC`
       const rows = (await query({ text: sql })).rows
       return rows
     }
