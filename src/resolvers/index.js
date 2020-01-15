@@ -36,6 +36,8 @@ import VariablesRfTypes from './types/variables-rf-types'
 import variablesRfTypes from './queries/variables-rf-types'
 import VariablesProtocols from './types/variables-protocols'
 import variablesProtocols from './queries/variables-protocols'
+import VariablesRforcingCompounds from './types/variables-rforcing-compounds'
+import variablesRforcingCompounds from './queries/variables-rforcing-compounds'
 
 import ProtocolsCoverages from './types/protocols-coverages'
 import protocolsCoverages from './queries/protocols-coverages'
@@ -99,6 +101,7 @@ export default {
     variablesDomains,
     variablesRfTypes,
     variablesProtocols,
+    variablesRforcingCompounds,
 
     network,
     networks,
@@ -130,6 +133,7 @@ export default {
   VariablesDomains,
   VariablesRfTypes,
   VariablesProtocols,
+  VariablesRforcingCompounds,
 
   Metadata,
   Dataproduct,

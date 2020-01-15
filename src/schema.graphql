@@ -178,6 +178,7 @@ type Query {
   variablesDomains(ids: [Int!]): [VariablesDomains]!
   variablesRfTypes(ids: [Int!]): [VariablesRfTypes]!
   variablesProtocols(ids: [Int!]): [VariablesProtocols]!
+  variablesRforcingCompounds(ids: [Int!]): [VariablesRforcingCompounds]!
 
   network(id: Int!): Network
   networks: [Network!]!
@@ -229,6 +230,11 @@ type VariablesProtocols {
   id: Int
   variable_name: String
   protocol_count: Int
+}
+type VariablesRforcingCompounds {
+  variable_id: Int
+  variable_name: String
+  rforcing_count: Int
 }
 
 type DataproductsSummary {

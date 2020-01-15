@@ -221,18 +221,33 @@ export const initializeLoaders = () => {
       const rows = (await query({ text: sql })).rows
       return rows
     },
+    //Radiative Forcing compound count aggregation of Variable set
+    variablesRforcingCompounds: async keys => {
+      const sql = `SELECT
+                    vars.id variable_id,
+                    vars."name" variable_name,
+                    COUNT(rfors.id) rforcing_count
+                    FROM variables vars
+                    INNER JOIN rforcing_variable_xref xref ON xref.variable_id = vars.id
+                    INNER JOIN rforcings rfors ON xref.rforcing_id = rfors.id
+                    WHERE vars.id IN (${keys.join(',')})
+                    GROUP BY vars.id, vars."name"
+                    ORDER BY rforcing_count DESC`
+      const rows = (await query({ text: sql })).rows
+      return rows
+    },
     //Protocol aggregation of Variable set
     variablesProtocols: async keys => {
       const sql = `SELECT
-          vars.id,
-          vars."name" variable_name,
-          COUNT(prots.id) protocol_count
-          FROM variables vars
-          INNER JOIN protocol_variable_xref xref ON xref.variable_id = vars.id
-          INNER JOIN protocols prots ON xref.protocol_id = prots.id
-          WHERE vars.id IN (${keys.join(',')})
-          GROUP BY vars.id, vars."name"
-          ORDER BY protocol_count DESC`
+                  vars.id,
+                  vars."name" variable_name,
+                  COUNT(prots.id) protocol_count
+                  FROM variables vars
+                  INNER JOIN protocol_variable_xref xref ON xref.variable_id = vars.id
+                  INNER JOIN protocols prots ON xref.protocol_id = prots.id
+                  WHERE vars.id IN (${keys.join(',')})
+                  GROUP BY vars.id, vars."name"
+                  ORDER BY protocol_count DESC`
       const rows = (await query({ text: sql })).rows
       return rows
     },
