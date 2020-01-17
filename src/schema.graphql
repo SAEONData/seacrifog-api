@@ -191,52 +191,6 @@ type Query {
   xrefDataproductsVariables: [XrefDataproductVariable!]!
 }
 
-#Aggregations
-type SitesAggregation {
-  network_id: Int
-  acronym: String
-  site_count: Int
-}
-type NetworksTypes {
-  network_count: Int
-  type: String
-}
-type ProtocolsCoverages {
-  coverage: String
-  protocol_count: Int
-}
-type ProtocolsCoverageTypes {
-  coverage_type: String
-  protocol_count: Int
-}
-type ProtocolsDomains {
-  domain: String
-  protocol_count: Int
-}
-type ProtocolsVariables {
-  protocol_id: Int
-  protocol_title: String
-  variable_count: Int
-}
-type VariablesDomains {
-  domain: String
-  variable_count: Int
-}
-type VariablesRfTypes {
-  rftype: String
-  variable_count: Int
-}
-type VariablesProtocols {
-  id: Int
-  variable_name: String
-  protocol_count: Int
-}
-type VariablesRforcingCompounds {
-  variable_id: Int
-  variable_name: String
-  rforcing_count: Int
-}
-
 type DataproductsSummary {
   count: Int!
 }
@@ -401,4 +355,50 @@ type Dataproduct {
   modified_at: Date
   present: String
   variables: [Variable!]!
+}
+
+#Aggregations
+type SitesAggregation {
+  network_id: Int
+  acronym: String
+  site_count: Int
+}
+type NetworksTypes {
+  network_count: Int
+  type: String
+}
+type ProtocolsCoverages {
+  coverage: String
+  protocol_count: Int
+}
+type ProtocolsCoverageTypes {
+  coverage_type: String
+  protocol_count: Int
+}
+type ProtocolsDomains {
+  domain: String
+  protocol_count: Int
+}
+type ProtocolsVariables {
+  protocol_id: Int
+  protocol_title: String
+  variable_count: Int
+}
+type VariablesDomains {
+  domain: String
+  variable_count: Int
+}
+type VariablesRfTypes {
+  rftype: String
+  variable_count: Int
+}
+type VariablesProtocols {
+  id: Int
+  variable_name: String
+  protocol_count: Int
+}
+type VariablesRforcingCompounds {
+  variable_id: Int
+  variable_name: String
+  rforcing_count: Int
 }
