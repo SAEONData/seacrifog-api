@@ -18,24 +18,74 @@ const targets = {
 export default async (self, args, req) => {
   const { findNetworks, findVariables, findProtocols } = req.ctx.db.dataLoaders
   const { byNetworks = [], byVariables = [], byProtocols = [] } = args
+  const search = {}
 
-  // Get networks search terms
+  // Resolve IDs to networks, variables and protocols
   const networks = await Promise.all(byNetworks.map(async id => (await findNetworks(id))[0]))
-  const ns = networks.map(n => n.type)
-
-  // Get variables search terms
   const variables = await Promise.all(byVariables.map(async id => (await findVariables(id))[0]))
-  const vs = variables.map(v => v.domain)
-
-  // Get protocols search terms
   const protocols = await Promise.all(byProtocols.map(async id => (await findProtocols(id))[0]))
-  const ps = protocols.map(p => p.domain)
 
-  const search = [...new Set([...ns, ...vs, ...ps])]
+  // Networks search object
+  search.networks = networks.reduce(
+    (acc, n) => ({
+      title: [...new Set([...acc.title, n.title])],
+      acronym: [...new Set([...acc.acronym, n.acronym])],
+      start_year: [...new Set([...acc.start_year, n.start_year])],
+      end_year: [...new Set([...acc.end_year, n.end_year])],
+      type: [...new Set([...acc.type, n.type])]
+    }),
+    {
+      title: [],
+      acronym: [],
+      start_year: [],
+      end_year: [],
+      type: []
+    }
+  )
+
+  // Variables search object
+  search.variables = variables.reduce(
+    (acc, v) => ({
+      name: [...new Set([...acc.name, v.name])],
+      class: [...new Set([...acc.class, v.class])],
+      domain: [...new Set([...acc.domain, v.domain])],
+      technology_type: [...new Set([...acc.technology_type, v.technology_type])]
+    }),
+    {
+      name: [],
+      class: [],
+      domain: [],
+      technology_type: []
+    }
+  )
+
+  // Protocols search object
+  search.protocols = protocols.reduce(
+    (acc, p) => ({
+      doi: [...new Set([...acc.doi, p.doi])],
+      author: [...new Set([...acc.author, p.author])],
+      publisher: [...new Set([...acc.publisher, p.publisher])],
+      title: [...new Set([...acc.title, p.title])],
+      publish_date: [...new Set([...acc.publish_date, p.publish_date])],
+      publish_year: [...new Set([...acc.publish_year, p.publish_year])],
+      category: [...new Set([...acc.category, p.category])],
+      domain: [...new Set([...acc.domain, p.domain])]
+    }),
+    {
+      doi: [],
+      author: [],
+      publisher: [],
+      title: [],
+      publish_date: [],
+      publish_year: [],
+      category: [],
+      domain: []
+    }
+  )
 
   /**
    * An array or results that correspond to each executor
-   * [{saeon search results}, etc]
+   * [executor1Results, executor2Results, etc]
    */
   const searchResults = await Promise.all(
     executors.map(
@@ -51,7 +101,6 @@ export default async (self, args, req) => {
     )
   )
 
-  // Currently only dealing with SAEON seach results
   return executors.map((filename, i) => ({
     id: i,
     target: targets[filename.match(/(.*)\.([^.]*)$/, '')[1]] || filename,
