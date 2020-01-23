@@ -5,28 +5,26 @@ const getSubjects = search => {
   const { acronym, type } = search.networks
   const { name, class: variableClass, domain: variableDomain, technology_type } = search.variables
   const { category, domain: protocolDomain } = search.protocols
-  return encodeURIComponent(
-    [
-      ...acronym,
-      ...type,
-      ...name,
-      ...variableClass,
-      ...variableDomain,
-      ...technology_type,
-      ...category,
-      ...protocolDomain
-    ].join(',')
-  )
+  return [
+    ...acronym,
+    ...type,
+    ...name,
+    ...variableClass,
+    ...variableDomain,
+    ...technology_type,
+    ...category,
+    ...protocolDomain
+  ]
 }
 
 const getTitles = search => {
   const { title: networkTitle } = search.networks
   const { name: variableTitle } = search.variables
   const { title: protocolTitle } = search.protocols
-  return encodeURIComponent([...networkTitle, ...variableTitle, ...protocolTitle].join(','))
+  return [...networkTitle, ...variableTitle, ...protocolTitle].join(',')
 }
 
-const getIdentifiers = ({ protocols }) => encodeURIComponent(protocols.doi.join(','))
+const getIdentifiers = ({ protocols }) => protocols.doi.join(',')
 
 ;(async search => {
   /**
@@ -44,15 +42,16 @@ const getIdentifiers = ({ protocols }) => encodeURIComponent(protocols.doi.join(
     }
   }
 
-  const subjects = getSubjects(search)
-  if (subjects) options.params['metadata_json.subjects.subject'] = subjects
+  // const subjects = getSubjects(search)
+  // if (subjects) options.params['metadata_json.subjects.subject'] = subjects
+  // options.params['metadata_json.subjects.subject'] = 'climatechange,climate'
 
   const titles = getTitles(search)
-  if (titles) options.params['metadata_json.titles.title'] = titles
+  options.params['metadata_json.titles.title'] = titles
 
-  const identifiers = getIdentifiers(search)
-  if (identifiers)
-    options.params['metadata_json.alternateIdentifiers.alternateIdentifier'] = identifiers
+  // const identifiers = getIdentifiers(search)
+  // if (identifiers)
+  // options.params['metadata_json.alternateIdentifiers.alternateIdentifier'] = identifiers
 
   /**
    * Log the search
