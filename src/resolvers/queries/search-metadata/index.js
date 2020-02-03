@@ -12,7 +12,8 @@ const executors = readdirSync(__dirname + '/executors').filter(
  * Target name  maps
  */
 const targets = {
-  _saeon: 'SAEON CKAN: saeon-odp-4-2'
+  _saeon: 'SAEON CKAN: saeon-odp-4-2',
+  _icos: 'ICOS Metadata Results'
 }
 
 export default async (self, args, req) => {
