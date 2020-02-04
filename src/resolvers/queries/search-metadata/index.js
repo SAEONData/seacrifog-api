@@ -4,12 +4,13 @@ import { readdirSync } from 'fs'
 /**
  * A list of executors to search metadata endpoints
  */
-const executors = readdirSync(__dirname + '/executors').filter(
-  filename => filename.indexOf('_example') !== 0
+const activeExecutors = ['_icos', '_saeon']
+const executors = readdirSync(__dirname + '/executors').filter(filename =>
+  activeExecutors.includes(filename.replace(/\.js$|\.mjs$/, ''))
 )
 
 /**
- * Target name  maps
+ * Target name maps
  */
 const targets = {
   _saeon: 'SAEON CKAN: saeon-odp-4-2',
@@ -83,8 +84,6 @@ export default async (self, args, req) => {
       domain: []
     }
   )
-
-  console.log('Metadata search', search)
 
   /**
    * An array or results that correspond to each executor
