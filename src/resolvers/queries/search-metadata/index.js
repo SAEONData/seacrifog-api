@@ -84,6 +84,8 @@ export default async (self, args, req) => {
     }
   )
 
+  console.log('Metadata search', search)
+
   /**
    * An array or results that correspond to each executor
    * [executor1Results, executor2Results, etc]
@@ -103,8 +105,9 @@ export default async (self, args, req) => {
   )
 
   return executors.map((filename, i) => ({
-    id: i,
+    i,
     target: targets[filename.match(/(.*)\.([^.]*)$/, '')[1]] || filename,
-    result: searchResults[i]
+    result: searchResults[i]?.error || searchResults[i] || null,
+    error: searchResults[i]?.error || null
   }))
 }

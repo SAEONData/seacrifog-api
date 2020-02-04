@@ -146,9 +146,10 @@ type Mutation {
 }
 
 type Metadata {
-  id: Int
+  i: Int
   target: String
   result: JSON
+  error: String
 }
 
 type Query {

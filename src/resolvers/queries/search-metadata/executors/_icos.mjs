@@ -1,7 +1,6 @@
 import { parentPort, workerData } from 'worker_threads'
 import axios from 'axios'
 ;(async search => {
-  console.log('Searching ICOS', search)
   const options = {
     baseURL: 'https://meta.icos-cp.eu/sparql',
     method: 'GET',
@@ -28,7 +27,8 @@ import axios from 'axios'
     result_length: 0,
     results: data
   })
-})(workerData).catch(error => {
-  console.log('Error executing finder', error)
-  throw error
-})
+})(workerData)
+  .catch(error => {
+    console.log('Unexpected error searching ICOS catalogue', error)
+  })
+  .finally(() => process.exit(0))

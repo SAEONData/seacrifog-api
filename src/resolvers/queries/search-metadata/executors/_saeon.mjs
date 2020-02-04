@@ -53,27 +53,19 @@ const getIdentifiers = ({ protocols }) => protocols.doi.join(',')
   // if (identifiers)
   // options.params['metadata_json.alternateIdentifiers.alternateIdentifier'] = identifiers
 
-  /**
-   * Log the search
-   */
   console.log('SAEON Metadata search', options)
 
-  /**
-   * Do the search
-   */
-  const { data } = await axios(options).catch(error => {
-    console.error('Error searching metadata', error)
-    throw error
+  const data = (
+    (await axios(options).catch(error => console.error('Error searching metadata', error))) || {}
+  ).data
+
+  if (data) {
+    parentPort.postMessage(data)
+  } else {
+    parentPort.postMessage({ error: 'SAEON catalogue search failed' })
+  }
+})(workerData)
+  .catch(error => {
+    console.log('Unexpected error searching SAEON catalogue', error)
   })
-
-  // Throw error if search is not succcessful
-  if (!data.success) throw data
-
-  /**
-   * Return the search
-   */
-  parentPort.postMessage(data)
-})(workerData).catch(error => {
-  console.error('Error executing finder', JSON.stringify(error))
-  process.exit(1)
-})
+  .finally(() => process.exit(0))
