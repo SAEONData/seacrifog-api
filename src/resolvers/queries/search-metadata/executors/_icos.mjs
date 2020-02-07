@@ -1,84 +1,114 @@
 import { parentPort, workerData } from 'worker_threads'
 import axios from 'axios'
-;(async search => {
-  const options = {
-    baseURL: 'https://meta.icos-cp.eu/sparql',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'text/plain',
-      Accept: 'application/json',
-      'accept-encoding': 'gzip, deflate, br'
-    },
-    data: `
-    prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
-    prefix prov: <http://www.w3.org/ns/prov#>
 
-    select distinct
-    ?dobj
-    ?station
-    ?stationId
-    ?samplingHeight
+const themeMap = {
+  Terrestrial: 'http://meta.icos-cp.eu/resources/themes/ecosystem',
+  Atmospheric: 'http://meta.icos-cp.eu/resources/themes/atmosphere',
+  Various: 'http://meta.icos-cp.eu/resources/themes/ecosystem',
+  Oceanic: 'http://meta.icos-cp.eu/resources/themes/ocean'
+}
+
+/**
+ * Mapping specifcations
+ * SEACRIFOG (Variable.domain) | ICOS (Object specification theme)
+ * Terrestrial                 | http://meta.icos-cp.eu/resources/themes/ecosystem
+ * Atmospheric                 | http://meta.icos-cp.eu/resources/themes/atmosphere
+ * Various                     | http://meta.icos-cp.eu/resources/themes/ecosystem
+ * Oceanic                     | http://meta.icos-cp.eu/resources/themes/ocean
+ */
+;(async search => {
+  // Get the theme that is being searched for
+  const { variables } = search
+  const themeUris = variables.domain.map(v => themeMap[v])
+
+  // Find the data object specs from ICOS that use this theme
+  const specs = (
+    (await axios({
+      baseURL: 'https://meta.icos-cp.eu/sparql',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+        Accept: 'application/json',
+        'accept-encoding': 'gzip, deflate, br'
+      },
+      data: `
+    prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
+
+    select
+    ?spec
+    ?level
+    ?dataset
+    ?format
     ?theme
-    ?themeIcon
-    ?title
-    ?description
-    ?columnNames
-    ?site
+    ?temporalResolution
     
     where {
-      {
-        select
-        
-        ?dobj
-        (min(?station0) as ?station)
-        (sample(?stationId0) as ?stationId)
-        (sample(?samplingHeight0) as ?samplingHeight)
-        (sample(?site0) as ?site)
-        
-        where {
-          VALUES
-          
-          ?dobj {
-            <https://meta.icos-cp.eu/objects/Sb2xxbU06-oeCC9ITKxTRdWk>
-            <https://meta.icos-cp.eu/objects/x2gL6BMqkQEbh928i1roE3ky>
-            <https://meta.icos-cp.eu/objects/FrtCNzUnRdup-_hau8K1DZh->
-            <https://meta.icos-cp.eu/objects/Su3qm3JOhpbGAk8fIJ3gxSRA>
-            <https://meta.icos-cp.eu/objects/rVbJrJG6fv7t53cLMvmId-MV>
-          }
-          
-          OPTIONAL {
-            ?dobj cpmeta:wasAcquiredBy ?acq .
-            ?acq prov:wasAssociatedWith ?stationUri .
-            OPTIONAL { ?stationUri cpmeta:hasName ?station0 }
-            OPTIONAL{ ?stationUri cpmeta:hasStationId ?stationId0 }
-            OPTIONAL{ ?acq cpmeta:hasSamplingHeight ?samplingHeight0 }
-            OPTIONAL{ ?acq cpmeta:wasPerformedAt/cpmeta:hasSpatialCoverage/rdfs:label ?site0 }
-          }
-        }
-        group by ?dobj
+      values ?level { 2 }
+      values ?theme { ${themeUris.map(uri => `<${uri}>`).join(' ')} }
+    
+      ?spec cpmeta:hasDataLevel ?level .
+      FILTER NOT EXISTS { ?spec cpmeta:hasAssociatedProject/cpmeta:hasHideFromSearchPolicy "true"^^xsd:boolean }
+      FILTER(STRSTARTS(str(?spec), "http://meta.icos-cp.eu/"))
+      ?spec cpmeta:hasDataTheme ?theme .
+    
+      OPTIONAL {
+        ?spec cpmeta:containsDataset ?dataset .
+        OPTIONAL{ ?dataset cpmeta:hasTemporalResolution ?temporalResolution }
       }
-      ?dobj cpmeta:hasObjectSpec ?specUri .
-      OPTIONAL{ ?specUri cpmeta:hasDataTheme [
-        rdfs:label ?theme ;
-        cpmeta:hasIcon ?themeIcon
-      ]}
-      OPTIONAL{ ?dobj <http://purl.org/dc/terms/title> ?title }
-      OPTIONAL{ ?dobj <http://purl.org/dc/terms/description> ?description }
-      OPTIONAL{ ?dobj cpmeta:hasActualColumnNames ?columnNames }
+    
+      FILTER EXISTS{
+        ?dobj cpmeta:hasObjectSpec ?spec .
+        FILTER NOT EXISTS {[] cpmeta:isNextVersionOf ?dobj}
+      }
+    
+      ?spec cpmeta:hasFormat ?format .
     }`
-  }
+    }).catch(error => console.error('Error searching metadata', error))) || {}
+  ).data.results.bindings.map(r => r.spec.value)
 
-  console.log('ICOS Metadata search', options)
-
-  const data = (
-    (await axios(options).catch(error => console.error('Error searching metadata', error))) || {}
+  // Get data objects for the themes found above
+  const metadataRecords = (
+    (await axios({
+      baseURL: 'https://meta.icos-cp.eu/sparql',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+        Accept: 'application/json',
+        'accept-encoding': 'gzip, deflate, br'
+      },
+      data: `
+      prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
+      prefix prov: <http://www.w3.org/ns/prov#>
+      select
+      ?dobj
+      ?spec
+      ?fileName
+      ?size
+      ?submTime
+      ?timeStart
+      ?timeEnd
+      where {
+        VALUES ?spec { ${specs.map(s => `<${s}>`).join(' ')} }
+        ?dobj cpmeta:hasObjectSpec ?spec .  
+        ?dobj cpmeta:hasSizeInBytes ?size .
+        ?dobj cpmeta:hasName ?fileName .
+        ?dobj cpmeta:wasSubmittedBy/prov:endedAtTime ?submTime .
+        ?dobj cpmeta:hasStartTime | (cpmeta:wasAcquiredBy / prov:startedAtTime) ?timeStart .
+        ?dobj cpmeta:hasEndTime | (cpmeta:wasAcquiredBy / prov:endedAtTime) ?timeEnd .
+        FILTER NOT EXISTS {[] cpmeta:isNextVersionOf ?dobj}
+      }
+      
+      order by desc(?submTime)
+      offset 0
+      limit 100`
+    }).catch(error => console.error('Error searching metadata', error))) || {}
   ).data
 
-  if (data) {
+  if (metadataRecords) {
     parentPort.postMessage({
       success: true,
-      result_length: data.results.bindings.length,
-      results: data
+      result_length: metadataRecords.results.bindings.length,
+      results: metadataRecords.results.bindings
     })
   } else {
     parentPort.postMessage({ error: 'ICOS catalogue search failed' })
