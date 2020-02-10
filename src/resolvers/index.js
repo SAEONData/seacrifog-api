@@ -25,7 +25,7 @@ import Site from './types/site'
 import site from './queries/site'
 import sites from './queries/sites'
 
-//Aggregations
+// Aggregations
 import SitesAggregation from './types/sites-aggregation'
 import sitesAggregation from './queries/sites-aggregation'
 import NetworksTypes from './types/networks-types'
@@ -66,16 +66,22 @@ import xrefDataproductsVariables from './queries/xref-dataproducts-variables'
 import xrefSitesNetworks from './queries/xref-sites-networks'
 import xrefNetworksVariables from './queries/xref-networks-variables'
 
+// Integrations
+import IntegrationResult from './types/integration-result'
+import { integrateIcos } from './mutations/integrations'
+
 export default {
-  // Mutations
   Mutation: {
+    // CRUD Operations
     updateVariables,
     updateProtocols,
     updateDataproducts,
-    updateNetworks
+    updateNetworks,
+
+    // Integrations
+    integrateIcos
   },
 
-  // Queries
   Query: {
     variable,
     variables,
@@ -122,8 +128,9 @@ export default {
   Protocol,
   Network,
   Site,
+  IntegrationResult,
 
-  //Aggregations
+  // Aggregations
   SitesAggregation,
   NetworksTypes,
   ProtocolsCoverages,

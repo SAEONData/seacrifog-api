@@ -29,7 +29,7 @@ const themeMap = {
       headers: {
         'Content-Type': 'text/plain',
         Accept: 'application/json',
-        'accept-encoding': 'gzip, deflate, br'
+        'Accept-Encoding': 'gzip, deflate, br'
       },
       data: `
     prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
