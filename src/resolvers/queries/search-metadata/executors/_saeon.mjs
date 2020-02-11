@@ -42,6 +42,10 @@ const getIdentifiers = ({ protocols }) => protocols.doi.join(',')
     }
   }
 
+  // TODO
+  // Do something with bySites parameter
+
+  // TODO
   // const subjects = getSubjects(search)
   // if (subjects) options.params['metadata_json.subjects.subject'] = subjects
   // options.params['metadata_json.subjects.subject'] = 'climatechange,climate'
@@ -49,6 +53,7 @@ const getIdentifiers = ({ protocols }) => protocols.doi.join(',')
   const titles = getTitles(search)
   options.params['metadata_json.titles.title'] = titles
 
+  // TODO
   // const identifiers = getIdentifiers(search)
   // if (identifiers)
   // options.params['metadata_json.alternateIdentifiers.alternateIdentifier'] = identifiers
