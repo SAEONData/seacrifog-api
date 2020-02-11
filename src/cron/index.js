@@ -1,22 +1,24 @@
 import { CronJob } from 'cron'
 import icosIntegration from './_icos-integration'
-import { logError } from '../lib/log'
+import { logError, log } from '../lib/log'
 
 const WAIT = process.env.INITIAL_CRON_WAIT || 1000
+log('Scheduled task delay set', WAIT)
+
+const ICOS_INTEGRATION_SCHEDULE = process.env.ICOS_INTEGRATION_SCHEDULE || '* * * * *'
+log('ICOS integration interval', ICOS_INTEGRATION_SCHEDULE)
 
 const handleAsync = fn => (...args) =>
   Promise.resolve(fn(...args)).catch(error => {
     logError('Error running scheduled tasks', error)
   })
 
-const icosIntegrationSchedule = process.env.ICOS_INTEGRATION_SCHEDULE || '*/60 * * * * *'
-
 export default async createCtx =>
   setTimeout(
     () =>
       [
         new CronJob(
-          icosIntegrationSchedule,
+          ICOS_INTEGRATION_SCHEDULE,
           handleAsync(() => icosIntegration(createCtx()))
         )
       ].forEach(job => job.start()),
