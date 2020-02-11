@@ -53,8 +53,6 @@ const getIdentifiers = ({ protocols }) => protocols.doi.join(',')
   // if (identifiers)
   // options.params['metadata_json.alternateIdentifiers.alternateIdentifier'] = identifiers
 
-  console.log('SAEON Metadata search', options)
-
   const data = (
     (await axios(options).catch(error => console.error('Error searching metadata', error))) || {}
   ).data

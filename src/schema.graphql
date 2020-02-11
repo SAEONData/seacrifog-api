@@ -172,7 +172,12 @@ type Query {
   dataproduct(id: Int!): Dataproduct
   dataproducts: [Dataproduct!]!
 
-  searchMetadata(byVariables: [Int!], byProtocols: [Int!], byNetworks: [Int!]): [Metadata!]!
+  searchMetadata(
+    bySites: [Int!]
+    byNetworks: [Int!]
+    byVariables: [Int!]
+    byProtocols: [Int!]
+  ): [Metadata!]!
 
   dataproductsSummary: DataproductsSummary!
 

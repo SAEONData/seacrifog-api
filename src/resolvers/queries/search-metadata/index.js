@@ -1,5 +1,6 @@
 import { Worker } from 'worker_threads'
 import { readdirSync } from 'fs'
+import { log } from '../../../lib/log'
 
 /**
  * A list of executors to search metadata endpoints
@@ -18,14 +19,26 @@ const targets = {
 }
 
 export default async (self, args, req) => {
-  const { findNetworks, findVariables, findProtocols } = req.ctx.db.dataLoaders
-  const { byNetworks = [], byVariables = [], byProtocols = [] } = args
+  const { findNetworks, findVariables, findProtocols, findSites } = req.ctx.db.dataLoaders
+  const { byNetworks = [], byVariables = [], byProtocols = [], bySites = [] } = args
   const search = {}
 
   // Resolve IDs to networks, variables and protocols
+  const sites = await Promise.all(bySites.map(async id => (await findSites(id))[0]))
   const networks = await Promise.all(byNetworks.map(async id => (await findNetworks(id))[0]))
   const variables = await Promise.all(byVariables.map(async id => (await findVariables(id))[0]))
   const protocols = await Promise.all(byProtocols.map(async id => (await findProtocols(id))[0]))
+
+  search.sites = sites.reduce(
+    (acc, s) => ({
+      name: [...new Set([...acc.name, s.name])],
+      xyz: [...new Set([...acc.xyz, s.xyz])]
+    }),
+    {
+      name: [],
+      xyz: []
+    }
+  )
 
   // Networks search object
   search.networks = networks.reduce(
@@ -83,6 +96,12 @@ export default async (self, args, req) => {
       category: [],
       domain: []
     }
+  )
+
+  log(
+    'Searching metadata',
+    `${activeExecutors.length} endpoints registererd for ${JSON.stringify(activeExecutors)}`,
+    JSON.stringify(search)
   )
 
   /**
