@@ -10,6 +10,7 @@ import { normalize, join } from 'path'
 import resolvers from './resolvers'
 import { log, logError } from './lib/log'
 import { initializeLoaders, query, setupDb } from './db'
+import cron from './cron'
 import { config } from 'dotenv'
 import nativeExtensions from './lib/native-extensions'
 config()
@@ -73,19 +74,21 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(join(__dirname, '../public')))
 
+const createCtx = () => ({
+  db: {
+    query,
+    dataLoaders: initializeLoaders()
+  },
+  schema
+})
+
 /**
  * Provides a request lifecycle object to append adhoc things
  *  => req.ctx
  */
 app.use(
   asyncHandler(async (req, res, next) => {
-    req.ctx = {
-      db: {
-        query,
-        dataLoaders: initializeLoaders()
-      },
-      schema
-    }
+    req.ctx = createCtx()
     next()
   })
 )
@@ -110,5 +113,13 @@ app.use(
     graphiql: false
   })
 )
+
+/**
+ * JavaScript CRON jobs
+ * Using a JS scheduler allows for
+ * jobs to use the GraphQL resolvers
+ * and database code
+ */
+cron(createCtx)
 
 export default app

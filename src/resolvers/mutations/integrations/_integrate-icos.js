@@ -2,6 +2,7 @@ import axios from 'axios'
 
 export default async (self, args, req) => {
   const { query } = req.ctx.db
+
   /**
    * Upsert ICOS into public.networks
    * In the future the information could be requested from
