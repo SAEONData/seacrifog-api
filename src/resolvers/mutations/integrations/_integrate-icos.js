@@ -1,5 +1,25 @@
 import axios from 'axios'
 
+/**
+ * TODO
+ * This integration is a POC only. There are several problems:
+ * 
+ * (1) The ICOS network row insert is a stub - ideally ICOS information
+ * should be fetchec from ICOS and udpated
+ * 
+ * (2) Stations are identified by name and not an ID. This means that
+ * if a station name is changed there will be 2 rows in SEACRIFOG
+ * 
+ * (3) Stations are not deleted, nor are mappings between stations and
+ * networks. This means that, similarly to the problem of (2) that there
+ * can be stale data in SEACRIFOG
+ * 
+ * These are fairly easy to fix - just a matter of updating queries and
+ * network fetches. It's tedious, however, so this is not worth doing
+ * until a deployment and usecase for the software is finalized
+ * 
+ */
+
 export default async (self, args, req) => {
   const { query } = req.ctx.db
 
