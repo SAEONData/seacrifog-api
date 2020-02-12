@@ -17,7 +17,6 @@ import axios from 'axios'
  * These are fairly easy to fix - just a matter of updating queries and
  * network fetches. It's tedious, however, so this is not worth doing
  * until a deployment and usecase for the software is finalized
- *
  */
 
 export default async (self, args, req) => {
