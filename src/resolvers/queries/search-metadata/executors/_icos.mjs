@@ -19,17 +19,28 @@ const themeMap = {
   const { variables, sites } = search
   const themeUris = variables.domain.map(v => themeMap[v])
 
-  // (1) Find the data object specs from ICOS that use this theme
-  const specs = (
-    (await axios({
-      baseURL: 'https://meta.icos-cp.eu/sparql',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain',
-        Accept: 'application/json',
-        'Accept-Encoding': 'gzip, deflate, br'
-      },
-      data: `
+  // Check if search should be done or not
+  const doSearch = [variables, sites].reduce((_, curr) => {
+    let doSearch = _ || false
+    Object.entries(curr).forEach(([key, arr]) => {
+      if (arr.length > 0) doSearch = true
+    })
+    return doSearch
+  }, false)
+
+  let metadataRecords
+  if (doSearch) {
+    // (1) Find the data object specs from ICOS that use this theme
+    const specs = (
+      (await axios({
+        baseURL: 'https://meta.icos-cp.eu/sparql',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain',
+          Accept: 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        },
+        data: `
     prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
 
     select
@@ -61,20 +72,20 @@ const themeMap = {
     
       ?spec cpmeta:hasFormat ?format .
     }`
-    }).catch(error => console.error('Error searching metadata', error))) || {}
-  ).data.results.bindings.map(r => r.spec.value)
+      }).catch(error => console.error('Error searching metadata', error))) || {}
+    ).data.results.bindings.map(r => r.spec.value)
 
-  // (2) Get the ICOS UIR IDs of stations being searched for
-  const stations = (
-    (await axios({
-      baseURL: 'https://meta.icos-cp.eu/sparql',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain',
-        Accept: 'application/json',
-        'accept-encoding': 'gzip, deflate, br'
-      },
-      data: `
+    // (2) Get the ICOS UIR IDs of stations being searched for
+    const stations = (
+      (await axios({
+        baseURL: 'https://meta.icos-cp.eu/sparql',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain',
+          Accept: 'application/json',
+          'accept-encoding': 'gzip, deflate, br'
+        },
+        data: `
     prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
 
     select distinct
@@ -99,23 +110,23 @@ const themeMap = {
                 ?uri cpmeta:hasName ?label .
             }
         }
-        values ?stationId {${sites.name.map(s => `'${s}'`).join(' ')}}
+        values ?stationId {${sites.name.map(s => `'${s.replace("'", "''")}'`).join(' ')}}
         ?uri cpmeta:hasStationId ?stationId
     }`
-    }).catch(error => console.error('Error searching metadata', error))) || {}
-  ).data.results.bindings.map(r => r.uri.value)
+      }).catch(error => console.error('Error searching metadata', error))) || {}
+    ).data.results.bindings.map(r => r.uri.value)
 
-  // (3) Get data objects for the themes found above
-  const metadataRecords = (
-    (await axios({
-      baseURL: 'https://meta.icos-cp.eu/sparql',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain',
-        Accept: 'application/json',
-        'accept-encoding': 'gzip, deflate, br'
-      },
-      data: `
+    // (3) Get data objects for the themes found above
+    metadataRecords = (
+      (await axios({
+        baseURL: 'https://meta.icos-cp.eu/sparql',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain',
+          Accept: 'application/json',
+          'accept-encoding': 'gzip, deflate, br'
+        },
+        data: `
       prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
       prefix prov: <http://www.w3.org/ns/prov#>
       
@@ -147,8 +158,15 @@ const themeMap = {
       order by desc(?submTime)
       offset 0
       limit 100`
-    }).catch(error => console.error('Error searching metadata', error))) || {}
-  ).data
+      }).catch(error => console.error('Error searching metadata', error))) || {}
+    ).data
+  } else {
+    metadataRecords = {
+      results: {
+        bindings: []
+      }
+    }
+  }
 
   if (metadataRecords) {
     parentPort.postMessage({
