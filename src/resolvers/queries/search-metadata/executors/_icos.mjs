@@ -38,7 +38,7 @@ const themeMap = {
           return doSearch
         }, false)
 
-  let metadataRecords
+  let extendedMetadataRecords
   if (doSearch) {
     // (1) Find the data object specs from ICOS that use this theme
     const specs = (
@@ -135,7 +135,7 @@ const themeMap = {
       )
     } else {
       // (3) Get data objects for the themes found above
-      metadataRecords = (
+      const metadataRecords = (
         (await axios({
           baseURL: 'https://meta.icos-cp.eu/sparql',
           method: 'POST',
@@ -182,20 +182,93 @@ const themeMap = {
             limit 100`
         }).catch(error => console.error('Error searching metadata', error))) || {}
       ).data
+
+      if (metadataRecords) {
+        extendedMetadataRecords = (
+          (await axios({
+            baseURL: 'https://meta.icos-cp.eu/sparql',
+            method: 'POST',
+            headers: {
+              'Content-Type': 'text/plain',
+              Accept: 'application/json',
+              'accept-encoding': 'gzip, deflate, br'
+            },
+            data: `
+              prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
+              prefix prov: <http://www.w3.org/ns/prov#>
+              
+              select distinct
+              ?dobj
+              ?station
+              ?stationId
+              ?samplingHeight
+              ?theme
+              ?themeIcon
+              ?title
+              ?description
+              ?columnNames
+              ?site
+              
+              where {
+                {
+                  select
+                  ?dobj (min(?station0) as ?station)
+                  (sample(?stationId0) as ?stationId)
+                  (sample(?samplingHeight0) as ?samplingHeight)
+                  (sample(?site0) as ?site)
+              
+                  where {
+              
+                    VALUES ?dobj { ${metadataRecords.results.bindings
+                      .map(r => `<${r.dobj.value}>`)
+                      .join(' ')} }
+                    
+                    OPTIONAL {
+                      ?dobj cpmeta:wasAcquiredBy ?acq.
+                      ?acq prov:wasAssociatedWith ?stationUri .
+                      OPTIONAL{ ?stationUri cpmeta:hasName ?station0 }
+                      OPTIONAL{ ?stationUri cpmeta:hasStationId ?stationId0 }
+                      OPTIONAL{ ?acq cpmeta:hasSamplingHeight ?samplingHeight0 }
+                      OPTIONAL{ ?acq cpmeta:wasPerformedAt/cpmeta:hasSpatialCoverage/rdfs:label ?site0 }
+                    }
+                  }
+                  
+                  group by
+                  ?dobj
+                }
+              
+                ?dobj cpmeta:hasObjectSpec ?specUri .
+                
+                OPTIONAL {
+                  ?specUri cpmeta:hasDataTheme [
+                    rdfs:label ?theme ;
+                    cpmeta:hasIcon ?themeIcon
+                  ]
+                }
+                
+                OPTIONAL{ ?dobj <http://purl.org/dc/terms/title> ?title }
+                
+                OPTIONAL{ ?dobj <http://purl.org/dc/terms/description> ?description }
+                
+                OPTIONAL{ ?dobj cpmeta:hasActualColumnNames ?columnNames }
+              }            `
+          }).catch(error => console.error('Error searching metadata', error))) || {}
+        ).data
+      }
     }
   }
 
-  metadataRecords = metadataRecords || {
+  extendedMetadataRecords = extendedMetadataRecords || {
     results: {
       bindings: []
     }
   }
 
-  if (metadataRecords) {
+  if (extendedMetadataRecords) {
     parentPort.postMessage({
       success: true,
-      result_length: metadataRecords.results.bindings.length,
-      results: metadataRecords.results.bindings
+      result_length: extendedMetadataRecords.results.bindings.length,
+      results: extendedMetadataRecords.results.bindings
     })
   } else {
     parentPort.postMessage({ error: 'ICOS catalogue search failed' })
