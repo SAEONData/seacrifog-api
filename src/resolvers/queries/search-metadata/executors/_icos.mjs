@@ -179,7 +179,7 @@ const themeMap = {
             
             order by desc(?submTime)
             offset 0
-            limit 100`
+            limit 2000`
         }).catch(error => console.error('Error searching metadata', error))) || {}
       ).data
 
