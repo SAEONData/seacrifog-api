@@ -1,11 +1,16 @@
 import { Worker } from 'worker_threads'
 import { readdirSync } from 'fs'
 import { log } from '../../../lib/log'
+import { config } from 'dotenv'
+config()
 
 /**
  * A list of executors to search metadata endpoints
  */
-const activeExecutors = ['_icos', '_saeon']
+const activeExecutors = process.env.SEARCH_EXECUTORS?.split(',') || ['_icos', '_saeon']
+log('Registered executors', JSON.stringify(activeExecutors))
+
+console.log(process.env.SEARCH_EXECUTORS)
 const executors = readdirSync(__dirname + '/executors').filter(filename =>
   activeExecutors.includes(filename.replace(/\.js$|\.mjs$/, ''))
 )
