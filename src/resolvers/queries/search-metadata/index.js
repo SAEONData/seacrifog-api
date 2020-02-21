@@ -9,8 +9,6 @@ config()
  */
 const activeExecutors = process.env.SEARCH_EXECUTORS?.split(',') || ['_icos', '_saeon']
 log('Registered executors', JSON.stringify(activeExecutors))
-
-console.log(process.env.SEARCH_EXECUTORS)
 const executors = readdirSync(__dirname + '/executors').filter(filename =>
   activeExecutors.includes(filename.replace(/\.js$|\.mjs$/, ''))
 )
