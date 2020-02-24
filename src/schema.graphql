@@ -184,7 +184,7 @@ type Query {
   dataproductsSummary: DataproductsSummary!
 
   site(id: Int!): Site
-  sites(ids: [Int!]): [Site!]!
+  sites(ids: [Int!]): [Site]!
 
   # Aggregations
   sitesAggregation(ids: [Int!]): [SitesAggregation]!

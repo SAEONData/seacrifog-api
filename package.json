@@ -9,9 +9,9 @@
     "url": "http://saeon.ac.za"
   },
   "scripts": {
-    "prettier": "prettier --write \"src/**/*.@(js|mjs|graphql)\"",
+    "prettier": "prettier --write \"**/*.@(js|mjs|graphql|json)\"",
     "lint": "eslint \"./src/**/*.js\"",
-    "start": "nodemon --exec \"npm-run-all prettier run:dev\"",
+    "start": "nodemon --exec \"npm-run-all prettier run:dev\" --ext js,mjs,graphql,json",
     "run:dev": "NODE_ENV=development npm-run-all server:dev",
     "server:dev": "TZ=utc babel-node ./src/bin",
     "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:gqlschema copy:sql copy:csvs copy:env server:prod",

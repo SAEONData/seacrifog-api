@@ -16,7 +16,8 @@ const themeMap = {
  */
 ;(async search => {
   // Get the theme that is being searched for
-  const { variables, sites, networks } = search
+  const { variables, sites, networks, org } = search
+  const { limit, from } = org
   const { acronym } = networks
   const themeUris = variables.domain.map(v => themeMap[v])
 
@@ -179,7 +180,7 @@ const themeMap = {
             
             order by desc(?submTime)
             offset 0
-            limit 2000`
+            limit ${limit}`
         }).catch(error => console.error('Error searching metadata', error))) || {}
       ).data
 
@@ -251,7 +252,9 @@ const themeMap = {
                 OPTIONAL{ ?dobj <http://purl.org/dc/terms/description> ?description }
                 
                 OPTIONAL{ ?dobj cpmeta:hasActualColumnNames ?columnNames }
-              }            `
+              }
+              
+              limit ${limit}`
           }).catch(error => console.error('Error searching metadata', error))) || {}
         ).data
       }
