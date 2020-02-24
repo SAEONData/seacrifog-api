@@ -23,7 +23,14 @@ const targets = {
 
 export default async (self, args, req) => {
   const { findNetworks, findVariables, findProtocols, findSites } = req.ctx.db.dataLoaders
-  const { byNetworks = [], byVariables = [], byProtocols = [], bySites = [] } = args
+  const {
+    limit = 100,
+    from = 1,
+    byNetworks = [],
+    byVariables = [],
+    byProtocols = [],
+    bySites = []
+  } = args
   const search = {}
 
   // Resolve IDs to networks, variables and protocols
@@ -100,6 +107,11 @@ export default async (self, args, req) => {
       domain: []
     }
   )
+
+  search.org = {
+    from,
+    limit
+  }
 
   log(
     'Searching metadata',

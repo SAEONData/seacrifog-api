@@ -37,7 +37,8 @@ const getIdentifiers = ({ protocols }) => protocols.doi.join(',')
     headers: { 'Content-Type': 'application/json' },
     params: {
       index: 'saeon-odp-4-2',
-      size: 10000,
+      start: search.org.from,
+      size: search.org.limit,
       fields: 'metadata_json,record_id,organization'
     }
   }

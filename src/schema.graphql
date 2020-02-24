@@ -173,6 +173,8 @@ type Query {
   dataproducts: [Dataproduct!]!
 
   searchMetadata(
+    limit: Int
+    from: Int
     bySites: [Int!]
     byNetworks: [Int!]
     byVariables: [Int!]
