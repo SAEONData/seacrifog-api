@@ -21,6 +21,8 @@ const themeMap = {
   const { acronym } = networks
   const themeUris = variables.domain.map(v => themeMap[v])
 
+  console.log(from)
+
   /**
    * Do search IF
    *
@@ -33,7 +35,7 @@ const themeMap = {
       ? true
       : [variables, sites].reduce((_, curr) => {
           let doSearch = _ || false
-          Object.entries(curr).forEach(([key, arr]) => {
+          Object.entries(curr).forEach(([, arr]) => {
             if (arr.length > 0) doSearch = true
           })
           return doSearch
@@ -84,7 +86,7 @@ const themeMap = {
             ?spec cpmeta:hasFormat ?format .
           }`
       }).catch(error => console.error('Error searching metadata', error))) || {}
-    ).data.results.bindings.map(r => r.spec.value)
+    ).data?.results?.bindings?.map(r => r.spec.value)
 
     // (2) Get the ICOS UIR IDs of stations being searched for
     const stations = (

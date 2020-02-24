@@ -1,5 +1,7 @@
 import { parentPort, workerData } from 'worker_threads'
 ;(async search => {
+  console.log('search', search)
+
   // If search is successful
   parentPort.postMessage({ success: true, result_length: 0, results: [] })
 

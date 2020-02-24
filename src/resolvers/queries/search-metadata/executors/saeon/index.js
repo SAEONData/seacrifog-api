@@ -1,21 +1,21 @@
 import { parentPort, workerData } from 'worker_threads'
 import axios from 'axios'
 
-const getSubjects = search => {
-  const { acronym, type } = search.networks
-  const { name, class: variableClass, domain: variableDomain, technology_type } = search.variables
-  const { category, domain: protocolDomain } = search.protocols
-  return [
-    ...acronym,
-    ...type,
-    ...name,
-    ...variableClass,
-    ...variableDomain,
-    ...technology_type,
-    ...category,
-    ...protocolDomain
-  ]
-}
+// const getSubjects = search => {
+//   const { acronym, type } = search.networks
+//   const { name, class: variableClass, domain: variableDomain, technology_type } = search.variables
+//   const { category, domain: protocolDomain } = search.protocols
+//   return [
+//     ...acronym,
+//     ...type,
+//     ...name,
+//     ...variableClass,
+//     ...variableDomain,
+//     ...technology_type,
+//     ...category,
+//     ...protocolDomain
+//   ]
+// }
 
 const getTitles = search => {
   const { title: networkTitle } = search.networks
@@ -24,7 +24,7 @@ const getTitles = search => {
   return [...networkTitle, ...variableTitle, ...protocolTitle].join(',')
 }
 
-const getIdentifiers = ({ protocols }) => protocols.doi.join(',')
+// const getIdentifiers = ({ protocols }) => protocols.doi.join(',')
 
 ;(async search => {
   /**

@@ -7,18 +7,16 @@ config()
 /**
  * A list of executors to search metadata endpoints
  */
-const activeExecutors = process.env.SEARCH_EXECUTORS?.split(',') || ['_icos', '_saeon']
+const activeExecutors = process.env.SEARCH_EXECUTORS?.split(',') || ['icos', 'saeon']
 log('Registered executors', JSON.stringify(activeExecutors))
-const executors = readdirSync(__dirname + '/executors').filter(filename =>
-  activeExecutors.includes(filename.replace(/\.js$|\.mjs$/, ''))
-)
+const executors = readdirSync(__dirname + '/executors').filter(dir => activeExecutors.includes(dir))
 
 /**
  * Target name maps
  */
 const targets = {
-  _saeon: 'SAEON CKAN: saeon-odp-4-2',
-  _icos: 'ICOS Metadata Results'
+  saeon: 'SAEON CKAN: saeon-odp-4-2',
+  icos: 'ICOS Metadata Results'
 }
 
 export default async (self, args, req) => {
@@ -125,9 +123,11 @@ export default async (self, args, req) => {
    */
   const searchResults = await Promise.all(
     executors.map(
-      filename =>
+      dir =>
         new Promise((resolve, reject) => {
-          const worker = new Worker(`${__dirname}/executors/${filename}`, { workerData: search })
+          const worker = new Worker(`${__dirname}/executors/${dir}/index.js`, {
+            workerData: search
+          })
           worker.on('message', resolve)
           worker.on('error', reject)
           worker.on('exit', code => {
@@ -137,9 +137,9 @@ export default async (self, args, req) => {
     )
   )
 
-  return executors.map((filename, i) => ({
+  return executors.map((executor, i) => ({
     i,
-    target: targets[filename.match(/(.*)\.([^.]*)$/, '')[1]] || filename,
+    target: targets[executor] || executor,
     result: searchResults[i]?.error || searchResults[i] || null,
     error: searchResults[i]?.error || null
   }))

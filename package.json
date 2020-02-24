@@ -11,17 +11,19 @@
   "scripts": {
     "prettier": "prettier --write \"**/*.@(js|mjs|graphql|json)\"",
     "lint": "eslint \"./src/**/*.js\"",
-    "start": "nodemon --exec \"npm-run-all prettier run:dev\" --ext js,mjs,graphql,json",
-    "run:dev": "NODE_ENV=development npm-run-all server:dev",
-    "server:dev": "TZ=utc babel-node ./src/bin",
-    "start:prod": "NODE_ENV=production npm-run-all clean:prod build:prod copy:gqlschema copy:sql copy:csvs copy:env server:prod",
-    "server:prod": "TZ=utc node ./dist/bin",
-    "clean:prod": "rimraf ./dist",
-    "build:prod": "babel ./src --out-dir dist",
+    "*******************************": "*********************************",
+    "start": "NODE_ENV=development npm-run-all clean copy:gqlschema copy:sql copy:csvs copy:env run:dev",
+    "run:dev": "nodemon --ignore './dist/' --exec \"npm-run-all prettier transpile server\" --ext js,mjs,graphql,json",
+    "start:prod": "NODE_ENV=production npm-run-all clean transpile copy:gqlschema copy:sql copy:csvs copy:env server",
+    "********************************": "*********************************",
+    "clean": "rimraf ./dist",
     "copy:gqlschema": "copyfiles -u 1 ./src/schema.graphql dist/",
     "copy:sql": "copyfiles -u 2 \"./src/db/sql/**/*\" dist/db/",
     "copy:env": "copyfiles ./.env dist/",
-    "copy:csvs": "copyfiles -u 2 \"./src/db/csvs/**/*\" dist/db/"
+    "copy:csvs": "copyfiles -u 2 \"./src/db/csvs/**/*\" dist/db/",
+    "*********************************": "*********************************",
+    "transpile": "babel ./src --out-dir dist",
+    "server": "TZ=utc node ./dist/bin"
   },
   "husky": {
     "hooks": {
