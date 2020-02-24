@@ -9,8 +9,6 @@ config()
  */
 const activeExecutors = process.env.SEARCH_EXECUTORS?.split(',') || ['_icos', '_saeon']
 log('Registered executors', JSON.stringify(activeExecutors))
-
-console.log(process.env.SEARCH_EXECUTORS)
 const executors = readdirSync(__dirname + '/executors').filter(filename =>
   activeExecutors.includes(filename.replace(/\.js$|\.mjs$/, ''))
 )
@@ -25,7 +23,14 @@ const targets = {
 
 export default async (self, args, req) => {
   const { findNetworks, findVariables, findProtocols, findSites } = req.ctx.db.dataLoaders
-  const { byNetworks = [], byVariables = [], byProtocols = [], bySites = [] } = args
+  const {
+    limit = 100,
+    from = 1,
+    byNetworks = [],
+    byVariables = [],
+    byProtocols = [],
+    bySites = []
+  } = args
   const search = {}
 
   // Resolve IDs to networks, variables and protocols
@@ -102,6 +107,11 @@ export default async (self, args, req) => {
       domain: []
     }
   )
+
+  search.org = {
+    from,
+    limit
+  }
 
   log(
     'Searching metadata',
