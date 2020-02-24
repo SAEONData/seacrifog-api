@@ -4,7 +4,7 @@ import express from 'express'
 var router = express.Router()
 
 router.get('/', async (req, res) => {
-  res.redirect('/graphiql')
+  res.send('the documentation.html file')
 })
 
 router.get('/http', async (req, res) => {
