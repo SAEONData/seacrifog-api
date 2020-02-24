@@ -1,7 +1,7 @@
 # SEACRIFOG API
 This is an Express.js application. The Express.js webserver is defined in `/src/bin/index.js`, tucked out the way. The web-server loads and serves the Express.js application - the application root is `./src/app.js`
 
-# Quickstart (local dev environment) 
+# Quickstart (local dev environment)
 You need to have Docker and Node.js installed on your machine, then run the following commands / do the following steps:
 
 ### Start a PostGIS server
