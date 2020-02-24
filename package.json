@@ -9,7 +9,6 @@
     "url": "http://saeon.ac.za"
   },
   "scripts": {
-    "pre-commit": "npm-run-all prettier lint",
     "prettier": "prettier --write \"src/**/*.@(js|mjs|graphql)\"",
     "lint": "eslint \"./src/**/*.js\"",
     "start": "nodemon --exec \"npm-run-all prettier run:dev\"",
