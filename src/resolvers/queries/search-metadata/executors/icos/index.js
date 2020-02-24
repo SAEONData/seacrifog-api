@@ -1,5 +1,9 @@
 import { parentPort, workerData } from 'worker_threads'
 import axios from 'axios'
+import getSpecs from './sparql/get-specs'
+import getStations from './sparql/get-stations'
+import getDobjs from './sparql/get-dobjs'
+import getExtendedDobjs from './sparql/get-extended-dobjs'
 
 const themeMap = {
   Terrestrial: 'http://meta.icos-cp.eu/resources/themes/ecosystem',
@@ -13,23 +17,17 @@ const themeMap = {
  * (1) Data object spec labels are retrieved for the relevant variables
  * (2) Station URIs are retrieved for selected SEACRIFOG sites
  * (3) Data objects are retrieved for selected stations and sites
+ * (4) Extended data objects are retrieved for the dobjs found in (3)
  */
 ;(async search => {
-  // Get the theme that is being searched for
   const { variables, sites, networks, org } = search
-  const { limit, from } = org
+  const { limit, offset } = org
   const { acronym } = networks
   const themeUris = variables.domain.map(v => themeMap[v])
 
-  console.log(from)
+  // Return object
+  let extendedMetadataRecords
 
-  /**
-   * Do search IF
-   *
-   * (A) The ICOS network is selected
-   * or
-   * (B)
-   */
   const doSearch =
     acronym.indexOf('ICOS') >= 0
       ? true
@@ -41,7 +39,6 @@ const themeMap = {
           return doSearch
         }, false)
 
-  let extendedMetadataRecords
   if (doSearch) {
     // (1) Find the data object specs from ICOS that use this theme
     const specs = (
@@ -53,38 +50,7 @@ const themeMap = {
           Accept: 'application/json',
           'Accept-Encoding': 'gzip, deflate, br'
         },
-        data: `
-          prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
-
-          select
-          ?spec
-          ?level
-          ?dataset
-          ?format
-          ?theme
-          ?temporalResolution
-          
-          where {
-            values ?level { 2 }
-            values ?theme { ${themeUris.map(uri => `<${uri}>`).join(' ')} }
-          
-            ?spec cpmeta:hasDataLevel ?level .
-            FILTER NOT EXISTS { ?spec cpmeta:hasAssociatedProject/cpmeta:hasHideFromSearchPolicy "true"^^xsd:boolean }
-            FILTER(STRSTARTS(str(?spec), "http://meta.icos-cp.eu/"))
-            ?spec cpmeta:hasDataTheme ?theme .
-          
-            OPTIONAL {
-              ?spec cpmeta:containsDataset ?dataset .
-              OPTIONAL{ ?dataset cpmeta:hasTemporalResolution ?temporalResolution }
-            }
-          
-            FILTER EXISTS{
-              ?dobj cpmeta:hasObjectSpec ?spec .
-              FILTER NOT EXISTS {[] cpmeta:isNextVersionOf ?dobj}
-            }
-          
-            ?spec cpmeta:hasFormat ?format .
-          }`
+        data: getSpecs(themeUris)
       }).catch(error => console.error('Error searching metadata', error))) || {}
     ).data?.results?.bindings?.map(r => r.spec.value)
 
@@ -98,34 +64,7 @@ const themeMap = {
           Accept: 'application/json',
           'accept-encoding': 'gzip, deflate, br'
         },
-        data: `
-          prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
-
-          select distinct
-          ?uri
-          ?label
-          ?stationId
-          
-          from <http://meta.icos-cp.eu/ontologies/cpmeta/>
-          from <http://meta.icos-cp.eu/resources/cpmeta/>
-          from <http://meta.icos-cp.eu/resources/icos/>
-          from <http://meta.icos-cp.eu/resources/extrastations/>
-          from named <http://meta.icos-cp.eu/resources/wdcgg/>
-          
-          where {
-              { ?uri rdfs:label ?label }
-              UNION
-              { ?uri cpmeta:hasName ?label }
-              UNION 
-              {
-                  graph <http://meta.icos-cp.eu/resources/wdcgg/> {
-                      ?uri a cpmeta:Station .
-                      ?uri cpmeta:hasName ?label .
-                  }
-              }
-              values ?stationId {${sites.name.map(s => `'${s.replace("'", "''")}'`).join(' ')}}
-              ?uri cpmeta:hasStationId ?stationId
-          }`
+        data: getStations(sites)
       }).catch(error => console.error('Error searching metadata', error))) || {}
     ).data.results.bindings.map(r => r.uri.value)
 
@@ -147,46 +86,12 @@ const themeMap = {
             Accept: 'application/json',
             'accept-encoding': 'gzip, deflate, br'
           },
-          data: `
-            prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
-            prefix prov: <http://www.w3.org/ns/prov#>
-            
-            select
-            ?dobj
-            ?spec
-            ?station
-            ?fileName
-            ?size
-            ?submTime
-            ?timeStart
-            ?timeEnd
-
-            where {
-              ${specs.length > 0 ? `VALUES ?spec { ${specs.map(s => `<${s}>`).join(' ')} }` : ''}
-              ?dobj cpmeta:hasObjectSpec ?spec .
-
-              ${
-                stations.length > 0
-                  ? `VALUES ?station { ${stations.map(s => `<${s}>`).join(' ')} }`
-                  : ''
-              }
-              ?dobj cpmeta:wasAcquiredBy/prov:wasAssociatedWith ?station .
-
-              ?dobj cpmeta:hasSizeInBytes ?size .
-              ?dobj cpmeta:hasName ?fileName .
-              ?dobj cpmeta:wasSubmittedBy/prov:endedAtTime ?submTime .
-              ?dobj cpmeta:hasStartTime | (cpmeta:wasAcquiredBy / prov:startedAtTime) ?timeStart .
-              ?dobj cpmeta:hasEndTime | (cpmeta:wasAcquiredBy / prov:endedAtTime) ?timeEnd .
-              FILTER NOT EXISTS {[] cpmeta:isNextVersionOf ?dobj}
-            }
-            
-            order by desc(?submTime)
-            offset 0
-            limit ${limit}`
+          data: getDobjs({ specs, stations, limit, offset })
         }).catch(error => console.error('Error searching metadata', error))) || {}
       ).data
 
       if (metadataRecords) {
+        // (4) Get extended metadata records for dobjs found in (3)
         extendedMetadataRecords = (
           (await axios({
             baseURL: 'https://meta.icos-cp.eu/sparql',
@@ -196,67 +101,7 @@ const themeMap = {
               Accept: 'application/json',
               'accept-encoding': 'gzip, deflate, br'
             },
-            data: `
-              prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
-              prefix prov: <http://www.w3.org/ns/prov#>
-              
-              select distinct
-              ?dobj
-              ?station
-              ?stationId
-              ?samplingHeight
-              ?theme
-              ?themeIcon
-              ?title
-              ?description
-              ?columnNames
-              ?site
-              
-              where {
-                {
-                  select
-                  ?dobj (min(?station0) as ?station)
-                  (sample(?stationId0) as ?stationId)
-                  (sample(?samplingHeight0) as ?samplingHeight)
-                  (sample(?site0) as ?site)
-              
-                  where {
-              
-                    VALUES ?dobj { ${metadataRecords.results.bindings
-                      .map(r => `<${r.dobj.value}>`)
-                      .join(' ')} }
-                    
-                    OPTIONAL {
-                      ?dobj cpmeta:wasAcquiredBy ?acq.
-                      ?acq prov:wasAssociatedWith ?stationUri .
-                      OPTIONAL{ ?stationUri cpmeta:hasName ?station0 }
-                      OPTIONAL{ ?stationUri cpmeta:hasStationId ?stationId0 }
-                      OPTIONAL{ ?acq cpmeta:hasSamplingHeight ?samplingHeight0 }
-                      OPTIONAL{ ?acq cpmeta:wasPerformedAt/cpmeta:hasSpatialCoverage/rdfs:label ?site0 }
-                    }
-                  }
-                  
-                  group by
-                  ?dobj
-                }
-              
-                ?dobj cpmeta:hasObjectSpec ?specUri .
-                
-                OPTIONAL {
-                  ?specUri cpmeta:hasDataTheme [
-                    rdfs:label ?theme ;
-                    cpmeta:hasIcon ?themeIcon
-                  ]
-                }
-                
-                OPTIONAL{ ?dobj <http://purl.org/dc/terms/title> ?title }
-                
-                OPTIONAL{ ?dobj <http://purl.org/dc/terms/description> ?description }
-                
-                OPTIONAL{ ?dobj cpmeta:hasActualColumnNames ?columnNames }
-              }
-              
-              limit ${limit}`
+            data: getExtendedDobjs({ metadataRecords, limit })
           }).catch(error => console.error('Error searching metadata', error))) || {}
         ).data
       }

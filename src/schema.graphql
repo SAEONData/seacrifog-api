@@ -174,7 +174,7 @@ type Query {
 
   searchMetadata(
     limit: Int
-    from: Int
+    offset: Int
     bySites: [Int!]
     byNetworks: [Int!]
     byVariables: [Int!]

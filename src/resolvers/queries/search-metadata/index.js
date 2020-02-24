@@ -23,7 +23,7 @@ export default async (self, args, req) => {
   const { findNetworks, findVariables, findProtocols, findSites } = req.ctx.db.dataLoaders
   const {
     limit = 100,
-    from = 1,
+    offset = 1,
     byNetworks = [],
     byVariables = [],
     byProtocols = [],
@@ -107,8 +107,8 @@ export default async (self, args, req) => {
   )
 
   search.org = {
-    from,
-    limit
+    limit,
+    offset
   }
 
   log(

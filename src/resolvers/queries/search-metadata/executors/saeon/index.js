@@ -37,7 +37,7 @@ const getTitles = search => {
     headers: { 'Content-Type': 'application/json' },
     params: {
       index: 'saeon-odp-4-2',
-      start: search.org.from,
+      start: search.org.offset || 1,
       size: search.org.limit,
       fields: 'metadata_json,record_id,organization'
     }
