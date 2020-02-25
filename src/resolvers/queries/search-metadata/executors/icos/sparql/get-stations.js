@@ -1,4 +1,4 @@
-export default sites => `
+export default ({ sites }) => `
   prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
 
   select distinct

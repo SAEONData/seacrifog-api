@@ -1,4 +1,4 @@
-export default (metadataRecords, limit) => `
+export default ({ metadataRecords, limit }) => `
   prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
   prefix prov: <http://www.w3.org/ns/prov#>
 

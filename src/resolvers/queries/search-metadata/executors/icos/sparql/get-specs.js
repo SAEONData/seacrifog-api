@@ -1,4 +1,4 @@
-export default themeUris => `
+export default ({ themeUris }) => `
   prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
 
   select

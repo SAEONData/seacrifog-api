@@ -1,4 +1,4 @@
-export default (specs, stations, limit, offset) => `
+export default ({ specs, stations, limit, offset }) => `
   prefix cpmeta: <http://meta.icos-cp.eu/ontologies/cpmeta/>
   prefix prov: <http://www.w3.org/ns/prov#>
 

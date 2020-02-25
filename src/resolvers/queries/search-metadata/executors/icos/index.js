@@ -50,9 +50,9 @@ const themeMap = {
           Accept: 'application/json',
           'Accept-Encoding': 'gzip, deflate, br'
         },
-        data: getSpecs(themeUris)
+        data: getSpecs({ themeUris })
       }).catch(error => console.error('Error searching metadata', error))) || {}
-    ).data?.results?.bindings?.map(r => r.spec.value)
+    ).data.results.bindings.map(r => r.spec.value)
 
     // (2) Get the ICOS UIR IDs of stations being searched for
     const stations = (
@@ -64,7 +64,7 @@ const themeMap = {
           Accept: 'application/json',
           'accept-encoding': 'gzip, deflate, br'
         },
-        data: getStations(sites)
+        data: getStations({ sites })
       }).catch(error => console.error('Error searching metadata', error))) || {}
     ).data.results.bindings.map(r => r.uri.value)
 
